@@ -1,6 +1,5 @@
 package com.example.teamup;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Dialog;
@@ -12,12 +11,19 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class AuthActivity extends AppCompatActivity {
+
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
+
+        mAuth = FirebaseAuth.getInstance();
 
         //  Riferimenti agli elementi dell'UI
         ImageView image = findViewById(R.id.imageView_teamUp);
@@ -46,6 +52,13 @@ public class AuthActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //  TODO: verificare se l'utente è già autenticato e in tal caso chiamare teamUp()
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+    }
+
     private void login() {
         final Dialog loginDialog = new Dialog(AuthActivity.this);
         loginDialog.setContentView(R.layout.login_dialog);
@@ -54,9 +67,10 @@ public class AuthActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //  Verifica che l'EditText per l'indirizzo e-mail non sia vuota
+                //  Verifica che le EditText per l'indirizzo e-mail e la password non siano vuote
                 EditText etEmail = loginDialog.findViewById(R.id.editText_email);
                 String sEmail = etEmail.getText().toString();
+
 
                 if (!sEmail.equals("")) teamUp();
             }
@@ -86,7 +100,7 @@ public class AuthActivity extends AppCompatActivity {
 
     //  TODO: modificare il nome di questa funzione
     private void teamUp() {
-        Intent teamUpIntent = new Intent(this, ProfileActivity.class);
+        Intent teamUpIntent = new Intent(this, MainActivity.class);
         startActivity(teamUpIntent);
     }
 }
