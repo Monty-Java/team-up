@@ -28,7 +28,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final String TAG = "MainActivity";
 
     private FirebaseAuthUtils firebaseAuthUtils;
-    private FirebaseUser firebaseUser;
 
     private AppBarConfiguration mAppBarConfiguration;
 
@@ -36,6 +35,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     ImageView userProfilePicture;
     TextView userDisplayName;
     TextView userEmail;
+
+    private NavController navController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 R.id.nav_projects, R.id.nav_settings, R.id.nav_logout)
                 .setDrawerLayout(drawer)
                 .build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
@@ -68,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
         firebaseAuthUtils = new FirebaseAuthUtils(FirebaseAuth.getInstance(), this);
-        firebaseUser = firebaseAuthUtils.getCurrentUser();
+        FirebaseUser firebaseUser = firebaseAuthUtils.getCurrentUser();
         if (firebaseUser != null) {
             //  Aggiorna l'UI con i dati dell'utente
             userDisplayName.setText(firebaseUser.getDisplayName());
@@ -114,10 +115,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (menuItemId) {
             case R.id.nav_projects:
                 Toast.makeText(this, "My Projects", Toast.LENGTH_LONG).show();
+                navController.navigate(menuItemId);
+                if (mAppBarConfiguration.getDrawerLayout() != null) {
+                    mAppBarConfiguration.getDrawerLayout().closeDrawers();
+                }
                 break;
 
             case R.id.nav_settings:
                 Toast.makeText(this, "Settings", Toast.LENGTH_LONG).show();
+                navController.navigate(menuItemId);
+                if (mAppBarConfiguration.getDrawerLayout() != null) {
+                    mAppBarConfiguration.getDrawerLayout().closeDrawers();
+                }
                 break;
 
             case R.id.nav_logout:
