@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.teamup.AuthActivity;
 import com.example.teamup.MainActivity;
 import com.example.teamup.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -34,6 +35,12 @@ public class FirebaseAuthUtils {
         if (firebaseAuth.getCurrentUser() != null) {
             goToMainScreen();
         }
+    }
+
+    public FirebaseUser getCurrentUser() {
+        Log.d(TAG, "getCurrentUser");
+
+        return firebaseAuth.getCurrentUser();
     }
 
     public void createAccount(final String displayName, final String email, final String pass) {
@@ -87,6 +94,15 @@ public class FirebaseAuthUtils {
         });
     }
 
+    public void logout() {
+        Log.d(TAG, "logout");
+
+        FirebaseAuth.getInstance().signOut();
+        Intent logoutIntent = new Intent(activity, AuthActivity.class);
+        activity.startActivity(logoutIntent);
+        activity.finish();
+    }
+
     private void verifyUser() {
         Log.d(TAG, "verifyUser");
 
@@ -133,6 +149,7 @@ public class FirebaseAuthUtils {
         if (isEmailVerified()) {
             Intent teamUpIntent = new Intent(activity, MainActivity.class);
             activity.startActivity(teamUpIntent);
+            activity.finish();
 
         } else {
             verifyUser();
