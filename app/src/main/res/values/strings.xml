@@ -11,4 +11,6 @@
     <string name="menu_logout">Log Out</string>
 
     <string name="home_second">Home Second</string>
+    <string name="verify_account_title">Verify Account</string>
+    <string name="verify_account_message">Please check your e-mail for the verification link to activate your account.</string>
 </resources>
