@@ -1,8 +1,5 @@
 package com.example.teamup;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
@@ -13,9 +10,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -35,36 +33,6 @@ public class AuthActivity extends AppCompatActivity {
         setContentView(R.layout.activity_auth);
 
         mAuth = FirebaseAuth.getInstance();
-
-        //  Riferimenti agli elementi dell'UI
-        ImageView image = findViewById(R.id.imageView_teamUp);
-        TextView teamUpDescription = findViewById(R.id.textView_desc);
-        Button mLoginButton = findViewById(R.id.button_login);
-        Button mRegisterButton = findViewById(R.id.button_register);
-        Button discoverButton = findViewById(R.id.button_discover);
-
-        //  Registrazione di listener per i pulsanti
-        mLoginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                login();
-            }
-        });
-
-        mRegisterButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                register();
-            }
-        });
-
-        discoverButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //  TODO: Intent per inziare l'Activity relativa a IUI-7
-                Toast.makeText(AuthActivity.this, "Porta l'utente a IUI-7", Toast.LENGTH_LONG).show();
-            }
-        });
     }
 
     @Override
@@ -73,6 +41,24 @@ public class AuthActivity extends AppCompatActivity {
         //  TODO: verificare se l'utente è già autenticato e in tal caso chiamare teamUp()
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) teamUp();
+    }
+
+    public void onLoginClick(View view) {
+        Log.d(TAG, "onLoginClick");
+
+        login();
+    }
+
+    public void onRegisterClick(View view) {
+        Log.d(TAG, "onRegisterClick");
+
+        register();
+    }
+
+    public void onDiscoverClick(View view) {
+        Log.d(TAG, "onDiscoverClick");
+
+        Toast.makeText(this, "Porta l'utente a IUI-7", Toast.LENGTH_LONG).show();
     }
 
     private void login() {
