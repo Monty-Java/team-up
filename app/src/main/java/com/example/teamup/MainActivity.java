@@ -1,70 +1,56 @@
 package com.example.teamup;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Menu;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
+
+import com.example.teamup.utilities.FirebaseAuthUtils;
+import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = "MainActivity";
 
+    private FirebaseAuthUtils firebaseAuthUtils;
+    private FirebaseUser firebaseUser;
+
     private AppBarConfiguration mAppBarConfiguration;
 
-    private FirebaseAuth mAuth;
-    private FirebaseUser mUser;
-
     //  UI
-    ImageView mProfilePic;
-    TextView mDisplayName;
-    TextView mEmail;
-
-    private void logout() {
-        FirebaseAuth.getInstance().signOut();
-        Intent logoutIntent = new Intent(this, AuthActivity.class);
-        startActivity(logoutIntent);
-    }
+    ImageView userProfilePicture;
+    TextView userDisplayName;
+    TextView userEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Porta l'utente a IUI-6", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         //  Ottiene i riferimenti agli elementi dell'UI
         View headerView = navigationView.getHeaderView(0);
-        mDisplayName = (TextView) headerView.findViewById(R.id.display_name);
-        mEmail = (TextView) headerView.findViewById(R.id.email);
+        userDisplayName = headerView.findViewById(R.id.display_name);
+        userEmail = headerView.findViewById(R.id.email);
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -78,25 +64,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //  Registra un listener per permettere di effettuare un logout
         //  quando l'utente clicca sull'opzione appropriata.
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        mAuth = FirebaseAuth.getInstance();
-        if (mAuth.getCurrentUser() != null) {
-            mUser = mAuth.getCurrentUser();
+        firebaseAuthUtils = new FirebaseAuthUtils(FirebaseAuth.getInstance(), this);
+        firebaseUser = firebaseAuthUtils.getCurrentUser();
+        if (firebaseUser != null) {
             //  Aggiorna l'UI con i dati dell'utente
-            mDisplayName.setText(mUser.getDisplayName());
-            mEmail.setText(mUser.getEmail());
+            userDisplayName.setText(firebaseUser.getDisplayName());
+            userEmail.setText(firebaseUser.getEmail());
         }
+    }
 
-        Button discoverButton = findViewById(R.id.button_discover);
-        discoverButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //  TODO: Intent per inziare l'Activity relativa a IUI-7
-                Toast.makeText(MainActivity.this, "Porta l'utente a IUI-7", Toast.LENGTH_LONG).show();
-            }
-        });
+    public void onFabClick(View view) {
+        Log.d(TAG, "onDiscoverClick");
+
+        Snackbar.make(view, "Porta l'utente a IUI-6", Snackbar.LENGTH_LONG)
+                .setAction("Action", null)
+                .show();
+    }
+
+    public void onDiscoverClick(View view) {
+        Log.d(TAG, "onDiscoverClick");
+
+        //  TODO: Intent per inziare l'Activity relativa a IUI-7
+        Toast.makeText(MainActivity.this, "Porta l'utente a IUI-7", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -115,7 +107,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-        if (menuItem.getItemId() == R.id.nav_logout) logout();
+        Log.d(TAG, "onNavigationItemSelected");
+
+        int menuItemId = menuItem.getItemId();
+
+        switch (menuItemId) {
+            case R.id.nav_projects:
+                Toast.makeText(this, "My Projects", Toast.LENGTH_LONG).show();
+                break;
+
+            case R.id.nav_settings:
+                Toast.makeText(this, "Settings", Toast.LENGTH_LONG).show();
+                break;
+
+            case R.id.nav_logout:
+                firebaseAuthUtils.logout();
+                break;
+
+            default:
+                Log.w(TAG, "onNavigationItemSelected: impossibile trovare item con id: " + menuItemId);
+        }
+
         return true;
     }
 }
