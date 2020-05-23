@@ -13,4 +13,12 @@
     <string name="home_second">Home Second</string>
     <string name="verify_account_title">Verify Account</string>
     <string name="verify_account_message">Please check your e-mail for the verification link to activate your account.</string>
+
+    <!-- EditText hints -->
+    <string name="hint_name">Name</string>
+    <string name="hint_surname">Surname</string>
+    <string name="hint_email">E-mail Address</string>
+    <string name="hint_pass">Password</string>
+
+    <string name="app_mission">TeamUp! vuole andare incontro a tutte le persone che hanno dovuto rinunciare o hanno riscontrato difficoltà nel realizzare i propri progetti, cercando di riunire persone con lo stesso obiettivo o passione in modo tale da potersi aiutare a vicenda.</string>
 </resources>

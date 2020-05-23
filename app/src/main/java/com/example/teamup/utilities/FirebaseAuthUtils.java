@@ -6,13 +6,25 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import com.example.teamup.AuthActivity;
 import com.example.teamup.MainActivity;
 import com.example.teamup.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class FirebaseAuthUtils {
@@ -28,9 +40,9 @@ public class FirebaseAuthUtils {
         this.activity = activity;
     }
 
-    // TODO: vetrificare se serve modificare il nome del metodo
+    // TODO: verificare se serve modificare il nome del metodo
     public void checkCurrentUser() {
-        Log.d(TAG, "hasCurrentUser");
+        Log.d(TAG, "checkCurrentUser");
 
         if (firebaseAuth.getCurrentUser() != null) {
             goToMainScreen();
@@ -43,7 +55,7 @@ public class FirebaseAuthUtils {
         return firebaseAuth.getCurrentUser();
     }
 
-    public void createAccount(final String displayName, final String email, final String pass) {
+    public void createAccount(final String displayName, final String email, final String pass, final String skills) {
         firebaseAuth.createUserWithEmailAndPassword(email, pass)
                 .addOnCompleteListener(activity, task -> {
             if (task.isSuccessful()) {

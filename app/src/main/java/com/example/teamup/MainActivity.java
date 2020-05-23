@@ -1,5 +1,6 @@
 package com.example.teamup;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -23,13 +24,17 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = "MainActivity";
+    private static final String USERDATA = "skills";
 
     private FirebaseAuthUtils firebaseAuthUtils;
 
     private AppBarConfiguration mAppBarConfiguration;
+
+    private SharedPreferences mUserData;
 
     //  UI
     ImageView userProfilePicture;
@@ -56,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_projects, R.id.nav_settings, R.id.nav_logout)
+                R.id.nav_projects, R.id.nav_profile, R.id.nav_settings, R.id.nav_logout)
                 .setDrawerLayout(drawer)
                 .build();
         navController = Navigation.findNavController(this, R.id.nav_host_fragment);
@@ -75,11 +80,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             userDisplayName.setText(firebaseUser.getDisplayName());
             userEmail.setText(firebaseUser.getEmail());
         }
+
+        //  TODO: i dati relativi alle competenze degli utenti andranno posti nella schermata relativa la profilo personale
+        mUserData = MainActivity.this.getSharedPreferences(USERDATA, MODE_PRIVATE);
+        Log.d(TAG, "Skills: " + mUserData.getString(USERDATA, null));
     }
 
     public void onFabClick(View view) {
         Log.d(TAG, "onDiscoverClick");
 
+        //  TODO: Intent per avviare l'Activity relativa a IUI-6
         Snackbar.make(view, "Porta l'utente a IUI-6", Snackbar.LENGTH_LONG)
                 .setAction("Action", null)
                 .show();
@@ -115,6 +125,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (menuItemId) {
             case R.id.nav_projects:
                 Toast.makeText(this, "My Projects", Toast.LENGTH_LONG).show();
+                navController.navigate(menuItemId);
+                if (mAppBarConfiguration.getDrawerLayout() != null) {
+                    mAppBarConfiguration.getDrawerLayout().closeDrawers();
+                }
+                break;
+
+            case R.id.nav_profile:
                 navController.navigate(menuItemId);
                 if (mAppBarConfiguration.getDrawerLayout() != null) {
                     mAppBarConfiguration.getDrawerLayout().closeDrawers();

@@ -1,6 +1,7 @@
 package com.example.teamup;
 
 import android.app.Dialog;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,12 +13,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.teamup.utilities.FirebaseAuthUtils;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class AuthActivity extends AppCompatActivity {
 
     private static final String TAG = AuthActivity.class.getSimpleName();
+    private static final String USERDATA = "skills";
 
     private FirebaseAuthUtils firebaseAuthUtils;
+
+    private SharedPreferences mUserData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +37,6 @@ public class AuthActivity extends AppCompatActivity {
         super.onStart();
         Log.d(TAG, "onStart");
 
-        //  TODO: verificare se l'utente è già autenticato e in tal caso chiamare teamUp()
         firebaseAuthUtils.checkCurrentUser();
     }
 
@@ -85,13 +89,22 @@ public class AuthActivity extends AppCompatActivity {
             EditText etPass = registerDialog.findViewById(R.id.editText_pass);
             EditText etName = registerDialog.findViewById(R.id.editText_name);
             EditText etSurname = registerDialog.findViewById(R.id.editText_surname);
+            EditText etSkills = registerDialog.findViewById(R.id.editText_skills);
 
             String sEmail = etEmail.getText().toString();
             String sPass = etPass.getText().toString();
             String displayName = etName.getText().toString() + ' ' + etSurname.getText().toString();
+            String sSkills = etSkills.getText().toString();
+
+            //  Memorizza le competenze inserite dall'utente durante la registrazione.
+            //  Implementato così supporta soltanto un utente per dispositivo.
+            Log.d(TAG, sSkills);
+            mUserData = AuthActivity.this.getSharedPreferences(USERDATA, MODE_PRIVATE);
+            SharedPreferences.Editor prefEditor = mUserData.edit();
+            prefEditor.putString(USERDATA, sSkills).apply();
 
             if (!sEmail.equals(""))
-                firebaseAuthUtils.createAccount(displayName, sEmail, sPass);
+                firebaseAuthUtils.createAccount(displayName, sEmail, sPass, sSkills);
         });
 
         registerDialog.show();
