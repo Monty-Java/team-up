@@ -22,7 +22,7 @@ public class ProjectsFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         projectsViewModel =
                 ViewModelProviders.of(this).get(ProjectsViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_settings, container, false);
+        View root = inflater.inflate(R.layout.fragment_projects, container, false);
         final TextView textView = root.findViewById(R.id.text_gallery);
         projectsViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override

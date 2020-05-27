@@ -1,11 +1,13 @@
 package com.example.teamup;
 
+import android.app.Dialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,10 +23,8 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.teamup.utilities.FirebaseAuthUtils;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = "MainActivity";
@@ -89,10 +89,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onFabClick(View view) {
         Log.d(TAG, "onDiscoverClick");
 
-        //  TODO: Intent per avviare l'Activity relativa a IUI-6
-        Snackbar.make(view, "Porta l'utente a IUI-6", Snackbar.LENGTH_LONG)
-                .setAction("Action", null)
-                .show();
+        final Dialog newProjectDialog = new Dialog(MainActivity.this);
+        newProjectDialog.setContentView(R.layout.new_project_dialog);
+        Button newProjectConfirmButton = newProjectDialog.findViewById(R.id.button_confirmNewProject);
+        newProjectConfirmButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //  TODO: creare il progetto con i dati forniti dall'utente (IF-3)
+            }
+        });
+        newProjectDialog.show();
     }
 
     public void onDiscoverClick(View view) {
