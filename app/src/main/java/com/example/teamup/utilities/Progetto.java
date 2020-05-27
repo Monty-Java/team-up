@@ -1,8 +1,12 @@
 package com.example.teamup.utilities;
+import android.util.Log;
+
 import java.util.*;
 import java.lang.reflect.*;
 
 class Progetto {
+    private static final String TAG = Progetto.class.getSimpleName();
+
     private String id;
     private String titolo;
     private String descrizione;
@@ -14,81 +18,58 @@ class Progetto {
 
     Progetto(Leader creator) {
         this.leader = creator;
-        //genera id
+        //  genera id
         UUID uuid = UUID.randomUUID();
         id = uuid.toString();
     }
-    void setTitolo(Utente user,String title) {
+
+    void setTitolo(Utente user, String title) {
         if(this.leader == user) {
             titolo = title;
-        }
-        else {
-            System.out.println("Error, you're not the leader of this project!");
-        }
+        } else
+            Log.d(TAG, "Error, you're not the leader of this project!");
     }
+
     void setDescrizione(Utente user,String description) {
         if(this.leader == user) {
             descrizione = description;
-        }
-        else {
-            System.out.println("Error, you're not the leader of this project!");
-        }
+        } else
+            Log.d(TAG, "Error, you're not the leader of this project!");
     }
+
     void setEtichette(Utente user,List<Tag> labels) {
         if(this.leader == user) {
             etichette = labels;
-        }
-        else {
-            System.out.println("Error, you're not the leader of this project!");
-        }
+        } else
+            Log.d(TAG, "Error, you're not the leader of this project!");
     }
+
     void setPersonale(Utente user, List<Teammate> mates) {
         if(this.leader == user) {
             personale = mates;
-        }
-        else {
-            System.out.println("Error, you're not the leader of this project!");
-        }
+        } else
+            Log.d(TAG, "Error, you're not the leader of this project!");
     }
     void setObiettiviRaggiunti(Utente user, List<String> reachedTarget) {
         if(this.leader == user) {
             obiettiviRaggiunti = reachedTarget;
-        }
-        else {
-            System.out.println("Error, you're not the leader of this project!");
-        }
+        } else
+            Log.d(TAG, "Error, you're not the leader of this project!");
     }
+
     void setObiettiviDaRaggiungere(Utente user, List<String> targetToReach) {
         if(this.leader == user) {
             obiettiviDaRaggiungere = targetToReach;
-        }
-        else {
-            System.out.println("Error, you're not the leader of this project!");
-        }
+        } else
+            Log.d(TAG, "Error, you're not the leader of this project!");
     }
 
-    String getId() {
-        return id;
-    }
-    String getTitolo() {
-        return titolo;
-    }
-    String getDescrizione() {
-        return descrizione;
-    }
-    List<Tag> getEtichette() {
-        return etichette;
-    }
-    Leader getLeader() {
-        return leader;
-    }
-    List<Teammate> getPersonale() {
-        return personale;
-    }
-    List<String> getObiettiviRaggiunti() {
-        return obiettiviRaggiunti;
-    }
-    List<String> getObiettiviDaRaggiungere() {
-        return obiettiviDaRaggiungere;
-    }
+    String getId() { return id; }
+    String getTitolo() { return titolo; }
+    String getDescrizione() { return descrizione; }
+    List<Tag> getEtichette() { return etichette; }
+    Leader getLeader() { return leader; }
+    List<Teammate> getPersonale() { return personale; }
+    List<String> getObiettiviRaggiunti() { return obiettiviRaggiunti; }
+    List<String> getObiettiviDaRaggiungere() { return obiettiviDaRaggiungere; }
 }
