@@ -3,6 +3,7 @@ package com.example.teamup.utilities;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -29,6 +30,7 @@ public class Progetto {
         this.titolo = titolo;
         this.descrizione = descrizione;
         this.etichette = etichette;
+        this.obiettivi = new HashMap<>();
 
         for (String goal : goalsToAchieve) {
             this.obiettivi.put(goal, false);
