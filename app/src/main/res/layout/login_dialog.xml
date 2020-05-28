@@ -4,13 +4,13 @@
     android:layout_height="match_parent"
     android:padding="@dimen/activity_horizontal_margin">
 
-    <!-- TODO: trasformare la stringa "Sign In to an Existing Account" in una risorsa in strings.xml -->
+
     <TextView
         android:id="@+id/dialog_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:text="Sign In to an Existing Account"
+        android:text="@string/prompt_sign_in"
         android:textAlignment="center"
         android:gravity="center_horizontal" />
 
@@ -34,7 +34,7 @@
         android:hint="@string/hint_pass"
         android:inputType="textPassword" />
 
-    <!-- TODO: trasformare la stringa "Log In" in una risorsa in strings.xml -->
+
     <Button
         android:id="@+id/button_login"
         android:layout_width="wrap_content"
