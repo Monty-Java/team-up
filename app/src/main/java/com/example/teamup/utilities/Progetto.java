@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 public class Progetto {
     private static final String TAG = Progetto.class.getSimpleName();
@@ -15,17 +14,14 @@ public class Progetto {
     private String titolo;
     private String descrizione;
     private List<String> etichette;
-    private Leader leader;
-    private List<Teammate> personale;
+    private String leader;
+    private List<String> teammates;
     private Map<String, Boolean> obiettivi;
 
-    public Progetto(Leader leader, String titolo, String descrizione, List<String> etichette, List<String> goalsToAchieve) {
+    public Progetto(String id, String leader, String titolo, String descrizione, List<String> etichette, List<String> goalsToAchieve) {
         Log.d(TAG, "Costruttore");
 
-        //  genera id
-        UUID uuid = UUID.randomUUID();
-        id = uuid.toString();
-
+        this.id = id;
         this.leader = leader;
         this.titolo = titolo;
         this.descrizione = descrizione;
@@ -61,20 +57,20 @@ public class Progetto {
         etichette = new ArrayList<>(result);
     }
 
-    public void addTeammate(Teammate teammate) {
-        personale.add(teammate);
+    public void addTeammate(String teammate) {
+        teammates.add(teammate);
     }
 
-    public void removeTeammate(Teammate teammate) {
-        List<Teammate> result = new ArrayList<>();
+    public void removeTeammate(String teammate) {
+        List<String> result = new ArrayList<>();
 
-        for (Teammate oldTeammate : personale) {
-            if (oldTeammate != teammate) {
+        for (String oldTeammate : teammates) {
+            if (!oldTeammate.equals(teammate)) {
                 result.add(oldTeammate);
             }
         }
 
-        personale = new ArrayList<>(result);
+        teammates = new ArrayList<>(result);
     }
 
     public void addObiettivoDaRaggiungere(String goal) {
@@ -105,12 +101,12 @@ public class Progetto {
         return etichette;
     }
 
-    public Leader getLeader() {
+    public String getLeader() {
         return leader;
     }
 
-    public List<Teammate> getPersonale() {
-        return personale;
+    public List<String> getTeammates() {
+        return teammates;
     }
 
     public Map<String, Boolean> getObiettivi() {
