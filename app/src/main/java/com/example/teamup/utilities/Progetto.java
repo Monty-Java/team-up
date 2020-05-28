@@ -14,12 +14,12 @@ public class Progetto {
     private String id;
     private String titolo;
     private String descrizione;
-    private List<Tag> etichette;
+    private List<String> etichette;
     private Leader leader;
     private List<Teammate> personale;
     private Map<String, Boolean> obiettivi;
 
-    public Progetto(Leader leader, String titolo, String descrizione, List<Tag> etichette, List<String> goalsToAchieve) {
+    public Progetto(Leader leader, String titolo, String descrizione, List<String> etichette, List<String> goalsToAchieve) {
         Log.d(TAG, "Costruttore");
 
         //  genera id
@@ -45,15 +45,15 @@ public class Progetto {
         descrizione = description;
     }
 
-    public void addEtichetta(Tag tag) {
+    public void addEtichetta(String tag) {
         etichette.add(tag);
     }
 
-    public void removeEtichetta(Tag tag) {
-        List<Tag> result = new ArrayList<>();
+    public void removeEtichetta(String tag) {
+        List<String> result = new ArrayList<>();
 
-        for (Tag oldTag : etichette) {
-            if (oldTag != tag) {
+        for (String oldTag : etichette) {
+            if (!oldTag.equals(tag)) {
                 result.add(oldTag);
             }
         }
@@ -101,7 +101,7 @@ public class Progetto {
         return descrizione;
     }
 
-    public List<Tag> getEtichette() {
+    public List<String> getEtichette() {
         return etichette;
     }
 
