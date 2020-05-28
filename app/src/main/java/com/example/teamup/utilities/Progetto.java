@@ -1,10 +1,13 @@
 package com.example.teamup.utilities;
+
 import android.util.Log;
 
-import java.util.*;
-import java.lang.reflect.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
-class Progetto {
+public class Progetto {
     private static final String TAG = Progetto.class.getSimpleName();
 
     private String id;
@@ -13,63 +16,102 @@ class Progetto {
     private List<Tag> etichette;
     private Leader leader;
     private List<Teammate> personale;
-    private List<String> obiettiviRaggiunti;
-    private List<String> obiettiviDaRaggiungere;
+    private Map<String, Boolean> obiettivi;
 
-    Progetto(Leader creator) {
-        this.leader = creator;
+    public Progetto(Leader leader, String titolo, String descrizione, List<Tag> etichette, List<String> goalsToAchieve) {
+        Log.d(TAG, "Costruttore");
+
         //  genera id
         UUID uuid = UUID.randomUUID();
         id = uuid.toString();
+
+        this.leader = leader;
+        this.titolo = titolo;
+        this.descrizione = descrizione;
+        this.etichette = etichette;
+
+        for (String goal : goalsToAchieve) {
+            this.obiettivi.put(goal, false);
+        }
     }
 
-    void setTitolo(Utente user, String title) {
-        if(this.leader == user) {
-            titolo = title;
-        } else
-            Log.d(TAG, "Error, you're not the leader of this project!");
+    public void setTitolo(String title) {
+        titolo = title;
     }
 
-    void setDescrizione(Utente user,String description) {
-        if(this.leader == user) {
-            descrizione = description;
-        } else
-            Log.d(TAG, "Error, you're not the leader of this project!");
+    public void setDescrizione(String description) {
+        descrizione = description;
     }
 
-    void setEtichette(Utente user,List<Tag> labels) {
-        if(this.leader == user) {
-            etichette = labels;
-        } else
-            Log.d(TAG, "Error, you're not the leader of this project!");
+    public void addEtichetta(Tag tag) {
+        etichette.add(tag);
     }
 
-    void setPersonale(Utente user, List<Teammate> mates) {
-        if(this.leader == user) {
-            personale = mates;
-        } else
-            Log.d(TAG, "Error, you're not the leader of this project!");
-    }
-    void setObiettiviRaggiunti(Utente user, List<String> reachedTarget) {
-        if(this.leader == user) {
-            obiettiviRaggiunti = reachedTarget;
-        } else
-            Log.d(TAG, "Error, you're not the leader of this project!");
+    public void removeEtichetta(Tag tag) {
+        List<Tag> result = new ArrayList<>();
+
+        for (Tag oldTag : etichette) {
+            if (oldTag != tag) {
+                result.add(oldTag);
+            }
+        }
+
+        etichette = new ArrayList<>(result);
     }
 
-    void setObiettiviDaRaggiungere(Utente user, List<String> targetToReach) {
-        if(this.leader == user) {
-            obiettiviDaRaggiungere = targetToReach;
-        } else
-            Log.d(TAG, "Error, you're not the leader of this project!");
+    public void addTeammate(Teammate teammate) {
+        personale.add(teammate);
     }
 
-    String getId() { return id; }
-    String getTitolo() { return titolo; }
-    String getDescrizione() { return descrizione; }
-    List<Tag> getEtichette() { return etichette; }
-    Leader getLeader() { return leader; }
-    List<Teammate> getPersonale() { return personale; }
-    List<String> getObiettiviRaggiunti() { return obiettiviRaggiunti; }
-    List<String> getObiettiviDaRaggiungere() { return obiettiviDaRaggiungere; }
+    public void removeTeammate(Teammate teammate) {
+        List<Teammate> result = new ArrayList<>();
+
+        for (Teammate oldTeammate : personale) {
+            if (oldTeammate != teammate) {
+                result.add(oldTeammate);
+            }
+        }
+
+        personale = new ArrayList<>(result);
+    }
+
+    public void addObiettivoDaRaggiungere(String goal) {
+        obiettivi.put(goal, false);
+    }
+
+    public void removeObiettivo(String goalToRemove) {
+        obiettivi.remove(goalToRemove);
+    }
+
+    public void setObiettivoRaggiunto(String goalAchieved) {
+        obiettivi.replace(goalAchieved, true);
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getTitolo() {
+        return titolo;
+    }
+
+    public String getDescrizione() {
+        return descrizione;
+    }
+
+    public List<Tag> getEtichette() {
+        return etichette;
+    }
+
+    public Leader getLeader() {
+        return leader;
+    }
+
+    public List<Teammate> getPersonale() {
+        return personale;
+    }
+
+    public Map<String, Boolean> getObiettivi() {
+        return obiettivi;
+    }
 }
