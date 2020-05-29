@@ -98,17 +98,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         final Dialog newProjectDialog = new Dialog(MainActivity.this);
         newProjectDialog.setContentView(R.layout.new_project_dialog);
+        TextView leader = newProjectDialog.findViewById(R.id.leaderName_textView);
+        leader.setText("Leader: " + userDisplayName.getText().toString());
         Button newProjectConfirmButton = newProjectDialog.findViewById(R.id.button_confirmNewProject);
         newProjectConfirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 EditText title = newProjectDialog.findViewById(R.id.projectTitle_editText);
                 EditText description = newProjectDialog.findViewById(R.id.description_editText);
-                TextView leader = newProjectDialog.findViewById(R.id.leaderName_textView);
                 EditText objectives = newProjectDialog.findViewById(R.id.objectives_editText);
                 EditText tags = newProjectDialog.findViewById(R.id.projectTag_editText);
-
-                leader.setText("Leader: " + userDisplayName.getText().toString());
 
                 FirestoreUtils firestoreUtils = firebaseAuthUtils.getFirestoreUtils();
 
