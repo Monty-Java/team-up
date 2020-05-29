@@ -39,8 +39,8 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = "MainActivity";
 
-    private FirebaseAuthUtils firebaseAuthUtils;
-    private FirebaseFirestore firestore;
+    public FirebaseAuthUtils firebaseAuthUtils;
+    public FirebaseFirestore firestore;
 
     private AppBarConfiguration mAppBarConfiguration;
 
