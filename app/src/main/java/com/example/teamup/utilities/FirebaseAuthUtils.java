@@ -24,6 +24,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -32,11 +33,13 @@ public class FirebaseAuthUtils {
     private static final String TAG = FirebaseAuthUtils.class.getSimpleName();
 
     private FirebaseAuth firebaseAuth;
+    private FirestoreUtils firestoreUtils;
     private Activity activity;
 
 
-    public FirebaseAuthUtils(FirebaseAuth firebaseAuth, Activity activity) {
+    public FirebaseAuthUtils(FirebaseAuth firebaseAuth, FirebaseFirestore firestore, Activity activity) {
         this.firebaseAuth = firebaseAuth;
+        this.firestoreUtils = new FirestoreUtils(firestore);
         this.activity = activity;
     }
 
@@ -55,12 +58,11 @@ public class FirebaseAuthUtils {
         return firebaseAuth.getCurrentUser();
     }
 
-    public void createAccount(final String displayName, final String email, final String pass, final String skills) {
+    public void createAccount(final String displayName, final String email, final String pass, final List<String> skills) {
         firebaseAuth.createUserWithEmailAndPassword(email, pass)
                 .addOnCompleteListener(activity, task -> {
             if (task.isSuccessful()) {
-                updateUserProfile(displayName, email, pass);
-
+                updateUserProfile(displayName, email, pass, skills);
             } else {
                 Log.e(TAG, "Create FirebaseUser unsuccessful");
 
@@ -69,7 +71,7 @@ public class FirebaseAuthUtils {
         });
     }
 
-    private void updateUserProfile(final String displayName, final String email, final String pass) {
+    private void updateUserProfile(final String displayName, final String email, final String pass, final List<String> skills) {
         Log.d(TAG, "updateUserProfile");
 
         //  Aggiorna il profilo dell'utente impostando la stringa displayName come nome utente
@@ -83,7 +85,12 @@ public class FirebaseAuthUtils {
                                     .setDisplayName(displayName)
                                     .build();
 
-                    user.updateProfile(profileUpdate);
+                    user.updateProfile(profileUpdate).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            firestoreUtils.storeUserData(FirebaseAuthUtils.this, skills);
+                        }
+                    });
 
                     signIn(email, pass);
                 }
@@ -126,6 +133,7 @@ public class FirebaseAuthUtils {
                 firebaseAuth.getCurrentUser().reload().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         if (isEmailVerified()) {
+
                             goToMainScreen();
 
                         } else {

@@ -25,16 +25,15 @@ import com.example.teamup.utilities.FirebaseAuthUtils;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = "MainActivity";
-    private static final String USERDATA = "skills";
 
     private FirebaseAuthUtils firebaseAuthUtils;
+    private FirebaseFirestore firestore;
 
     private AppBarConfiguration mAppBarConfiguration;
-
-    private SharedPreferences mUserData;
 
     //  UI
     ImageView userProfilePicture;
@@ -73,7 +72,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        firebaseAuthUtils = new FirebaseAuthUtils(FirebaseAuth.getInstance(), this);
+        firestore = FirebaseFirestore.getInstance();
+        firebaseAuthUtils = new FirebaseAuthUtils(FirebaseAuth.getInstance(), firestore, this);
         FirebaseUser firebaseUser = firebaseAuthUtils.getCurrentUser();
         if (firebaseUser != null) {
             //  Aggiorna l'UI con i dati dell'utente
@@ -82,8 +82,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         //  TODO: i dati relativi alle competenze degli utenti andranno posti nella schermata relativa la profilo personale
-        mUserData = MainActivity.this.getSharedPreferences(USERDATA, MODE_PRIVATE);
-        Log.d(TAG, "Skills: " + mUserData.getString(USERDATA, null));
     }
 
     public void onFabClick(View view) {

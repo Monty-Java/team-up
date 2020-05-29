@@ -12,8 +12,13 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.teamup.utilities.FirebaseAuthUtils;
+import com.example.teamup.utilities.FirestoreUtils;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class AuthActivity extends AppCompatActivity {
 
@@ -21,15 +26,15 @@ public class AuthActivity extends AppCompatActivity {
     private static final String USERDATA = "skills";
 
     private FirebaseAuthUtils firebaseAuthUtils;
-
-    private SharedPreferences mUserData;
+    private FirebaseFirestore firestore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
 
-        firebaseAuthUtils = new FirebaseAuthUtils(FirebaseAuth.getInstance(), this);
+        firestore = FirebaseFirestore.getInstance();
+        firebaseAuthUtils = new FirebaseAuthUtils(FirebaseAuth.getInstance(), firestore, this);
     }
 
     @Override
@@ -96,15 +101,11 @@ public class AuthActivity extends AppCompatActivity {
             String displayName = etName.getText().toString() + ' ' + etSurname.getText().toString();
             String sSkills = etSkills.getText().toString();
 
-            //  Memorizza le competenze inserite dall'utente durante la registrazione.
-            //  Implementato così supporta soltanto un utente per dispositivo.
-            Log.d(TAG, sSkills);
-            mUserData = AuthActivity.this.getSharedPreferences(USERDATA, MODE_PRIVATE);
-            SharedPreferences.Editor prefEditor = mUserData.edit();
-            prefEditor.putString(USERDATA, sSkills).apply();
+            String[] skillsArray = sSkills.split("\\W+");
+            List<String> skillList = new ArrayList<>(Arrays.asList(skillsArray));
 
             if (!sEmail.equals(""))
-                firebaseAuthUtils.createAccount(displayName, sEmail, sPass, sSkills);
+                firebaseAuthUtils.createAccount(displayName, sEmail, sPass, skillList);
         });
 
         registerDialog.show();
