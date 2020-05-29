@@ -43,6 +43,8 @@ public class FirebaseAuthUtils {
         this.activity = activity;
     }
 
+    public FirestoreUtils getFirestoreUtils() { return firestoreUtils; }
+
     // TODO: verificare se serve modificare il nome del metodo
     public void checkCurrentUser() {
         Log.d(TAG, "checkCurrentUser");

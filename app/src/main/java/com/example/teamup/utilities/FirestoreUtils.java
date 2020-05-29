@@ -33,7 +33,6 @@ public class FirestoreUtils {
             userData.put("name", name);
             userData.put("surname", surname);
             userData.put("skills", skills);
-            //  TODO: inserire i progetti
 
             DocumentReference userDocument = firestore.collection("users").document(Objects.requireNonNull(userAuth.getCurrentUser().getEmail()));
             userDocument.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -48,4 +47,29 @@ public class FirestoreUtils {
             });
         }
     }
+
+    public void storeNewProjectData(String title, String desc, String leader,
+                                 Map<String, Boolean> objectives, List<String> tags) {
+        Map<String, Object> projectData = new HashMap<>();
+        projectData.put("title", title);
+        projectData.put("leader", leader);
+        projectData.put("description", desc);
+        projectData.put("objectives", objectives);
+        projectData.put("tags", tags);
+
+        DocumentReference document = firestore.collection("projects").document();
+        document.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot snapshot = task.getResult();
+                    assert snapshot != null;
+                    snapshot.getReference().set(projectData);
+                }
+            }
+        });
+
+    }
+
+    //  TODO: prendere l'id del documento creato in storeNewProject data e inserirlo nell'array di progetti del documento di utente
 }

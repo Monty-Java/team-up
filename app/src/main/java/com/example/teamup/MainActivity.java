@@ -1,13 +1,13 @@
 package com.example.teamup;
 
 import android.app.Dialog;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,10 +22,19 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.teamup.utilities.FirebaseAuthUtils;
+import com.example.teamup.utilities.FirestoreUtils;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import org.w3c.dom.Text;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = "MainActivity";
@@ -93,7 +102,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         newProjectConfirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //  TODO: creare il progetto con i dati forniti dall'utente (IF-3)
+                EditText title = newProjectDialog.findViewById(R.id.projectTitle_editText);
+                EditText description = newProjectDialog.findViewById(R.id.description_editText);
+                TextView leader = newProjectDialog.findViewById(R.id.leaderName_textView);
+                EditText objectives = newProjectDialog.findViewById(R.id.objectives_editText);
+                EditText tags = newProjectDialog.findViewById(R.id.projectTag_editText);
+
+                leader.setText("Leader: " + userDisplayName.getText().toString());
+
+                FirestoreUtils firestoreUtils = firebaseAuthUtils.getFirestoreUtils();
+
+                String obj[] = objectives.getText().toString().split("\n");
+                Map<String, Boolean> objectiveMap = new HashMap<>();
+                for (String o : obj) objectiveMap.put(o, false);
+
+                String tg[] = tags.getText().toString().split("\\W+");
+                List<String> tagList = new ArrayList<>(Arrays.asList(tg));
+                firestoreUtils.storeNewProjectData(title.getText().toString(),
+                        description.getText().toString(),
+                        userDisplayName.getText().toString(),
+                        objectiveMap, tagList);
+                newProjectDialog.hide();
             }
         });
         newProjectDialog.show();
