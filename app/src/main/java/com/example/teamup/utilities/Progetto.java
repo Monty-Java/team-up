@@ -18,7 +18,7 @@ public class Progetto {
     private List<String> teammates;
     private Map<String, Boolean> obiettivi;
 
-    public Progetto(String id, String leader, String titolo, String descrizione, List<String> etichette, List<String> goalsToAchieve) {
+    public Progetto(String id, String leader, String titolo, String descrizione, List<String> etichette, Map<String, Boolean> goalsToAchieve) {
         Log.d(TAG, "Costruttore");
 
         this.id = id;
@@ -27,10 +27,13 @@ public class Progetto {
         this.descrizione = descrizione;
         this.etichette = etichette;
         this.obiettivi = new HashMap<>();
+        this.teammates = new ArrayList<>();
 
-        for (String goal : goalsToAchieve) {
+        this.obiettivi.putAll(goalsToAchieve);
+
+        /*for (String goal : goalsToAchieve) {
             this.obiettivi.put(goal, false);
-        }
+        }*/
     }
 
     public void setTitolo(String title) {
@@ -112,4 +115,6 @@ public class Progetto {
     public Map<String, Boolean> getObiettivi() {
         return obiettivi;
     }
+
+    public boolean hasTeammates() { return this.teammates.isEmpty(); }
 }
