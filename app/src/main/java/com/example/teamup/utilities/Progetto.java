@@ -138,4 +138,3 @@ public class Progetto {
 
     public boolean hasTeammates() { return this.teammates.isEmpty(); }
 }
-}
