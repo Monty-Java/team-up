@@ -34,6 +34,7 @@ public class FirestoreUtils {
             String name = displayName[0];
             String surname = displayName[1];
 
+            //  TODO: trasformare le stringhe in costanti
             Map<String, Object> userData = new HashMap<>();
             userData.put("name", name);
             userData.put("surname", surname);

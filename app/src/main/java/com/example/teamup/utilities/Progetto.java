@@ -122,19 +122,11 @@ public class Progetto {
         for (Map.Entry<String, Boolean> obj : getObiettivi().entrySet())
             if (obj.getValue()) n++;
 
-        Log.d(TAG, "Complete: " + n);
-
         return n;
     }
 
     // Metodo di supporto per poter calcolare la percentuale di completezza del progetto
-    public double numeroObiettivi() {
-        int n = 0;
-        for (int i = 0; i < obiettivi.size(); i++) n++;
+    public double numeroObiettivi() { return obiettivi.size(); }
 
-        Log.d(TAG, "Total: " + n);
-        return n;
-    }
-
-    public boolean hasTeammates() { return this.teammates.isEmpty(); }
+    public boolean hasTeammates() { return teammates.isEmpty(); }
 }

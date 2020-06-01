@@ -2,7 +2,6 @@ package com.example.teamup;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,7 +14,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -33,7 +31,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-//  TODO IF-6: gestione del progetto
 public class ProjectActivity extends AppCompatActivity {
 
     private static final String TAG = ProjectActivity.class.getSimpleName();
@@ -217,7 +214,6 @@ public class ProjectActivity extends AppCompatActivity {
         this.setTitle(project.getTitolo());
 
         //  Imposta le ListView per visualizzare gli obiettivi e i teammates
-        //List<Map.Entry<String, Boolean>> objectivesList = new ArrayList<>(project.getObiettivi().entrySet());
         List<String> objectivesList = new ArrayList<>(project.getObiettivi().keySet());
         mObjectivesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
                 objectivesList);
