@@ -1,5 +1,7 @@
 package com.example.teamup.utilities;
 
+import android.util.Log;
+
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -54,6 +56,22 @@ public class FirestoreUtils {
         });
     }
 
+    public void updateProjectData(String id, String field, Object data) {
+        firestore.collection("projects").document(id)
+                .get().addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+
+                        Map<String, Object> newData = new HashMap<>();
+                        newData.put(field, data);
+
+                        task.getResult().getReference().update(field, data).addOnCompleteListener(t -> {
+                            if (t.isSuccessful()) Log.d(TAG, "Document updated");
+                            else Log.d(TAG, "Error updating document");
+                        });
+                    }
+        });
+    }
+
     public void writeToDocument(Task<DocumentSnapshot> task, Map<String, Object> data) {
         if (task.isSuccessful()) {
             DocumentSnapshot snapshot = task.getResult();
@@ -61,6 +79,4 @@ public class FirestoreUtils {
             snapshot.getReference().set(data);
         } // TODO: mettere una condizione else in caso di errori
     }
-
-    //  TODO: prendere l'id del documento creato in storeNewProject data e inserirlo nell'array di progetti del documento di utente
 }

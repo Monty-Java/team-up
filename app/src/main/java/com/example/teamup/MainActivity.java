@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void onFabClick(View view) {
-        Log.d(TAG, "onDiscoverClick");
+        Log.d(TAG, "onFabClick");
 
         final Dialog newProjectDialog = new Dialog(MainActivity.this);
         newProjectDialog.setContentView(R.layout.new_project_dialog);

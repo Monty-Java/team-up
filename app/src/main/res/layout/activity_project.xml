@@ -42,10 +42,27 @@
         android:layout_weight="0.2"
         android:text="TextView" />
 
+    <TextView
+        android:id="@+id/progress_textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.2"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingActionButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:clickable="true"
+        app:srcCompat="@android:drawable/ic_menu_add"
+        android:onClick="onFabProjectClick"/>
+
+    <!--
     <ProgressBar
         android:id="@+id/progressBar"
         style="@style/Widget.AppCompat.ProgressBar.Horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0.2" />
+        -->
 </LinearLayout>
