@@ -28,8 +28,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -39,8 +37,8 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = "MainActivity";
 
-    private FirebaseAuthUtils firebaseAuthUtils;
-    private FirebaseFirestore firestore;
+    public FirebaseAuthUtils firebaseAuthUtils;
+    public FirebaseFirestore firestore;
 
     private AppBarConfiguration mAppBarConfiguration;
 
@@ -94,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void onFabClick(View view) {
-        Log.d(TAG, "onDiscoverClick");
+        Log.d(TAG, "onFabClick");
 
         final Dialog newProjectDialog = new Dialog(MainActivity.this);
         newProjectDialog.setContentView(R.layout.new_project_dialog);
@@ -137,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.profile, menu);
+        getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 

@@ -11,8 +11,6 @@ public class ProfileViewModel extends ViewModel {
     //  e per la lista dei progetti in cui è coinvolto
 
     public ProfileViewModel() {
-        mText = new MutableLiveData<>();
-        mText.setValue("This is the user profile fragment");
     }
 
     public LiveData<String> getText() {

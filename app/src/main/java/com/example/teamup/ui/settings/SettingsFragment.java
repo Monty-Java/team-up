@@ -23,6 +23,8 @@ public class SettingsFragment extends Fragment {
         settingsViewModel =
                 ViewModelProviders.of(this).get(SettingsViewModel.class);
         View root = inflater.inflate(R.layout.fragment_settings, container, false);
+
+        /*
         final TextView textView = root.findViewById(R.id.text_home);
         settingsViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
@@ -30,6 +32,8 @@ public class SettingsFragment extends Fragment {
                 textView.setText(s);
             }
         });
+        */
+
         return root;
     }
 }

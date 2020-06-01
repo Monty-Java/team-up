@@ -18,7 +18,7 @@ public class Progetto {
     private List<String> teammates;
     private Map<String, Boolean> obiettivi;
 
-    public Progetto(String id, String leader, String titolo, String descrizione, List<String> etichette, List<String> goalsToAchieve) {
+    public Progetto(String id, String leader, String titolo, String descrizione, List<String> etichette, Map<String, Boolean> goalsToAchieve) {
         Log.d(TAG, "Costruttore");
 
         this.id = id;
@@ -27,10 +27,13 @@ public class Progetto {
         this.descrizione = descrizione;
         this.etichette = etichette;
         this.obiettivi = new HashMap<>();
+        this.teammates = new ArrayList<>();
 
-        for (String goal : goalsToAchieve) {
+        this.obiettivi.putAll(goalsToAchieve);
+
+        /*for (String goal : goalsToAchieve) {
             this.obiettivi.put(goal, false);
-        }
+        }*/
     }
 
     public void setTitolo(String title) {
@@ -112,4 +115,26 @@ public class Progetto {
     public Map<String, Boolean> getObiettivi() {
         return obiettivi;
     }
+
+    // Metodo di supporto per poter calcolare la percentuale di completezza del progetto
+    public double obiettiviCompleti() {
+        int n = 0;
+        for (Map.Entry<String, Boolean> obj : getObiettivi().entrySet())
+            if (obj.getValue()) n++;
+
+        Log.d(TAG, "Complete: " + n);
+
+        return n;
+    }
+
+    // Metodo di supporto per poter calcolare la percentuale di completezza del progetto
+    public double numeroObiettivi() {
+        int n = 0;
+        for (int i = 0; i < obiettivi.size(); i++) n++;
+
+        Log.d(TAG, "Total: " + n);
+        return n;
+    }
+
+    public boolean hasTeammates() { return this.teammates.isEmpty(); }
 }

@@ -39,7 +39,8 @@ public class FirebaseAuthUtils {
 
     public FirebaseAuthUtils(FirebaseAuth firebaseAuth, FirebaseFirestore firestore, Activity activity) {
         this.firebaseAuth = firebaseAuth;
-        this.firestoreUtils = new FirestoreUtils(firestore);
+        if (firestoreUtils == null)
+            this.firestoreUtils = new FirestoreUtils(firestore);
         this.activity = activity;
     }
 
