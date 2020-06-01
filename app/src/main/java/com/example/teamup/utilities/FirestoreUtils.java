@@ -3,6 +3,7 @@ package com.example.teamup.utilities;
 import android.util.Log;
 
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -13,18 +14,23 @@ import java.util.Map;
 import java.util.Objects;
 
 public class FirestoreUtils {
+
     private static final String TAG = FirestoreUtils.class.getSimpleName();
 
     private FirebaseFirestore firestore;
 
-    public FirestoreUtils(FirebaseFirestore firestore) { this.firestore = firestore; }
+    public FirestoreUtils(FirebaseFirestore firestore) {
+        this.firestore = firestore;
+    }
 
-    public FirebaseFirestore getFirestoreInstance() { return this.firestore; }
+    public FirebaseFirestore getFirestoreInstance() {
+        return this.firestore;
+    }
 
-    public void storeUserData(FirebaseAuthUtils userAuth, List<String> skills) {
-        if (userAuth.getCurrentUser() != null) {
+    public void storeUserData(FirebaseUser currentUser, List<String> skills) {
+        if (currentUser != null) {
             //  Ottiene nome e cognome dell'utente dividendo il display name in due
-            String[] displayName = userAuth.getCurrentUser().getDisplayName().split(" ");
+            String[] displayName = currentUser.getDisplayName().split(" ");
             String name = displayName[0];
             String surname = displayName[1];
 
@@ -34,10 +40,8 @@ public class FirestoreUtils {
             userData.put("skills", skills);
 
             DocumentReference userDocument = firestore.collection("users")
-                    .document(Objects.requireNonNull(userAuth.getCurrentUser().getEmail()));
-            userDocument.get().addOnCompleteListener(task -> {
-                writeToDocument(task, userData);
-            });
+                    .document(Objects.requireNonNull(currentUser.getEmail()));
+            userDocument.get().addOnCompleteListener(task -> writeToDocument(task, userData));
         }
     }
 
@@ -51,22 +55,21 @@ public class FirestoreUtils {
         projectData.put("tags", tags);
 
         DocumentReference document = firestore.collection("projects").document();
-        document.get().addOnCompleteListener(task -> {
-            writeToDocument(task, projectData);
-        });
+        document.get().addOnCompleteListener(task -> writeToDocument(task, projectData));
     }
 
     public void updateProjectData(String id, String field, Object data) {
-        firestore.collection("projects").document(id)
+        firestore.collection("projects")
+                .document(id)
                 .get().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
 
-                        Map<String, Object> newData = new HashMap<>();
-                        newData.put(field, data);
-
                         task.getResult().getReference().update(field, data).addOnCompleteListener(t -> {
-                            if (t.isSuccessful()) Log.d(TAG, "Document updated");
-                            else Log.d(TAG, "Error updating document");
+                            if (t.isSuccessful()) {
+                                Log.d(TAG, "Document updated");
+                            } else {
+                                Log.e(TAG, "Error updating document");
+                            }
                         });
                     }
         });
@@ -77,6 +80,8 @@ public class FirestoreUtils {
             DocumentSnapshot snapshot = task.getResult();
             assert snapshot != null;
             snapshot.getReference().set(data);
-        } // TODO: mettere una condizione else in caso di errori
+        } else {
+            Log.e(TAG, "Error updating document");
+        }
     }
 }

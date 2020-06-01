@@ -16,16 +16,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 public class FirebaseAuthUtils {
@@ -33,18 +26,19 @@ public class FirebaseAuthUtils {
     private static final String TAG = FirebaseAuthUtils.class.getSimpleName();
 
     private FirebaseAuth firebaseAuth;
-    private FirestoreUtils firestoreUtils;
+    private final FirestoreUtils firestoreUtils;
     private Activity activity;
 
 
     public FirebaseAuthUtils(FirebaseAuth firebaseAuth, FirebaseFirestore firestore, Activity activity) {
         this.firebaseAuth = firebaseAuth;
-        if (firestoreUtils == null)
-            this.firestoreUtils = new FirestoreUtils(firestore);
+        this.firestoreUtils = new FirestoreUtils(firestore);
         this.activity = activity;
     }
 
-    public FirestoreUtils getFirestoreUtils() { return firestoreUtils; }
+    public FirestoreUtils getFirestoreUtils() {
+        return firestoreUtils;
+    }
 
     // TODO: verificare se serve modificare il nome del metodo
     public void checkCurrentUser() {
@@ -91,7 +85,7 @@ public class FirebaseAuthUtils {
                     user.updateProfile(profileUpdate).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            firestoreUtils.storeUserData(FirebaseAuthUtils.this, skills);
+                            firestoreUtils.storeUserData(getCurrentUser(), skills);
                         }
                     });
 
