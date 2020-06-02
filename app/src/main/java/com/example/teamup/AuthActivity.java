@@ -1,6 +1,7 @@
 package com.example.teamup;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -24,10 +25,14 @@ public class AuthActivity extends AppCompatActivity {
 
     private FirebaseAuthUtils firebaseAuthUtils;
 
+    private Button mDiscoverButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
+
+        mDiscoverButton = findViewById(R.id.button_discover);
 
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
         firebaseAuthUtils = new FirebaseAuthUtils(FirebaseAuth.getInstance(), firestore, this);
@@ -39,6 +44,12 @@ public class AuthActivity extends AppCompatActivity {
         Log.d(TAG, "onStart");
 
         firebaseAuthUtils.checkCurrentUser();
+
+        mDiscoverButton.setOnClickListener(v -> {
+            Intent discoverIntent = new Intent(this, DiscoverActivity.class);
+            this.startActivity(discoverIntent);
+            //this.finish();
+        });
     }
 
     public void onLoginClick(View view) {

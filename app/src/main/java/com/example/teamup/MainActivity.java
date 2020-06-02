@@ -1,6 +1,7 @@
 package com.example.teamup;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     ImageView userProfilePicture;
     TextView userDisplayName;
     TextView userEmail;
+    private Button mDiscoverButton;
 
     private NavController navController;
 
@@ -63,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         View headerView = navigationView.getHeaderView(0);
         userDisplayName = headerView.findViewById(R.id.display_name);
         userEmail = headerView.findViewById(R.id.email);
+        mDiscoverButton = findViewById(R.id.button_discover);
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -89,6 +92,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         //  TODO: i dati relativi alle competenze degli utenti andranno posti nella schermata relativa la profilo personale
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mDiscoverButton.setOnClickListener(v -> {
+            Intent discoverIntent = new Intent(this, DiscoverActivity.class);
+            this.startActivity(discoverIntent);
+            //this.finish();
+        });
     }
 
     public void onFabClick(View view) {
@@ -129,8 +142,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onDiscoverClick(View view) {
         Log.d(TAG, "onDiscoverClick");
 
-        //  TODO: Intent per inziare l'Activity relativa a IUI-7
-        Toast.makeText(MainActivity.this, "Porta l'utente a IUI-7", Toast.LENGTH_LONG).show();
+        Intent discoverIntent = new Intent(this, DiscoverActivity.class);
+        this.startActivity(discoverIntent);
     }
 
     @Override

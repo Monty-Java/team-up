@@ -40,7 +40,7 @@ public class FirebaseAuthUtils {
         return firestoreUtils;
     }
 
-    // TODO: verificare se serve modificare il nome del metodo
+    // TODO: il metodo ha un nome ambiguo- si potrebbe voler verificare se l'utente è autenticato senza andare alla schermata principale
     public void checkCurrentUser() {
         Log.d(TAG, "checkCurrentUser");
 
@@ -167,7 +167,6 @@ public class FirebaseAuthUtils {
             Intent teamUpIntent = new Intent(activity, MainActivity.class);
             activity.startActivity(teamUpIntent);
             activity.finish();
-
         } else {
             verifyUser();
         }

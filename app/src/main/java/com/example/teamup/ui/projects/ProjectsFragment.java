@@ -46,6 +46,7 @@ public class ProjectsFragment extends Fragment {
 
         ListView projectsListView = root.findViewById(R.id.listview_projects);
 
+        //  TODO: fare questa cosa in DiscoverActivity
         //  IUI-4: Un click su un progetto avvia ProjectActivity con i dati relativi a quel progetto.
         projectsListView.setOnItemClickListener((parent, view, position, id) -> {
             String title = projectsListView.getItemAtPosition(position).toString();
