@@ -82,7 +82,19 @@ public class AuthActivity extends AppCompatActivity {
             String sEmail = etEmail.getText().toString();
             String sPass = etPass.getText().toString();
 
-            if (!sEmail.equals("") && !sPass.equals("")) {
+            boolean checkEmptyFields = true;
+
+            if(sEmail.equals("")) {
+                checkEmptyFields = false;
+                etEmail.setError("Empty Field!");
+            }
+
+            if(sPass.equals("")) {
+                checkEmptyFields = false;
+                etPass.setError("Empty Field!");
+            }
+
+            if (checkEmptyFields == true) {
                 firebaseAuthUtils.signIn(sEmail, sPass);
             }
         });
@@ -107,11 +119,40 @@ public class AuthActivity extends AppCompatActivity {
             String sPass = etPass.getText().toString();
             String displayName = etName.getText().toString() + ' ' + etSurname.getText().toString();
             String sSkills = etSkills.getText().toString();
+            String sName = etName.getText().toString();
+            String sSurname = etSurname.getText().toString();
 
             String[] skillsArray = sSkills.split("\\W+");
             List<String> skillList = new ArrayList<>(Arrays.asList(skillsArray));
 
-            if (!sEmail.equals(""))
+            boolean checkEmptyFields = true;
+
+            if(sEmail.equals("")) {
+                checkEmptyFields = false;
+                etEmail.setError("Empty Field!");
+            }
+
+            if(sPass.equals("")) {
+                checkEmptyFields = false;
+                etPass.setError("Empty Field!");
+            }
+
+            if(sName.equals("")) {
+                checkEmptyFields = false;
+                etName.setError("Empty Field!");
+            }
+
+            if(sSurname.equals("")) {
+                checkEmptyFields = false;
+                etSurname.setError("Empty Field!");
+            }
+
+            if(skillList.isEmpty()) {
+                checkEmptyFields = false;
+                etSkills.setError("Empty Field!");
+            }
+
+            if (checkEmptyFields == true)
                 firebaseAuthUtils.createAccount(displayName, sEmail, sPass, skillList);
         });
 
