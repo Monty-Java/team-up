@@ -22,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.teamup.utilities.FirebaseAuthUtils;
 import com.example.teamup.utilities.FirestoreUtils;
 import com.example.teamup.utilities.Progetto;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -30,6 +31,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 //  TODO: aggiungere un pulsante o item di menu Home per tornare alla MainActivity
 
@@ -46,6 +48,7 @@ public class ProjectActivity extends AppCompatActivity {
     private ListView mTeammatesList;
     private TextView mDescriptionTextView;
     private TextView mProgressTextView;
+    private FloatingActionButton mFab;
 
     private ArrayAdapter<String> mObjectivesAdapter;
     private ArrayAdapter<String> mTeammatesAdapter;
@@ -59,18 +62,16 @@ public class ProjectActivity extends AppCompatActivity {
         mTeammatesList = findViewById(R.id.team_listView);
         mDescriptionTextView = findViewById(R.id.description_textView);
         mProgressTextView = findViewById(R.id.progress_textView);
+        mFab = findViewById(R.id.floatingActionButton);
 
         firestoreUtils = new FirestoreUtils(FirebaseFirestore.getInstance());
         firebaseAuthUtils = new FirebaseAuthUtils(FirebaseAuth.getInstance(), firestoreUtils.getFirestoreInstance(), this);
 
-        //  TODO: verificare se l'utente ha effettuato l'accesso a TeamUp - impedire qualsiasi modifica al progetto
-        //  TODO: verificare se l'utente è Leader
-        //  TODO: verificare se l'utente è Teammate - limitare le modifiche al progetto
-        //  TODO: se l'utente è autenticato ma non è nè Leader nè Teammate visualizzare un pulsante per fare la richiesta di diventare Teammate
+        if (firebaseAuthUtils.getCurrentUser() == null) mFab.hide();
 
         //  TODO: refactor stringa in una costante
         Intent intent = getIntent();
-        readProjectData(intent.getStringExtra("title"));
+        progetto = readProjectData(intent.getStringExtra("title"));
     }
 
     @Override
@@ -82,6 +83,17 @@ public class ProjectActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_home:
+                //  Se l'utente è autenticato ritorna alla MainActivity, altrimenti ritorna ad AuthActivity
+                if (firebaseAuthUtils.getCurrentUser() != null) {
+                    Intent homeIntent = new Intent(this, MainActivity.class);
+                    startActivity(homeIntent);
+                } else {
+                    Intent authIntent = new Intent(this, AuthActivity.class);
+                    startActivity(authIntent);
+                }
+                this.finish();
+                break;
             case R.id.action_details:
                 onDetailsClick();
                 break;
@@ -106,35 +118,36 @@ public class ProjectActivity extends AppCompatActivity {
                 progetto.getEtichette());
         projectTags.setAdapter(adapter);
 
-        projectTags.setOnItemClickListener((parent, view, position, id) -> {
-            //  TODO: refactoring || optimizing
-            String tag = projectTags.getItemAtPosition(position).toString();
-            AlertDialog.Builder editTagDialogBuilder = new AlertDialog.Builder(this);
-            editTagDialogBuilder.setTitle("Edit Tag");
+        if (firebaseAuthUtils.getCurrentUser() != null && firebaseAuthUtils.getCurrentUser().getDisplayName().equals(progetto.getLeader())) {
+            projectTags.setOnItemClickListener((parent, view, position, id) -> {
+                        //  TODO: refactoring || optimizing
+                        String tag = projectTags.getItemAtPosition(position).toString();
+                        AlertDialog.Builder editTagDialogBuilder = new AlertDialog.Builder(this);
+                        editTagDialogBuilder.setTitle("Edit Tag");
 
-            EditText tagEditText = new EditText(this);
-            tagEditText.setText(tag);
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT);
-            tagEditText.setLayoutParams(layoutParams);
+                        EditText tagEditText = new EditText(this);
+                        tagEditText.setText(tag);
+                        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.WRAP_CONTENT);
+                        tagEditText.setLayoutParams(layoutParams);
 
-            editTagDialogBuilder.setView(tagEditText);
-            editTagDialogBuilder.setPositiveButton("OK", (dialog, which) -> {
-               if (tagEditText.getText().toString().equals("")) {
-                   progetto.removeEtichetta(tag);
-               } else if (!progetto.getEtichette().contains(tagEditText.getText().toString())) {
-                   progetto.addEtichetta(tagEditText.getText().toString());
-               } else {
-                   Log.w(TAG, "onDetailsClick: Non è stato possibile modificare l'etichetta");
-               }
-               firestoreUtils.updateProjectData(progetto.getId(), "tags", progetto.getEtichette());
-               adapter.notifyDataSetChanged();
+                        editTagDialogBuilder.setView(tagEditText);
+                        editTagDialogBuilder.setPositiveButton("OK", (dialog, which) -> {
+                            if (tagEditText.getText().toString().equals("")) {
+                                progetto.removeEtichetta(tag);
+                            } else if (!progetto.getEtichette().contains(tagEditText.getText().toString())) {
+                                progetto.addEtichetta(tagEditText.getText().toString());
+                            } else {
+                                Log.w(TAG, "onDetailsClick: Non è stato possibile modificare l'etichetta");
+                            }
+                            firestoreUtils.updateProjectData(progetto.getId(), "tags", progetto.getEtichette());
+                            adapter.notifyDataSetChanged();
+                        });
+                    AlertDialog editTagDialog = editTagDialogBuilder.create();
+                    editTagDialog.show();
             });
-
-            AlertDialog editTagDialog = editTagDialogBuilder.create();
-            editTagDialog.show();
-        });
+        }
 
         Button closeButton = detailsDialog.findViewById(R.id.closeDialogButton);
         projectId.setText("Project ID: " + progetto.getId());
@@ -146,35 +159,56 @@ public class ProjectActivity extends AppCompatActivity {
 
     public void onFabProjectClick(View view) {
         Log.d(TAG, "onFabProjectClick");
+
         //  TODO: sistemare il layout
-        AlertDialog.Builder addObjectiveBuilder = new AlertDialog.Builder(this);
-        addObjectiveBuilder.setTitle("New Objective");
+        //  TODO: raffinare questo controllo
 
-        EditText objectiveEditText = new EditText(this);
-        objectiveEditText.setHint("Objective");
-        objectiveEditText.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        if (Objects.equals(firebaseAuthUtils.getCurrentUser().getDisplayName(), progetto.getLeader()) ||
+            progetto.getTeammates().contains(firebaseAuthUtils.getCurrentUser().getDisplayName())) {
+            AlertDialog.Builder addObjectiveBuilder = new AlertDialog.Builder(this);
+            addObjectiveBuilder.setTitle("New Objective");
 
-        addObjectiveBuilder.setView(objectiveEditText);
-        addObjectiveBuilder.setPositiveButton("OK", (dialog, which) -> {
+            EditText objectiveEditText = new EditText(this);
+            objectiveEditText.setHint("Objective");
+            objectiveEditText.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-            String objectiveText = objectiveEditText.getText().toString();
-            if (!objectiveText.equals("") || !progetto.getObiettivi().containsKey(objectiveText)) {
-                progetto.addObiettivoDaRaggiungere(objectiveText);
-                firestoreUtils.updateProjectData(
-                        progetto.getId(),
-                        "objectives",
-                        progetto.getObiettivi());
-                mObjectivesAdapter.notifyDataSetChanged();
-            }
-        });
+            addObjectiveBuilder.setView(objectiveEditText);
+            addObjectiveBuilder.setPositiveButton("OK", (dialog, which) -> {
 
-        addObjectiveBuilder.setNegativeButton("Cancel", (dialog, which) -> {
-            dialog.cancel();
-            dialog.dismiss();
-        });
+                String objectiveText = objectiveEditText.getText().toString();
+                if (!objectiveText.equals("") || !progetto.getObiettivi().containsKey(objectiveText)) {
+                    progetto.addObiettivoDaRaggiungere(objectiveText);
+                    firestoreUtils.updateProjectData(
+                            progetto.getId(),
+                            "objectives",
+                            progetto.getObiettivi());
+                    mObjectivesAdapter.notifyDataSetChanged();
+                }
+            });
 
-        AlertDialog addObjectiveDialog = addObjectiveBuilder.create();
-        addObjectiveDialog.show();
+            addObjectiveBuilder.setNegativeButton("Cancel", (dialog, which) -> {
+                dialog.cancel();
+                dialog.dismiss();
+            });
+
+            AlertDialog addObjectiveDialog = addObjectiveBuilder.create();
+            addObjectiveDialog.show();
+        } else {
+            AlertDialog.Builder teammateRequestDialogBuilder = new AlertDialog.Builder(this);
+            teammateRequestDialogBuilder.setTitle("Become a Teammate!");
+            TextView requestTextView = new TextView(this);
+            requestTextView.setText("Would you like to send a request to become a teammate for this project?");
+            teammateRequestDialogBuilder.setView(requestTextView);
+            teammateRequestDialogBuilder.setPositiveButton("OK", (dialog, which) -> {
+                //  TODO: se l'utente non è Teammate, usare il Fab per inviare una richiesta di diventare Teammate
+            });
+            teammateRequestDialogBuilder.setNegativeButton("Cancel", (dialog, which) -> {
+                dialog.cancel();
+                dialog.dismiss();
+            });
+            AlertDialog teammateRequestDialog = teammateRequestDialogBuilder.create();
+            teammateRequestDialog.show();
+        }
     }
 
     /**
@@ -183,7 +217,7 @@ public class ProjectActivity extends AppCompatActivity {
      *
      * @param title
      */
-    public void readProjectData(String title) {
+    public Progetto readProjectData(String title) {
         Log.d(TAG, "readProjectData: title: "+ title);
         Map<String, Object> data = new HashMap<>();
         Query query = firestoreUtils.getFirestoreInstance()
@@ -197,7 +231,7 @@ public class ProjectActivity extends AppCompatActivity {
 
                 progetto = new Progetto(
                         data.get("id").toString(),
-                        data.get("leader").toString(),
+                        Objects.requireNonNull(data.get("leader")).toString(),
                         data.get("title").toString(),
                         data.get("description").toString(),
                         (List<String>) data.get("tags"),
@@ -208,6 +242,8 @@ public class ProjectActivity extends AppCompatActivity {
                 Log.e(TAG, "ERROR READING DATA...");
             }
         });
+
+        return progetto;
     }
 
     /**
@@ -234,38 +270,47 @@ public class ProjectActivity extends AppCompatActivity {
         mTeammatesList.setAdapter(mTeammatesAdapter);
         mDescriptionTextView.setText(project.getDescrizione());
 
-        //  Un long click permette di modificare la descrizione del progetto corrente
-        mDescriptionTextView.setOnLongClickListener(view -> {
-            //  TODO: sistemare layout
-            AlertDialog.Builder editDescriptionDialogBuilder = new AlertDialog.Builder(this);
-            editDescriptionDialogBuilder.setTitle("Edit Description");
-            EditText descriptionEditText = new EditText(this);
-            descriptionEditText.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            editDescriptionDialogBuilder.setView(descriptionEditText);
-            editDescriptionDialogBuilder.setPositiveButton("OK", (dialog, which) -> {
-                if (descriptionEditText.getText() != null) {
-                    project.setDescrizione(descriptionEditText.getText().toString());
-                    firestoreUtils.updateProjectData(project.getId(), "description", project.getDescrizione());
+        //  TODO: verificare se l'utente ha effettuato l'accesso a TeamUp - impedire qualsiasi modifica al progetto
+        //  TODO: verificare se l'utente è Leader
+        //  TODO: verificare se l'utente è Teammate - limitare le modifiche al progetto
+        //  TODO: se l'utente è autenticato ma non è nè Leader nè Teammate visualizzare un pulsante per fare la richiesta di diventare Teammate
+
+        //  TODO: raffinare questo controllo
+        if (firebaseAuthUtils.getCurrentUser() != null && firebaseAuthUtils.getCurrentUser().getDisplayName().equals(progetto.getLeader())) {
+
+            //  Un long click permette di modificare la descrizione del progetto corrente
+            mDescriptionTextView.setOnLongClickListener(view -> {
+                //  TODO: sistemare layout
+                AlertDialog.Builder editDescriptionDialogBuilder = new AlertDialog.Builder(this);
+                editDescriptionDialogBuilder.setTitle("Edit Description");
+                EditText descriptionEditText = new EditText(this);
+                descriptionEditText.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                editDescriptionDialogBuilder.setView(descriptionEditText);
+                editDescriptionDialogBuilder.setPositiveButton("OK", (dialog, which) -> {
+                    if (descriptionEditText.getText() != null) {
+                        project.setDescrizione(descriptionEditText.getText().toString());
+                        firestoreUtils.updateProjectData(project.getId(), "description", project.getDescrizione());
+                    }
+                });
+                AlertDialog editDescriptionDialog = editDescriptionDialogBuilder.create();
+                editDescriptionDialog.show();
+                return false;
+            });
+
+            //  Permette all'utente di modificare il valore degli objectives
+            //  Possono assumere false o true, true indica che sono completi.
+            mObjectivesList.setOnItemClickListener((parent, view, position, id) -> {
+                if (progetto.getLeader().equals(firebaseAuthUtils.getCurrentUser().getDisplayName())) {
+                    String objective = mObjectivesList.getItemAtPosition(position).toString();
+                    if (!progetto.getObiettivi().get(objective)) {
+                        progetto.setObiettivoRaggiunto(objective);
+                        firestoreUtils.updateProjectData(progetto.getId(), "objectives", progetto.getObiettivi());
+
+                        //  TODO: aggiornare layout con un feedback visuale corrispondente agli obiettivi completi
+                    }
                 }
             });
-            AlertDialog editDescriptionDialog = editDescriptionDialogBuilder.create();
-            editDescriptionDialog.show();
-            return false;
-        });
-
-        //  Permette all'utente di modificare il valore degli objectives
-        //  Possono assumere false o true, true indica che sono completi.
-        mObjectivesList.setOnItemClickListener((parent, view, position, id) -> {
-            if (progetto.getLeader().equals(firebaseAuthUtils.getCurrentUser().getDisplayName())) {
-                String objective = mObjectivesList.getItemAtPosition(position).toString();
-                if (!progetto.getObiettivi().get(objective)) {
-                    progetto.setObiettivoRaggiunto(objective);
-                    firestoreUtils.updateProjectData(progetto.getId(), "objectives", progetto.getObiettivi());
-
-                    //  TODO: aggiornare layout con un feedback visuale corrispondente agli obiettivi completi
-                }
-            }
-        });
+        }
 
         updateProgress(project);
     }
