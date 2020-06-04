@@ -48,7 +48,7 @@ public class DiscoverActivity extends AppCompatActivity {
                for (QueryDocumentSnapshot snapshot : task.getResult())
                    mProjectsList.add(snapshot.getData().get(FirestoreUtils.KEY_TITLE).toString());
 
-               /*ArrayAdapter<String>*/ listAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, mProjectsList);
+               listAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, mProjectsList);
                mProjectsListView.setAdapter(listAdapter);
            }
         });
@@ -67,8 +67,8 @@ public class DiscoverActivity extends AppCompatActivity {
         });
 
 
-        //Listener che rileva un click sugli item della ListView
-        //Usata per visualizzare il progetto selezionato
+        //  Listener che rileva un click sugli item della ListView
+        //  usata per visualizzare il progetto selezionato
         mProjectsListView.setOnItemClickListener((parent, view, position, id) -> {
             String projectTitle = mProjectsListView.getItemAtPosition(position).toString();
             Intent projectIntent = new Intent(this, ProjectActivity.class);
