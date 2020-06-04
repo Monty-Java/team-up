@@ -35,15 +35,14 @@ public class DiscoverActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
         setTitle("Discover");
 
-        Query query = firestoreUtils.getFirestoreInstance().collection("projects");
+        Query query = firestoreUtils.getFirestoreInstance().collection(FirestoreUtils.KEY_PROJECTS);
         query.get().addOnCompleteListener(task -> {
            if (task.isSuccessful()) {
-               mProjectsList = new ArrayList<String>();
+               mProjectsList = new ArrayList<>();
                for (QueryDocumentSnapshot snapshot : task.getResult())
-                   mProjectsList.add(snapshot.getData().get("title").toString());
+                   mProjectsList.add(snapshot.getData().get(FirestoreUtils.KEY_TITLE).toString());
 
                ArrayAdapter<String> listAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, mProjectsList);
                mProjectsListView.setAdapter(listAdapter);
@@ -53,7 +52,7 @@ public class DiscoverActivity extends AppCompatActivity {
         mProjectsListView.setOnItemClickListener((parent, view, position, id) -> {
             String projectTitle = mProjectsListView.getItemAtPosition(position).toString();
             Intent projectIntent = new Intent(this, ProjectActivity.class);
-            projectIntent.putExtra("title", projectTitle);
+            projectIntent.putExtra(FirestoreUtils.KEY_TITLE, projectTitle);
             startActivity(projectIntent);
         });
     }

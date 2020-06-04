@@ -6,13 +6,9 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-
 import com.example.teamup.AuthActivity;
 import com.example.teamup.MainActivity;
 import com.example.teamup.R;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
@@ -29,7 +25,6 @@ public class FirebaseAuthUtils {
     private final FirestoreUtils firestoreUtils;
     private Activity activity;
 
-
     public FirebaseAuthUtils(FirebaseAuth firebaseAuth, FirebaseFirestore firestore, Activity activity) {
         this.firebaseAuth = firebaseAuth;
         this.firestoreUtils = new FirestoreUtils(firestore);
@@ -40,8 +35,7 @@ public class FirebaseAuthUtils {
         return firestoreUtils;
     }
 
-    // TODO: il metodo ha un nome ambiguo- si potrebbe voler verificare se l'utente è autenticato senza andare alla schermata principale
-    public void checkCurrentUser() {
+    public void checkCurrentUserForLogin() {
         Log.d(TAG, "checkCurrentUser");
 
         if (firebaseAuth.getCurrentUser() != null) {
@@ -82,12 +76,8 @@ public class FirebaseAuthUtils {
                                     .setDisplayName(displayName)
                                     .build();
 
-                    user.updateProfile(profileUpdate).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            firestoreUtils.storeUserData(getCurrentUser(), skills);
-                        }
-                    });
+                    user.updateProfile(profileUpdate)
+                            .addOnCompleteListener(task1 -> firestoreUtils.storeUserData(getCurrentUser(), skills));
 
                     signIn(email, pass);
                 }

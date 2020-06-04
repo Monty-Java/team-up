@@ -20,6 +20,8 @@ public class ProfileFragment extends Fragment {
 
     private ProfileViewModel mViewModel;
 
+    //  TODO: i dati relativi alle competenze degli utenti andranno posti da qualche parte qui o in ProfielViewModel
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {

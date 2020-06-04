@@ -15,8 +15,19 @@ import java.util.Map;
 import java.util.Objects;
 
 public class FirestoreUtils {
-
     private static final String TAG = FirestoreUtils.class.getSimpleName();
+    //  Costanti usate come chiavi per leggere e scrivere dati Firestore
+    public static final String KEY_USERS = "users";
+    private static final String KEY_NAME = "name";
+    private static final String KEY_SURNAME = "surname";
+    private static final String KEY_SKILLS = "skills";
+    public static final String KEY_PROJECTS = "projects";
+    public static final String KEY_TITLE = "title";
+    public static final String KEY_LEADER = "leader";
+    public static final String KEY_DESC = "description";
+    public static final String KEY_OBJ = "objectives";
+    public static final String KEY_TAGS = "tags";
+    public static final String KEY_TEAMMATES = "teammates";
 
     private FirebaseFirestore firestore;
 
@@ -35,13 +46,12 @@ public class FirestoreUtils {
             String name = displayName[0];
             String surname = displayName[1];
 
-            //  TODO: trasformare le stringhe in costanti
             Map<String, Object> userData = new HashMap<>();
-            userData.put("name", name);
-            userData.put("surname", surname);
-            userData.put("skills", skills);
+            userData.put(KEY_NAME, name);
+            userData.put(KEY_SURNAME, surname);
+            userData.put(KEY_SKILLS, skills);
 
-            DocumentReference userDocument = firestore.collection("users")
+            DocumentReference userDocument = firestore.collection(KEY_USERS)
                     .document(Objects.requireNonNull(currentUser.getEmail()));
             userDocument.get().addOnCompleteListener(task -> writeToDocument(task, userData));
         }
@@ -50,18 +60,18 @@ public class FirestoreUtils {
     public void storeNewProjectData(String title, String desc, String leader,
                                  Map<String, Boolean> objectives, List<String> tags) {
         Map<String, Object> projectData = new HashMap<>();
-        projectData.put("title", title);
-        projectData.put("leader", leader);
-        projectData.put("description", desc);
-        projectData.put("objectives", objectives);
-        projectData.put("tags", tags);
+        projectData.put(KEY_TITLE, title);
+        projectData.put(KEY_LEADER, leader);
+        projectData.put(KEY_DESC, desc);
+        projectData.put(KEY_OBJ, objectives);
+        projectData.put(KEY_TAGS, tags);
 
-        DocumentReference document = firestore.collection("projects").document();
+        DocumentReference document = firestore.collection(KEY_PROJECTS).document();
         document.get().addOnCompleteListener(task -> writeToDocument(task, projectData));
     }
 
     public void updateProjectData(String id, String field, Object data) {
-        firestore.collection("projects")
+        firestore.collection(KEY_PROJECTS)
                 .document(id)
                 .get().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {

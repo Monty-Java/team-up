@@ -34,8 +34,8 @@ import java.util.Map;
 import java.util.Objects;
 
 public class ProjectActivity extends AppCompatActivity {
-
     private static final String TAG = ProjectActivity.class.getSimpleName();
+    private static final String KEY_ID = "id";
 
     private FirebaseAuthUtils firebaseAuthUtils;
     private FirestoreUtils firestoreUtils;
@@ -67,9 +67,8 @@ public class ProjectActivity extends AppCompatActivity {
 
         if (firebaseAuthUtils.getCurrentUser() == null) mFab.hide();
 
-        //  TODO: refactor stringa in una costante
         Intent intent = getIntent();
-        readProjectData(intent.getStringExtra("title"));
+        readProjectData(intent.getStringExtra(FirestoreUtils.KEY_TITLE));
     }
 
     @Override
@@ -178,7 +177,7 @@ public class ProjectActivity extends AppCompatActivity {
                     progetto.addObiettivoDaRaggiungere(objectiveText);
                     firestoreUtils.updateProjectData(
                             progetto.getId(),
-                            "objectives",
+                            FirestoreUtils.KEY_OBJ,
                             progetto.getObiettivi());
                     mObjectivesAdapter.notifyDataSetChanged();
                 }
@@ -206,7 +205,7 @@ public class ProjectActivity extends AppCompatActivity {
                 //  Questo codice andrà spostato nella schermata
                 //  che il leader visualizzerà quando riceverà la richiesta
                 progetto.addTeammate(firebaseAuthUtils.getCurrentUser().getDisplayName());
-                firestoreUtils.updateProjectData(progetto.getId(), "teammates", progetto.getTeammates());
+                firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_TEAMMATES, progetto.getTeammates());
             });
             teammateRequestDialogBuilder.setNegativeButton("Cancel", (dialog, which) -> {
                 dialog.cancel();
@@ -224,37 +223,33 @@ public class ProjectActivity extends AppCompatActivity {
      * @param title
      */
     public void readProjectData(String title) {
-        Log.d(TAG, "readProjectData: title: "+ title);
         Map<String, Object> data = new HashMap<>();
         Query query = firestoreUtils.getFirestoreInstance()
-                .collection("projects")
-                .whereEqualTo("title", title);
+                .collection(FirestoreUtils.KEY_PROJECTS)
+                .whereEqualTo(FirestoreUtils.KEY_TITLE, title);
 
         query.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 data.putAll(task.getResult().getDocuments().get(0).getData());
-                data.put("id", task.getResult().getDocuments().get(0).getId());
+                data.put(KEY_ID, task.getResult().getDocuments().get(0).getId());
 
                 List<String> team = new ArrayList<>();
-                if (data.get("teammates") != null) {
-                    Log.d(TAG, data.get("teammates").toString());
-                    team.addAll((List<String>) data.get("teammates"));
-                }
+                if (data.get(FirestoreUtils.KEY_TEAMMATES) != null)
+                    team.addAll((List<String>) data.get(FirestoreUtils.KEY_TEAMMATES));
 
 
                 progetto = new Progetto(
-                        data.get("id").toString(),
-                        Objects.requireNonNull(data.get("leader")).toString(),
-                        data.get("title").toString(),
-                        data.get("description").toString(),
-                        (List<String>) data.get("tags"),
+                        data.get(KEY_ID).toString(),
+                        Objects.requireNonNull(data.get(FirestoreUtils.KEY_LEADER)).toString(),
+                        data.get(FirestoreUtils.KEY_TITLE).toString(),
+                        data.get(FirestoreUtils.KEY_DESC).toString(),
+                        (List<String>) data.get(FirestoreUtils.KEY_TAGS),
                         team,
-                        (Map<String, Boolean>) data.get("objectives"));
+                        (Map<String, Boolean>) data.get(FirestoreUtils.KEY_OBJ));
                 displayProject(progetto);
 
-            } else {
-                Log.e(TAG, "ERROR READING DATA...");
-            }
+            } else
+                Log.e(TAG, "Error reading data");
         });
     }
 
@@ -272,13 +267,11 @@ public class ProjectActivity extends AppCompatActivity {
         List<String> objectivesList = new ArrayList<>(project.getObiettivi().keySet());
         mObjectivesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
                 objectivesList);
+
         List<String> team = new ArrayList<>();
         team.add(project.getLeader());
-        Log.d(TAG, project.getTeammates().toString());
-        Log.d(TAG, "hasTeammates: " + project.hasTeammates());
-        if (project.hasTeammates()) {
+        if (project.hasTeammates())
             team.addAll(project.getTeammates());
-        }
 
         mTeammatesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
                 team);
@@ -299,10 +292,11 @@ public class ProjectActivity extends AppCompatActivity {
                 EditText descriptionEditText = new EditText(this);
                 descriptionEditText.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                 editDescriptionDialogBuilder.setView(descriptionEditText);
+
                 editDescriptionDialogBuilder.setPositiveButton("OK", (dialog, which) -> {
                     if (descriptionEditText.getText() != null) {
                         project.setDescrizione(descriptionEditText.getText().toString());
-                        firestoreUtils.updateProjectData(project.getId(), "description", project.getDescrizione());
+                        firestoreUtils.updateProjectData(project.getId(), FirestoreUtils.KEY_DESC, project.getDescrizione());
                     }
                 });
                 AlertDialog editDescriptionDialog = editDescriptionDialogBuilder.create();
@@ -315,9 +309,10 @@ public class ProjectActivity extends AppCompatActivity {
             mObjectivesList.setOnItemClickListener((parent, view, position, id) -> {
                 if (progetto.getLeader().equals(firebaseAuthUtils.getCurrentUser().getDisplayName())) {
                     String objective = mObjectivesList.getItemAtPosition(position).toString();
+
                     if (!progetto.getObiettivi().get(objective)) {
                         progetto.setObiettivoRaggiunto(objective);
-                        firestoreUtils.updateProjectData(progetto.getId(), "objectives", progetto.getObiettivi());
+                        firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_OBJ, progetto.getObiettivi());
 
                         //  TODO: aggiornare layout con un feedback visuale corrispondente agli obiettivi completi
                     }

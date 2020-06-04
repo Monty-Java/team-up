@@ -89,8 +89,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             userDisplayName.setText(firebaseUser.getDisplayName());
             userEmail.setText(firebaseUser.getEmail());
         }
-
-        //  TODO: i dati relativi alle competenze degli utenti andranno posti nella schermata relativa la profilo personale
     }
 
     @Override
