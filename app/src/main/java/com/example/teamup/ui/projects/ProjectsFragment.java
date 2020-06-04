@@ -19,6 +19,7 @@ import com.example.teamup.utilities.FirestoreUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -30,7 +31,8 @@ public class ProjectsFragment extends Fragment {
     private static final String TAG = ProjectsFragment.class.getSimpleName();
 
     private ProjectsViewModel projectsViewModel;
-    private List<String> projectsList;
+    private List<String> leaderProjectsList;
+    private List<String> teammateProjectsList;
 
     FirestoreUtils firestoreUtils;
 
@@ -44,12 +46,21 @@ public class ProjectsFragment extends Fragment {
                 ViewModelProviders.of(this).get(ProjectsViewModel.class);
         View root = inflater.inflate(R.layout.fragment_projects, container, false);
 
-        ListView projectsListView = root.findViewById(R.id.listview_projects);
+        ListView leaderProjectsListView = root.findViewById(R.id.leaderProjects_listView);
+        ListView teammateProjectsListView = root.findViewById(R.id.teammateProjects_listView);
 
-        //  TODO: fare questa cosa in DiscoverActivity
+
         //  IUI-4: Un click su un progetto avvia ProjectActivity con i dati relativi a quel progetto.
-        projectsListView.setOnItemClickListener((parent, view, position, id) -> {
-            String title = projectsListView.getItemAtPosition(position).toString();
+        leaderProjectsListView.setOnItemClickListener((parent, view, position, id) -> {
+            //  TODO: questo codice si ripete- fare refactor in un metodo, passandogli le ListView come parametro
+            String title = leaderProjectsListView.getItemAtPosition(position).toString();
+            Intent projectIntent = new Intent(getContext(), ProjectActivity.class);
+            projectIntent.putExtra("title", title);
+            startActivity(projectIntent);
+        });
+
+        teammateProjectsListView.setOnItemClickListener((parent, view, position, id) -> {
+            String title = teammateProjectsListView.getItemAtPosition(position).toString();
             Intent projectIntent = new Intent(getContext(), ProjectActivity.class);
             projectIntent.putExtra("title", title);
             startActivity(projectIntent);
@@ -72,26 +83,46 @@ public class ProjectsFragment extends Fragment {
         //activity = (MainActivity) getActivity();
         FirebaseUser user = activity.firebaseAuthUtils.getCurrentUser();
 
-        Query query = activity.firestore.collection("projects").whereEqualTo("leader", user.getDisplayName());
-        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    final ListView projects = root.findViewById(R.id.listview_projects);
-                    projectsList = new ArrayList<String>();
+        Query queryLeader = activity.firestore.collection("projects").whereEqualTo("leader", user.getDisplayName());
+        queryLeader.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                final ListView projects = root.findViewById(R.id.leaderProjects_listView);
+                leaderProjectsList = new ArrayList<String>();
 
-                    //  TODO: iterate through Firestore data for this user's projects
-                    for (QueryDocumentSnapshot snapshot : task.getResult())
-                        projectsList.add(snapshot.getData().get("title").toString());
+                for (QueryDocumentSnapshot snapshot : task.getResult())
+                    leaderProjectsList.add(snapshot.getData().get("title").toString());
 
-                    ArrayAdapter<String> listAdapter = new ArrayAdapter<String>(
-                            activity,
-                            android.R.layout.simple_list_item_1,
-                            projectsList
-                    );
-                    projects.setAdapter(listAdapter);
-                }
+                ArrayAdapter<String> listAdapter = new ArrayAdapter<String>(
+                        activity,
+                        android.R.layout.simple_list_item_1,
+                        leaderProjectsList
+                );
+                projects.setAdapter(listAdapter);
             }
+        });
+
+        activity.firestore.collection("projects").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                teammateProjectsList = new ArrayList<String>();
+               for (DocumentSnapshot snapshot : task.getResult()) {
+                   if (snapshot.getData().containsKey("teammates")) {
+                       List<String> team = (List<String>) snapshot.getData().get("teammates");
+
+                       for (String s : team) {
+                           if (s.contains(user.getDisplayName())) {
+                               teammateProjectsList.add((String) snapshot.getData().get("title").toString());
+                           }
+                       }
+
+                       ArrayAdapter<String> listAdapter = new ArrayAdapter<String>(
+                               activity,
+                               android.R.layout.simple_list_item_1,
+                               teammateProjectsList
+                       );
+                       teammateProjectsListView.setAdapter(listAdapter);
+                   }
+               }
+           }
         });
 
         return root;

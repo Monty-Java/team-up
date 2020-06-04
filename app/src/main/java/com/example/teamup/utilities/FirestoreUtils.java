@@ -7,6 +7,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 
 import java.util.HashMap;
 import java.util.List;
@@ -65,7 +66,10 @@ public class FirestoreUtils {
                 .get().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
 
-                        task.getResult().getReference().update(field, data).addOnCompleteListener(t -> {
+                        Map<String, Object> newData = new HashMap<>();
+                        newData.put(field, data);
+
+                        task.getResult().getReference().set(newData, SetOptions.merge()).addOnCompleteListener(t -> {
                             if (t.isSuccessful()) {
                                 Log.d(TAG, "Document updated");
                             } else {
