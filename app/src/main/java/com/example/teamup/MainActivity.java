@@ -48,7 +48,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     TextView userDisplayName;
     TextView userEmail;
     private Button mDiscoverButton;
-
     private NavController navController;
 
     @Override
