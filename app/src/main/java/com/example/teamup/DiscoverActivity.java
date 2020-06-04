@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.SearchView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,8 +20,10 @@ public class DiscoverActivity extends AppCompatActivity {
 
     private FirestoreUtils firestoreUtils;
 
+    private SearchView mSearchView;
     private ListView mProjectsListView;
     private List<String> mProjectsList;
+    private ArrayAdapter<String> listAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +32,8 @@ public class DiscoverActivity extends AppCompatActivity {
 
         firestoreUtils = new FirestoreUtils(FirebaseFirestore.getInstance());
 
-        mProjectsListView = findViewById(R.id.projects_listView);
+        mSearchView = (SearchView) findViewById(R.id.searchView);
+        mProjectsListView = (ListView) findViewById(R.id.projects_listView);
     }
 
     @Override
@@ -44,11 +48,27 @@ public class DiscoverActivity extends AppCompatActivity {
                for (QueryDocumentSnapshot snapshot : task.getResult())
                    mProjectsList.add(snapshot.getData().get(FirestoreUtils.KEY_TITLE).toString());
 
-               ArrayAdapter<String> listAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, mProjectsList);
+               /*ArrayAdapter<String>*/ listAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, mProjectsList);
                mProjectsListView.setAdapter(listAdapter);
            }
         });
 
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                listAdapter.getFilter().filter(s);
+                return false;
+            }
+        });
+
+
+        //Listener che rileva un click sugli item della ListView
+        //Usata per visualizzare il progetto selezionato
         mProjectsListView.setOnItemClickListener((parent, view, position, id) -> {
             String projectTitle = mProjectsListView.getItemAtPosition(position).toString();
             Intent projectIntent = new Intent(this, ProjectActivity.class);
