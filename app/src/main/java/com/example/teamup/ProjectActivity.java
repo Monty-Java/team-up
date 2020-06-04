@@ -71,7 +71,7 @@ public class ProjectActivity extends AppCompatActivity {
 
         //  TODO: refactor stringa in una costante
         Intent intent = getIntent();
-        progetto = readProjectData(intent.getStringExtra("title"));
+        readProjectData(intent.getStringExtra("title"));
     }
 
     @Override
@@ -194,13 +194,21 @@ public class ProjectActivity extends AppCompatActivity {
             AlertDialog addObjectiveDialog = addObjectiveBuilder.create();
             addObjectiveDialog.show();
         } else {
+            //  TODO: identificare il leader del progetto e inviargli una notifica.
+            //  TODO: realizzare la schermata che permetterà al leader di accettare o rifiutare, e di visualizzare il profilo del candidato
             AlertDialog.Builder teammateRequestDialogBuilder = new AlertDialog.Builder(this);
             teammateRequestDialogBuilder.setTitle("Become a Teammate!");
             TextView requestTextView = new TextView(this);
             requestTextView.setText("Would you like to send a request to become a teammate for this project?");
             teammateRequestDialogBuilder.setView(requestTextView);
             teammateRequestDialogBuilder.setPositiveButton("OK", (dialog, which) -> {
-                //  TODO: se l'utente non è Teammate, usare il Fab per inviare una richiesta di diventare Teammate
+
+                //  TODO: inviare una notifica al leader del progetto
+
+                //  Questo codice andrà spostato nella schermata
+                //  che il leader visualizzerà quando riceverà la richiesta
+                progetto.addTeammate(firebaseAuthUtils.getCurrentUser().getDisplayName());
+                firestoreUtils.updateProjectData(progetto.getId(), "teammates", progetto.getTeammates());
             });
             teammateRequestDialogBuilder.setNegativeButton("Cancel", (dialog, which) -> {
                 dialog.cancel();
@@ -217,7 +225,7 @@ public class ProjectActivity extends AppCompatActivity {
      *
      * @param title
      */
-    public Progetto readProjectData(String title) {
+    public void readProjectData(String title) {
         Log.d(TAG, "readProjectData: title: "+ title);
         Map<String, Object> data = new HashMap<>();
         Query query = firestoreUtils.getFirestoreInstance()
@@ -229,12 +237,20 @@ public class ProjectActivity extends AppCompatActivity {
                 data.putAll(task.getResult().getDocuments().get(0).getData());
                 data.put("id", task.getResult().getDocuments().get(0).getId());
 
+                List<String> team = new ArrayList<>();
+                if (data.get("teammates") != null) {
+                    Log.d(TAG, data.get("teammates").toString());
+                    team.addAll((List<String>) data.get("teammates"));
+                }
+
+
                 progetto = new Progetto(
                         data.get("id").toString(),
                         Objects.requireNonNull(data.get("leader")).toString(),
                         data.get("title").toString(),
                         data.get("description").toString(),
                         (List<String>) data.get("tags"),
+                        team,
                         (Map<String, Boolean>) data.get("objectives"));
                 displayProject(progetto);
 
@@ -242,8 +258,6 @@ public class ProjectActivity extends AppCompatActivity {
                 Log.e(TAG, "ERROR READING DATA...");
             }
         });
-
-        return progetto;
     }
 
     /**
@@ -262,8 +276,12 @@ public class ProjectActivity extends AppCompatActivity {
                 objectivesList);
         List<String> team = new ArrayList<>();
         team.add(project.getLeader());
-        if (project.hasTeammates())
+        Log.d(TAG, project.getTeammates().toString());
+        Log.d(TAG, "hasTeammates: " + project.hasTeammates());
+        if (project.hasTeammates()) {
             team.addAll(project.getTeammates());
+        }
+
         mTeammatesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
                 team);
         mObjectivesList.setAdapter(mObjectivesAdapter);
