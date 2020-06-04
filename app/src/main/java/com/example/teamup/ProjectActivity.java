@@ -33,8 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-//  TODO: aggiungere un pulsante o item di menu Home per tornare alla MainActivity
-
 public class ProjectActivity extends AppCompatActivity {
 
     private static final String TAG = ProjectActivity.class.getSimpleName();
@@ -288,10 +286,7 @@ public class ProjectActivity extends AppCompatActivity {
         mTeammatesList.setAdapter(mTeammatesAdapter);
         mDescriptionTextView.setText(project.getDescrizione());
 
-        //  TODO: verificare se l'utente ha effettuato l'accesso a TeamUp - impedire qualsiasi modifica al progetto
-        //  TODO: verificare se l'utente è Leader
         //  TODO: verificare se l'utente è Teammate - limitare le modifiche al progetto
-        //  TODO: se l'utente è autenticato ma non è nè Leader nè Teammate visualizzare un pulsante per fare la richiesta di diventare Teammate
 
         //  TODO: raffinare questo controllo
         if (firebaseAuthUtils.getCurrentUser() != null && firebaseAuthUtils.getCurrentUser().getDisplayName().equals(progetto.getLeader())) {

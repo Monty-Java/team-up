@@ -89,7 +89,6 @@ public class ProjectsFragment extends Fragment {
                 final ListView projects = root.findViewById(R.id.leaderProjects_listView);
                 leaderProjectsList = new ArrayList<String>();
 
-                //  TODO: iterate through Firestore data for this user's projects
                 for (QueryDocumentSnapshot snapshot : task.getResult())
                     leaderProjectsList.add(snapshot.getData().get("title").toString());
 
@@ -106,7 +105,6 @@ public class ProjectsFragment extends Fragment {
             if (task.isSuccessful()) {
                 teammateProjectsList = new ArrayList<String>();
                for (DocumentSnapshot snapshot : task.getResult()) {
-                   //   TODO: ottenere i riferimenti ai progetti in cui l'utente corrente è coinvolto come teammate e inserirli nella lista
                    if (snapshot.getData().containsKey("teammates")) {
                        List<String> team = (List<String>) snapshot.getData().get("teammates");
 

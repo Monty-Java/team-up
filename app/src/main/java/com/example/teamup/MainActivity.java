@@ -127,12 +127,37 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             String[] tg = tags.getText().toString().split("\\W+");
             List<String> tagList = new ArrayList<>(Arrays.asList(tg));
-            firestoreUtils.storeNewProjectData(
-                    title.getText().toString(),
-                    description.getText().toString(),
-                    userDisplayName.getText().toString(),
-                    objectiveMap, tagList);
-            newProjectDialog.hide();
+
+            boolean checkEmptyFields = true;
+
+            if (title.getText().toString().equals("")) {
+                checkEmptyFields = false;
+                title.setError("Empty field");
+            }
+
+            if (description.getText().toString().equals("")) {
+                checkEmptyFields = false;
+                description.setError("Empty field");
+            }
+
+            if (objectiveMap.isEmpty()) {
+                checkEmptyFields = false;
+                objectives.setError("Empty field");
+            }
+
+            if (tags.getText().toString().equals("")) {
+                checkEmptyFields = false;
+                tags.setError("Empty field");
+            }
+
+            if (checkEmptyFields) {
+                firestoreUtils.storeNewProjectData(
+                        title.getText().toString(),
+                        description.getText().toString(),
+                        userDisplayName.getText().toString(),
+                        objectiveMap, tagList);
+                newProjectDialog.hide();
+            }
         });
 
         newProjectDialog.show();
