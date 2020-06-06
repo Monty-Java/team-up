@@ -8,6 +8,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,9 +19,10 @@ public class FirestoreUtils {
     private static final String TAG = FirestoreUtils.class.getSimpleName();
     //  Costanti usate come chiavi per leggere e scrivere dati Firestore
     public static final String KEY_USERS = "users";
-    private static final String KEY_NAME = "name";
-    private static final String KEY_SURNAME = "surname";
+    private static final String KEY_NAME = "display_name";
     private static final String KEY_SKILLS = "skills";
+    public static final String KEY_NOTIFICATIONS = "notifications";
+
     public static final String KEY_PROJECTS = "projects";
     public static final String KEY_TITLE = "title";
     public static final String KEY_LEADER = "leader";
@@ -30,6 +32,7 @@ public class FirestoreUtils {
     public static final String KEY_TEAMMATES = "teammates";
 
     private FirebaseFirestore firestore;
+    public String mToken;
 
     public FirestoreUtils(FirebaseFirestore firestore) {
         this.firestore = firestore;
@@ -41,20 +44,60 @@ public class FirestoreUtils {
 
     public void storeUserData(FirebaseUser currentUser, List<String> skills) {
         if (currentUser != null) {
-            //  Ottiene nome e cognome dell'utente dividendo il display name in due
-            String[] displayName = currentUser.getDisplayName().split(" ");
-            String name = displayName[0];
-            String surname = displayName[1];
 
             Map<String, Object> userData = new HashMap<>();
-            userData.put(KEY_NAME, name);
-            userData.put(KEY_SURNAME, surname);
+            userData.put(KEY_NAME, currentUser.getDisplayName());
             userData.put(KEY_SKILLS, skills);
 
             DocumentReference userDocument = firestore.collection(KEY_USERS)
                     .document(Objects.requireNonNull(currentUser.getEmail()));
             userDocument.get().addOnCompleteListener(task -> writeToDocument(task, userData));
         }
+    }
+
+    public void updateUserData(String displayName, String field, Object data) {
+        firestore.collection(KEY_USERS).whereEqualTo(KEY_NAME, displayName)
+                .get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+
+                Map<String, Object> newData = new HashMap<>();
+                newData.put(field, data);
+
+                Log.d(TAG, newData.toString());
+
+                task.getResult().getDocuments().get(0).getReference()
+                        .set(newData, SetOptions.merge()).addOnCompleteListener(t -> {
+                    if (t.isSuccessful()) {
+                        Log.d(TAG, "Document updated");
+                    } else
+                        Log.e(TAG, "Error updating document");
+                });
+            }
+        });
+    }
+
+    public void storeNotification(String projectTitle, String recepientDisplayName, Object data, NotificationType notifType) {
+        firestore.collection(KEY_USERS).whereEqualTo(KEY_NAME, recepientDisplayName)
+                .get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+
+                Map<String, Object> notif = new HashMap<String, Object>();
+                notif.put("sentFrom", data);
+                notif.put("recepient", recepientDisplayName);
+                notif.put("project", projectTitle);
+                notif.put("type", notifType);
+
+                task.getResult().getDocuments().get(0).getReference()
+                        .collection(KEY_NOTIFICATIONS)
+                        .document()
+                        .set(notif, SetOptions.merge()).addOnCompleteListener(t -> {
+                    if (t.isSuccessful()) {
+                        Log.d(TAG, "Document updated");
+                    } else
+                        Log.e(TAG, "Error updating document");
+                });
+            }
+        });
     }
 
     public void storeNewProjectData(String title, String desc, String leader,

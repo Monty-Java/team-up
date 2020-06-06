@@ -6,13 +6,20 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import com.example.teamup.AuthActivity;
 import com.example.teamup.MainActivity;
 import com.example.teamup.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.List;
 import java.util.Objects;
@@ -24,6 +31,7 @@ public class FirebaseAuthUtils {
     private FirebaseAuth firebaseAuth;
     private final FirestoreUtils firestoreUtils;
     private Activity activity;
+    public String tokenId;
 
     public FirebaseAuthUtils(FirebaseAuth firebaseAuth, FirebaseFirestore firestore, Activity activity) {
         this.firebaseAuth = firebaseAuth;
@@ -103,6 +111,9 @@ public class FirebaseAuthUtils {
     public void logout() {
         Log.d(TAG, "logout");
 
+        //  Rimuove il Token associato all'utente corrente
+        firestoreUtils.updateUserData(firebaseAuth.getCurrentUser().getDisplayName(), "token", FieldValue.delete());
+
         FirebaseAuth.getInstance().signOut();
         Intent logoutIntent = new Intent(activity, AuthActivity.class);
         activity.startActivity(logoutIntent);
@@ -154,6 +165,14 @@ public class FirebaseAuthUtils {
         Log.d(TAG, "teamUp");
 
         if (isEmailVerified()) {
+
+            //  Ottiene un token che permette a inviare notifiche ad altri dispositivi
+            FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(task -> {
+                if (task.isSuccessful())
+                    firestoreUtils.updateUserData(firebaseAuth.getCurrentUser().getDisplayName(), "token",
+                        task.getResult().getToken());
+            });
+
             Intent teamUpIntent = new Intent(activity, MainActivity.class);
             activity.startActivity(teamUpIntent);
             activity.finish();

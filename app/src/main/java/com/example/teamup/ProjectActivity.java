@@ -21,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.teamup.utilities.FirebaseAuthUtils;
 import com.example.teamup.utilities.FirestoreUtils;
+import com.example.teamup.utilities.NotificationType;
 import com.example.teamup.utilities.Progetto;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -201,11 +202,14 @@ public class ProjectActivity extends AppCompatActivity {
             teammateRequestDialogBuilder.setPositiveButton("OK", (dialog, which) -> {
 
                 //  TODO: inviare una notifica al leader del progetto
+                firestoreUtils.storeNotification(progetto.getTitolo(), progetto.getLeader(), firebaseAuthUtils.getCurrentUser().getDisplayName(), NotificationType.TEAMMATE_REQUEST);
 
                 //  Questo codice andrà spostato nella schermata
                 //  che il leader visualizzerà quando riceverà la richiesta
+                /*
                 progetto.addTeammate(firebaseAuthUtils.getCurrentUser().getDisplayName());
                 firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_TEAMMATES, progetto.getTeammates());
+                 */
             });
             teammateRequestDialogBuilder.setNegativeButton("Cancel", (dialog, which) -> {
                 dialog.cancel();

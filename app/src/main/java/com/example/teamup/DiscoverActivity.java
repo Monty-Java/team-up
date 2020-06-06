@@ -2,6 +2,7 @@ package com.example.teamup;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
@@ -9,6 +10,7 @@ import android.widget.SearchView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.teamup.utilities.FirestoreUtils;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -17,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DiscoverActivity extends AppCompatActivity {
+    public static final String TAG = DiscoverActivity.class.getSimpleName();
 
     private FirestoreUtils firestoreUtils;
 
@@ -24,6 +27,8 @@ public class DiscoverActivity extends AppCompatActivity {
     private ListView mProjectsListView;
     private List<String> mProjectsList;
     private ArrayAdapter<String> listAdapter;
+
+    private List<String> mTagsList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +39,8 @@ public class DiscoverActivity extends AppCompatActivity {
 
         mSearchView = (SearchView) findViewById(R.id.searchView);
         mProjectsListView = (ListView) findViewById(R.id.projects_listView);
+
+        mTagsList = new ArrayList<>();
     }
 
     @Override
@@ -41,6 +48,7 @@ public class DiscoverActivity extends AppCompatActivity {
         super.onStart();
         setTitle("Discover");
 
+        //  Ottiene i riferimenti ai progetti memorizzati e li visualizza nella ListView
         Query query = firestoreUtils.getFirestoreInstance().collection(FirestoreUtils.KEY_PROJECTS);
         query.get().addOnCompleteListener(task -> {
            if (task.isSuccessful()) {
@@ -51,6 +59,18 @@ public class DiscoverActivity extends AppCompatActivity {
                listAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, mProjectsList);
                mProjectsListView.setAdapter(listAdapter);
            }
+        });
+
+        //  Popola mTagsList con tutte le etichette usate per descrivere i progetti memorizzati in Firestore da usare per la ricerca
+        //  TODO: se le cose non funzionano si potrebbe dover spostare il QueryTextListener all'interno dell'if qui dentro per poter utilizzare i dati di mTagsList
+        firestoreUtils.getFirestoreInstance().collection(FirestoreUtils.KEY_PROJECTS).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                for (DocumentSnapshot snapshot : task.getResult()) {
+                    mTagsList.addAll((List<String>) snapshot.getData().get(FirestoreUtils.KEY_TAGS));
+                }
+
+                Log.d(TAG, mTagsList.toString());
+            }
         });
 
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -65,7 +85,6 @@ public class DiscoverActivity extends AppCompatActivity {
                 return false;
             }
         });
-
 
         //  Listener che rileva un click sugli item della ListView
         //  usata per visualizzare il progetto selezionato

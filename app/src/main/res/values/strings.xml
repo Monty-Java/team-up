@@ -23,4 +23,6 @@
     <string name="app_mission">TeamUp! vuole andare incontro a tutte le persone che hanno dovuto rinunciare o hanno riscontrato difficoltà nel realizzare i propri progetti, cercando di riunire persone con lo stesso obiettivo o passione in modo tale da potersi aiutare a vicenda.</string>
     <string name="prompt_sign_in">Sign In to an Existing Account</string>
     <string name="login">Log In</string>
+
+    <string name="default_notification_channel_id">CH_01</string>
 </resources>
