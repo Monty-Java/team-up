@@ -192,8 +192,6 @@ public class ProjectActivity extends AppCompatActivity {
             AlertDialog addObjectiveDialog = addObjectiveBuilder.create();
             addObjectiveDialog.show();
         } else {
-            //  TODO: identificare il leader del progetto e inviargli una notifica.
-            //  TODO: realizzare la schermata che permetterà al leader di accettare o rifiutare, e di visualizzare il profilo del candidato
             AlertDialog.Builder teammateRequestDialogBuilder = new AlertDialog.Builder(this);
             teammateRequestDialogBuilder.setTitle("Become a Teammate!");
             TextView requestTextView = new TextView(this);
@@ -201,7 +199,6 @@ public class ProjectActivity extends AppCompatActivity {
             teammateRequestDialogBuilder.setView(requestTextView);
             teammateRequestDialogBuilder.setPositiveButton("OK", (dialog, which) -> {
 
-                //  TODO: inviare una notifica al leader del progetto
                 firestoreUtils.storeNotification(progetto.getTitolo(), progetto.getLeader(), firebaseAuthUtils.getCurrentUser().getDisplayName(), NotificationType.TEAMMATE_REQUEST);
 
                 //  Questo codice andrà spostato nella schermata
