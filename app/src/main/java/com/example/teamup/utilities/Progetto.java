@@ -1,5 +1,6 @@
 package com.example.teamup.utilities;
 
+import android.os.Build;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -87,7 +88,12 @@ public class Progetto {
     }
 
     public void setObiettivoRaggiunto(String goalAchieved) {
-        obiettivi.replace(goalAchieved, true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            obiettivi.replace(goalAchieved, true);
+        } else {
+            obiettivi.remove(goalAchieved);
+            obiettivi.put(goalAchieved, true);
+        }
     }
 
     public String getId() {

@@ -10,6 +10,7 @@ import android.widget.SearchView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.teamup.utilities.FirestoreUtils;
+import com.example.teamup.utilities.Progetto;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -17,6 +18,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class DiscoverActivity extends AppCompatActivity {
     public static final String TAG = DiscoverActivity.class.getSimpleName();
@@ -27,6 +29,8 @@ public class DiscoverActivity extends AppCompatActivity {
     private ListView mProjectsListView;
     private List<String> mProjectsList;
     private ArrayAdapter<String> listAdapter;
+
+    private List<Progetto> mProjects;
 
     private List<String> mTagsList;
 
@@ -41,6 +45,8 @@ public class DiscoverActivity extends AppCompatActivity {
         mProjectsListView = (ListView) findViewById(R.id.projects_listView);
 
         mTagsList = new ArrayList<>();
+
+        mProjects = new ArrayList<>();
     }
 
     @Override
@@ -53,8 +59,18 @@ public class DiscoverActivity extends AppCompatActivity {
         query.get().addOnCompleteListener(task -> {
            if (task.isSuccessful()) {
                mProjectsList = new ArrayList<>();
-               for (QueryDocumentSnapshot snapshot : task.getResult())
+               for (QueryDocumentSnapshot snapshot : task.getResult()) {
                    mProjectsList.add(snapshot.getData().get(FirestoreUtils.KEY_TITLE).toString());
+
+                   //   Crea una lista di Progetti corrispondenti alla ListView dei titoli di progetto
+                   mProjects.add(new Progetto(snapshot.getId(),
+                           (String) snapshot.getData().get(FirestoreUtils.KEY_LEADER).toString(),
+                           (String) snapshot.getData().get(FirestoreUtils.KEY_TITLE).toString(),
+                           (String) snapshot.getData().get(FirestoreUtils.KEY_DESC).toString(),
+                           (List<String>) snapshot.getData().get(FirestoreUtils.KEY_TAGS),
+                           (List<String>) snapshot.getData().get(FirestoreUtils.KEY_TEAMMATES),
+                           (Map<String, Boolean>) snapshot.getData().get(FirestoreUtils.KEY_OBJ)));
+               }
 
                listAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, mProjectsList);
                mProjectsListView.setAdapter(listAdapter);
@@ -90,6 +106,9 @@ public class DiscoverActivity extends AppCompatActivity {
         //  usata per visualizzare il progetto selezionato
         mProjectsListView.setOnItemClickListener((parent, view, position, id) -> {
             String projectTitle = mProjectsListView.getItemAtPosition(position).toString();
+
+            Log.d(TAG, mProjects.get(position).getTitolo());
+
             Intent projectIntent = new Intent(this, ProjectActivity.class);
             projectIntent.putExtra(FirestoreUtils.KEY_TITLE, projectTitle);
             startActivity(projectIntent);
