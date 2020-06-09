@@ -23,6 +23,13 @@
         tools:layout="@layout/fragment_profile">
     </fragment>
 
+    <fragment
+        android:id="@+id/nav_discover"
+        android:name="com.example.teamup.ui.discover.DiscoverFragment"
+        android:label="Discover"
+        tools:layout="@layout/fragment_discover">
+    </fragment>
+
     <!-- Questo fragment ha a che fare con IUI-3 -->
     <fragment
         android:id="@+id/nav_home_second"

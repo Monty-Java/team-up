@@ -47,7 +47,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     ImageView userProfilePicture;
     TextView userDisplayName;
     TextView userEmail;
-    private Button mDiscoverButton;
     private NavController navController;
 
     @Override
@@ -64,12 +63,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         View headerView = navigationView.getHeaderView(0);
         userDisplayName = headerView.findViewById(R.id.display_name);
         userEmail = headerView.findViewById(R.id.email);
-        mDiscoverButton = findViewById(R.id.button_discover);
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_projects, R.id.nav_profile, R.id.nav_settings, R.id.nav_logout)
+                R.id.nav_projects, R.id.nav_profile, R.id.nav_discover, R.id.nav_settings, R.id.nav_logout)
                 .setDrawerLayout(drawer)
                 .build();
         navController = Navigation.findNavController(this, R.id.nav_host_fragment);
@@ -89,16 +87,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             userDisplayName.setText(firebaseUser.getDisplayName());
             userEmail.setText(firebaseUser.getEmail());
         }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mDiscoverButton.setOnClickListener(v -> {
-            Intent discoverIntent = new Intent(this, DiscoverActivity.class);
-            this.startActivity(discoverIntent);
-            //this.finish();
-        });
     }
 
     public void onFabClick(View view) {
@@ -161,13 +149,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         newProjectDialog.show();
     }
 
-    public void onDiscoverClick(View view) {
-        Log.d(TAG, "onDiscoverClick");
-
-        Intent discoverIntent = new Intent(this, DiscoverActivity.class);
-        this.startActivity(discoverIntent);
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -190,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         switch (menuItemId) {
             case R.id.nav_projects:
-                Toast.makeText(this, "My Projects", Toast.LENGTH_LONG).show();
+                Log.d(TAG, "onNavigationItemSelected: My Projects");
                 navController.navigate(menuItemId);
                 if (mAppBarConfiguration.getDrawerLayout() != null) {
                     mAppBarConfiguration.getDrawerLayout().closeDrawers();
@@ -198,6 +179,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
 
             case R.id.nav_profile:
+                Log.d(TAG, "onNavigationItemSelected: My Profile");
+                navController.navigate(menuItemId);
+                if (mAppBarConfiguration.getDrawerLayout() != null) {
+                    mAppBarConfiguration.getDrawerLayout().closeDrawers();
+                }
+                break;
+
+            case R.id.nav_discover:
+                Log.d(TAG, "onNavigationItemSelected: Discover");
                 navController.navigate(menuItemId);
                 if (mAppBarConfiguration.getDrawerLayout() != null) {
                     mAppBarConfiguration.getDrawerLayout().closeDrawers();

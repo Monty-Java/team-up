@@ -26,7 +26,6 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-        <activity android:name=".DiscoverActivity" />
         <activity android:name=".ProjectActivity" />
         <activity
             android:name=".MainActivity"
