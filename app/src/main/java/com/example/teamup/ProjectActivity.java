@@ -87,7 +87,7 @@ public class ProjectActivity extends AppCompatActivity {
                     Intent homeIntent = new Intent(this, MainActivity.class);
                     startActivity(homeIntent);
                 } else {
-                    Intent authIntent = new Intent(this, AuthActivity.class);
+                    Intent authIntent = new Intent(this, LoginActivity.class);
                     startActivity(authIntent);
                 }
                 this.finish();
