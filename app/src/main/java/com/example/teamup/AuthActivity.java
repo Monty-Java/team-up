@@ -43,7 +43,7 @@ public class AuthActivity extends AppCompatActivity {
         super.onStart();
         Log.d(TAG, "onStart");
 
-        firebaseAuthUtils.checkCurrentUserForLogin();
+        firebaseAuthUtils.isAlreadyLoggedIn();
 
         mDiscoverButton.setOnClickListener(v -> {
             Intent discoverIntent = new Intent(this, DiscoverActivity.class);
@@ -94,8 +94,8 @@ public class AuthActivity extends AppCompatActivity {
                 etPass.setError("Empty Field!");
             }
 
-            if (checkEmptyFields)
-                firebaseAuthUtils.signIn(sEmail, sPass);
+            /*if (checkEmptyFields)
+                firebaseAuthUtils.signIn(sEmail, sPass);*/
         });
 
         loginDialog.show();
@@ -151,8 +151,8 @@ public class AuthActivity extends AppCompatActivity {
                 etSkills.setError("Empty Field!");
             }
 
-            if (checkEmptyFields)
-                firebaseAuthUtils.createAccount(displayName, sEmail, sPass, skillList);
+            /*if (checkEmptyFields)
+                firebaseAuthUtils.createAccount(displayName, sEmail, sPass, skillList);*/
         });
 
         registerDialog.show();
