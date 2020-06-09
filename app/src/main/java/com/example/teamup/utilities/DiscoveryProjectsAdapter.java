@@ -116,6 +116,7 @@ public class DiscoveryProjectsAdapter
         ViewHolder(@NonNull View itemView, Activity activity) {
             super(itemView);
 
+            this.activity = activity;
             projectLayout = itemView.findViewById(R.id.projectLayout);
             projectTitle = itemView.findViewById(R.id.projectTitle);
             projectTags = itemView.findViewById(R.id.projectTags);
