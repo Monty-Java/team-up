@@ -37,27 +37,28 @@ public class FirebaseAuthUtils {
         return firestoreUtils;
     }
 
-    public boolean isAlreadyLoggedIn() {
+    public void isAlreadyLoggedIn(Runnable onUserVerified) {
         Log.d(TAG, "alreadyLoggedIn");
 
         if (firebaseAuth.getCurrentUser() != null) {
             if (isEmailVerified()) {
 
-                //  Ottiene un token che permette a inviare notifiche ad altri dispositivi
-                FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(task -> {
-                    if (task.isSuccessful())
-                        firestoreUtils.updateUserData(firebaseAuth.getCurrentUser().getDisplayName(), "token",
-                                task.getResult().getToken());
-                });
+                obtainToken();
 
-                return true;
+                onUserVerified.run();
             } else {
-                verifyUser();
-                return false;
+                verifyUser(onUserVerified);
             }
         }
+    }
 
-        return false;
+    private void obtainToken() {
+        //  Ottiene un token che permette a inviare notifiche ad altri dispositivi
+        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(task -> {
+            if (task.isSuccessful())
+                firestoreUtils.updateUserData(firebaseAuth.getCurrentUser().getDisplayName(), "token",
+                        task.getResult().getToken());
+        });
     }
 
     public FirebaseUser getCurrentUser() {
@@ -66,20 +67,21 @@ public class FirebaseAuthUtils {
         return firebaseAuth.getCurrentUser();
     }
 
-    public void createAccount(final String displayName, final String email, final String pass, final List<String> skills, Runnable onLoginSuccessful) {
+    public void createAccount(final String displayName, final String email, final String pass, final List<String> skills, Runnable onSignupSuccessful, Runnable onSignupFailed) {
         firebaseAuth.createUserWithEmailAndPassword(email, pass)
                 .addOnCompleteListener(activity, task -> {
             if (task.isSuccessful()) {
-                updateUserProfile(displayName, email, pass, skills, onLoginSuccessful);
+                updateUserProfile(displayName, email, pass, skills, onSignupSuccessful);
             } else {
                 Log.e(TAG, "Create FirebaseUser unsuccessful");
 
                 Toast.makeText(activity, "Error: Unable to create a user", Toast.LENGTH_LONG).show();
+                onSignupFailed.run();
             }
         });
     }
 
-    private void updateUserProfile(final String displayName, final String email, final String pass, final List<String> skills, Runnable onLoginSuccessful) {
+    private void updateUserProfile(final String displayName, final String email, final String pass, final List<String> skills, Runnable onSignupSuccessful) {
         Log.d(TAG, "updateUserProfile");
 
         //  Aggiorna il profilo dell'utente impostando la stringa displayName come nome utente
@@ -96,7 +98,7 @@ public class FirebaseAuthUtils {
                     user.updateProfile(profileUpdate)
                             .addOnCompleteListener(task1 -> firestoreUtils.storeUserData(getCurrentUser(), skills));
 
-                    signIn(email, pass, onLoginSuccessful);
+                    signIn(email, pass, onSignupSuccessful);
                 }
             });
         }
@@ -131,7 +133,7 @@ public class FirebaseAuthUtils {
         activity.finish();
     }
 
-    private void verifyUser() {
+    public void verifyUser(Runnable onUserVerified) {
         Log.d(TAG, "verifyUser");
 
         AlertDialog.Builder verifyDialogBuilder = new AlertDialog.Builder(activity);
@@ -143,7 +145,8 @@ public class FirebaseAuthUtils {
                     if (task.isSuccessful()) {
                         if (isEmailVerified()) {
 
-                            goToMainScreen();
+                            obtainToken();
+                            onUserVerified.run();
 
                         } else {
                             //  If the user isn't verified, show again this dialog
@@ -152,7 +155,7 @@ public class FirebaseAuthUtils {
                                     Toast.LENGTH_SHORT).show();
                             dialog.dismiss();
 
-                            verifyUser();
+                            verifyUser(onUserVerified);
                         }
                     } else {
                         Log.e(TAG, "Create FirebaseUser unsuccessful");
@@ -170,26 +173,6 @@ public class FirebaseAuthUtils {
 
         AlertDialog verifyDialog = verifyDialogBuilder.create();
         verifyDialog.show();
-    }
-
-    private void goToMainScreen() {
-        Log.d(TAG, "teamUp");
-
-        if (isEmailVerified()) {
-
-            //  Ottiene un token che permette a inviare notifiche ad altri dispositivi
-            FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(task -> {
-                if (task.isSuccessful())
-                    firestoreUtils.updateUserData(firebaseAuth.getCurrentUser().getDisplayName(), "token",
-                        task.getResult().getToken());
-            });
-
-            /*Intent teamUpIntent = new Intent(activity, MainActivity.class);
-            activity.startActivity(teamUpIntent);
-            activity.finish();*/
-        } else {
-            verifyUser();
-        }
     }
 
     private boolean isEmailVerified() {

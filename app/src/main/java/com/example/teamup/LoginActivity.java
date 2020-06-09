@@ -1,8 +1,5 @@
 package com.example.teamup;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,8 +7,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.teamup.utilities.FirebaseAuthUtils;
 import com.google.firebase.auth.FirebaseAuth;
@@ -25,7 +24,6 @@ public class LoginActivity extends AppCompatActivity {
     private EditText _emailText;
     private EditText _passwordText;
     private Button _loginButton;
-    private TextView _signupLink;
 
     private FirebaseAuthUtils firebaseAuthUtils;
 
@@ -39,7 +37,6 @@ public class LoginActivity extends AppCompatActivity {
         _emailText = findViewById(R.id.input_email);
         _passwordText = findViewById(R.id.input_password);
         _loginButton = findViewById(R.id.btn_login);
-        _signupLink = findViewById(R.id.link_signup);
 
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
         firebaseAuthUtils = new FirebaseAuthUtils(FirebaseAuth.getInstance(), firestore, this);
@@ -51,9 +48,7 @@ public class LoginActivity extends AppCompatActivity {
 
         Log.d(TAG, "onStart");
 
-        if (firebaseAuthUtils.isAlreadyLoggedIn()) {
-            onLoginSuccess();
-        }
+        firebaseAuthUtils.isAlreadyLoggedIn(this::onLoginSuccess);
     }
 
     public void onLoginClick(View view) {
@@ -86,9 +81,9 @@ public class LoginActivity extends AppCompatActivity {
     public void onSignupClick(View view) {
         Log.d(TAG, "onSignupClick");
 
-        /*// Start the Signup activity
+        // Start the Signup activity
         Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
-        startActivityForResult(intent, REQUEST_SIGNUP);*/
+        startActivityForResult(intent, REQUEST_SIGNUP);
     }
 
     @Override
@@ -96,9 +91,8 @@ public class LoginActivity extends AppCompatActivity {
         if (requestCode == REQUEST_SIGNUP) {
             if (resultCode == RESULT_OK) {
 
-                // TODO: Implement successful signup logic here
-                // By default we just finish the Activity and log them in automatically
-                this.finish();
+                Log.d(TAG, "onActivityResult: Signup successfull");
+                firebaseAuthUtils.verifyUser(this::onLoginSuccess);
             }
         }
     }

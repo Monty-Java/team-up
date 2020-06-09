@@ -43,7 +43,7 @@ public class AuthActivity extends AppCompatActivity {
         super.onStart();
         Log.d(TAG, "onStart");
 
-        firebaseAuthUtils.isAlreadyLoggedIn();
+        //firebaseAuthUtils.isAlreadyLoggedIn();
 
         mDiscoverButton.setOnClickListener(v -> {
             Intent discoverIntent = new Intent(this, DiscoverActivity.class);

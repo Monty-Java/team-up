@@ -19,6 +19,7 @@
     <string name="hint_surname">Surname</string>
     <string name="hint_email">E-mail Address</string>
     <string name="hint_pass">Password</string>
+    <string name="hint_skills">Skills</string>
 
     <string name="app_mission">TeamUp! vuole andare incontro a tutte le persone che hanno dovuto rinunciare o hanno riscontrato difficoltà nel realizzare i propri progetti, cercando di riunire persone con lo stesso obiettivo o passione in modo tale da potersi aiutare a vicenda.</string>
     <string name="prompt_sign_in">Sign In to an Existing Account</string>
