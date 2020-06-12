@@ -29,6 +29,7 @@ public class FirestoreUtils {
     public static final String KEY_OBJ = "objectives";
     public static final String KEY_TAGS = "tags";
     public static final String KEY_TEAMMATES = "teammates";
+    public static final String KEY_SPONSORED = "sponsored";
 
     private FirebaseFirestore firestore;
     public String mToken;

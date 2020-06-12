@@ -4,18 +4,24 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.anjlab.android.iab.v3.BillingProcessor;
 import com.anjlab.android.iab.v3.TransactionDetails;
+import com.example.teamup.utilities.FirestoreUtils;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class SponsorProjectActivity extends AppCompatActivity implements BillingProcessor.IBillingHandler {
     public static final String TAG = SponsorProjectActivity.class.getSimpleName();
 
     BillingProcessor mBillingProcessor;
     String mProject;
+    FirestoreUtils mFirestore;
+
+    //  TODO: BUG - se un pagamento è stato effettuato e si ritorna a questa Activity per un altro progetto, il pagamento avviene in automatico senza mostrare i prompt
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,18 +29,29 @@ public class SponsorProjectActivity extends AppCompatActivity implements Billing
         setContentView(R.layout.activity_sponsor_project);
 
         mProject = getIntent().getStringExtra("project");
-        Log.d(TAG, "Project: " + mProject);
+
+        mFirestore = new FirestoreUtils(FirebaseFirestore.getInstance());
 
         mBillingProcessor = new BillingProcessor(this, "test_key", this);
         mBillingProcessor.initialize();
+        if (mBillingProcessor.isPurchased("android.test.purchased"))
+            mBillingProcessor.consumePurchase("android.test.purchased");    //  Permette di ripetere il pagamento
 
         Button pay = findViewById(R.id.pay_button);
-        pay.setOnClickListener(view -> {
-            if (mBillingProcessor.isInitialized()) {
-                Log.d(TAG, "Process Payment");
-                mBillingProcessor.purchase(this, "android.test.purchased");
-            }
-        });
+        pay.setOnClickListener(view -> mFirestore.getFirestoreInstance().collection(FirestoreUtils.KEY_PROJECTS)
+                .whereEqualTo(FirestoreUtils.KEY_TITLE, mProject)
+                .get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                if (!task.getResult().getDocuments().get(0).contains(FirestoreUtils.KEY_SPONSORED)) {
+                    if (mBillingProcessor.isInitialized()) {
+                        Log.d(TAG, "Process Payment");
+                        mBillingProcessor.purchase(this, "android.test.purchased");
+                    }
+                } else {
+                    Toast.makeText(this, "The project has already been sponsored", Toast.LENGTH_LONG).show();
+                }
+            } else Log.d(TAG, "Error reading data from Firestore");
+        }));
     }
 
     @Override
@@ -84,7 +101,13 @@ public class SponsorProjectActivity extends AppCompatActivity implements Billing
     }
 
     private void markProjectSponsored(String title) {
-        //  TODO: flag project with title as sponsored in Firestore document
-        Log.d(TAG, "Project Sponsored: " + title);
+        mFirestore.getFirestoreInstance().collection(FirestoreUtils.KEY_PROJECTS)
+                .whereEqualTo(FirestoreUtils.KEY_TITLE, title)
+                .get().addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        String projectId = task.getResult().getDocuments().get(0).getId();
+                        mFirestore.updateProjectData(projectId, FirestoreUtils.KEY_SPONSORED, true);
+                    } else Log.d(TAG, "Error updating project data");
+        });
     }
 }

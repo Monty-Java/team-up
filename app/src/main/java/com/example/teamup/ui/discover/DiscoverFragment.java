@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 
 public class DiscoverFragment extends Fragment {
-
     public static final String TAG = DiscoverFragment.class.getSimpleName();
 
     private FirestoreUtils firestoreUtils;
@@ -75,6 +74,9 @@ public class DiscoverFragment extends Fragment {
             if (task.isSuccessful()) {
                 for (QueryDocumentSnapshot snapshot : task.getResult()) {
                     //   Crea una lista di Progetti corrispondenti alla ListView dei titoli di progetto
+                    if (snapshot.contains(FirestoreUtils.KEY_SPONSORED)) {
+                        //  TODO: progetti che contengono il campo "sponsored" vanno posti in testa alla lista
+                    }
                     mProjects.add(new Progetto(snapshot.getId(),
                             snapshot.getData().get(FirestoreUtils.KEY_LEADER).toString(),
                             snapshot.getData().get(FirestoreUtils.KEY_TITLE).toString(),

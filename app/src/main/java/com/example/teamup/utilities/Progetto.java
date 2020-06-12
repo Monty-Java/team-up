@@ -18,6 +18,7 @@ public class Progetto {
     private String leader;
     private List<String> teammates;
     private Map<String, Boolean> obiettivi;
+    private boolean sponsored;
 
     public Progetto(String id, String leader, String titolo, String descrizione, List<String> etichette, List<String> teammates, Map<String, Boolean> goalsToAchieve) {
         Log.d(TAG, "Costruttore");
@@ -33,6 +34,8 @@ public class Progetto {
         if (teammates != null) this.teammates.addAll(teammates);
 
         this.obiettivi.putAll(goalsToAchieve);
+
+        sponsored = false;
 
         /*for (String goal : goalsToAchieve) {
             this.obiettivi.put(goal, false);
