@@ -95,7 +95,11 @@ public class ProjectActivity extends AppCompatActivity {
             case R.id.action_details:
                 onDetailsClick();
                 break;
-
+            case R.id.action_sponsor:
+                Intent sponsorIntent = new Intent(this, SponsorProjectActivity.class);
+                sponsorIntent.putExtra("project", progetto.getTitolo());
+                startActivity(sponsorIntent);
+                break;
             default:
                 Log.w(TAG, "onOptionsItemSelected: item non riconosciuto");
         }

@@ -9,13 +9,13 @@ import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
-import com.example.teamup.NotificationViewActivity;
 import com.example.teamup.R;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 public class NotificationUtils extends FirebaseMessagingService {
     public static final String TAG = NotificationUtils.class.getSimpleName();
+
     //  Ottiene il messaggio associato alla notifica ricevuta
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -25,12 +25,8 @@ public class NotificationUtils extends FirebaseMessagingService {
         String clickAction = remoteMessage.getNotification().getClickAction();
         String notificationType = remoteMessage.getData().get("notificationType");
         String sentFrom = remoteMessage.getData().get("sender");
-        String recepient = remoteMessage.getData().get("recepient");
+        String recepient = remoteMessage.getData().get("recipient");
         String project = remoteMessage.getData().get("project");
-
-        Log.d(TAG, remoteMessage.getData().get("sender"));
-        Log.d(TAG, recepient);
-        Log.d(TAG, project);
 
         //  Costruisce la notifica
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, getString(R.string.default_notification_channel_id))
@@ -42,7 +38,7 @@ public class NotificationUtils extends FirebaseMessagingService {
         viewNotificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         viewNotificationIntent.putExtra("type", notificationType);
         viewNotificationIntent.putExtra("sender", sentFrom);
-        viewNotificationIntent.putExtra("recepient", recepient);
+        viewNotificationIntent.putExtra("recipient", recepient);
         viewNotificationIntent.putExtra("project", project);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, viewNotificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);

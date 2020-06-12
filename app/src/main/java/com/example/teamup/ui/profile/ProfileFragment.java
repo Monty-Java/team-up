@@ -44,7 +44,7 @@ public class ProfileFragment extends Fragment {
     private ImageView mProfilePicImageView;
     private TextView mDisplayNameTextView;
     private TextView mEmailTextView;
-    private MaterialButton mViewSkillsButton;
+    private Button mViewSkillsButton;
 
     private List<String> mSkills;
 
