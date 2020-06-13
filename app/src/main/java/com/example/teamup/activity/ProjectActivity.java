@@ -75,7 +75,7 @@ public class ProjectActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        //  TODO: dopo aver sistemato le notifiche per bene, rimettere il minSdk a 24
+        //  TODO BRUNO: dopo aver sistemato le notifiche per bene, rimettere il minSdk a 24
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             readProjectData(intent.getStringExtra(FirestoreUtils.KEY_TITLE));
         }
@@ -233,7 +233,7 @@ public class ProjectActivity extends AppCompatActivity {
      *
      * @param title
      */
-    @RequiresApi(api = Build.VERSION_CODES.N)
+    @RequiresApi(api = Build.VERSION_CODES.N)   //  TODO BRUNO: rimuovere questo dopo
     public void readProjectData(String title) {
         Map<String, Object> data = new HashMap<>();
         Query query = firestoreUtils.getFirestoreInstance()
@@ -326,6 +326,7 @@ public class ProjectActivity extends AppCompatActivity {
                 return false;
             });
 
+            //  TODO: realizzare onItemClickListener analogo per la lista di Teammates, permettendo all'utente di vedere i loro profili personali
             //  Permette all'utente di modificare il valore degli objectives
             //  Possono assumere false o true, true indica che sono completi.
             mObjectivesList.setOnItemClickListener((parent, view, position, id) -> {
@@ -335,8 +336,6 @@ public class ProjectActivity extends AppCompatActivity {
                     if (!progetto.getObiettivi().get(objective)) {
                         progetto.setObiettivoRaggiunto(objective);
                         firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_OBJ, progetto.getObiettivi());
-
-                        //  TODO: aggiornare layout con un feedback visuale corrispondente agli obiettivi completi
                     }
                 }
             });

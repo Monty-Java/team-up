@@ -18,6 +18,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.List;
 
+//  TODO: visualizzare il profilo dell'utente che ha inviato la notifica
+
+//  TODO: BUG - l'Activity si apre soltanto se l'utente clicca sulla notifica mentre l'app è già aperta
+
 public class NotificationViewActivity extends AppCompatActivity {
     private static final String TAG = NotificationViewActivity.class.getSimpleName();
 

@@ -25,6 +25,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
 
+//  TODO: funzionalità per rendere l'e-mail e la foto profilo private
+
 public class ProfileFragment extends Fragment {
 
     private FirestoreUtils firestoreUtils;
@@ -60,6 +62,7 @@ public class ProfileFragment extends Fragment {
         mDisplayNameTextView.setText(firebaseAuthUtils.getCurrentUser().getDisplayName());
         mEmailTextView.setText(firebaseAuthUtils.getCurrentUser().getEmail());
 
+        //  TODO: modificare il dialog in modo da poter aggiungere, rimuovere o modificare le competenze
         mViewSkillsButton.setOnClickListener(view -> {
             Dialog skillsDialog = new Dialog(this.getContext());
             skillsDialog.setContentView(R.layout.profile_skills_dialog);
