@@ -1,17 +1,14 @@
-package com.example.teamup;
+package com.example.teamup.activity;
 
 import android.app.Dialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,6 +19,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.example.teamup.R;
 import com.example.teamup.utilities.FirebaseAuthUtils;
 import com.example.teamup.utilities.FirestoreUtils;
 import com.google.android.material.navigation.NavigationView;
@@ -67,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_projects, R.id.nav_profile, R.id.nav_discover, R.id.nav_settings, R.id.nav_logout)
+                R.id.nav_projects, R.id.nav_profile, R.id.nav_discover, R.id.nav_logout)
                 .setDrawerLayout(drawer)
                 .build();
         navController = Navigation.findNavController(this, R.id.nav_host_fragment);
@@ -181,14 +179,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             case R.id.nav_discover:
                 Log.d(TAG, "onNavigationItemSelected: Discover");
-                navController.navigate(menuItemId);
-                if (mAppBarConfiguration.getDrawerLayout() != null) {
-                    mAppBarConfiguration.getDrawerLayout().closeDrawers();
-                }
-                break;
-
-            case R.id.nav_settings:
-                Toast.makeText(this, "Settings", Toast.LENGTH_LONG).show();
                 navController.navigate(menuItemId);
                 if (mAppBarConfiguration.getDrawerLayout() != null) {
                     mAppBarConfiguration.getDrawerLayout().closeDrawers();

@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.teamup.LoginActivity;
+import com.example.teamup.activity.LoginActivity;
 import com.example.teamup.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;

@@ -19,9 +19,4 @@
         android:title="Project Details"
         app:showAsAction="never" />
 
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="400"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
 </menu>

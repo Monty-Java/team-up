@@ -1,4 +1,4 @@
-package com.example.teamup.ui.projects;
+package com.example.teamup.fragment.projects;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -11,10 +11,9 @@ import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
 
-import com.example.teamup.MainActivity;
-import com.example.teamup.ProjectActivity;
+import com.example.teamup.activity.MainActivity;
+import com.example.teamup.activity.ProjectActivity;
 import com.example.teamup.R;
 import com.example.teamup.utilities.FirestoreUtils;
 import com.google.firebase.auth.FirebaseUser;
@@ -30,7 +29,6 @@ public class ProjectsFragment extends Fragment {
     private static final String TAG = ProjectsFragment.class.getSimpleName();
 
     //  UI
-    private ProjectsViewModel projectsViewModel;
     private List<String> leaderProjectsList;
     private List<String> teammateProjectsList;
 
@@ -42,8 +40,6 @@ public class ProjectsFragment extends Fragment {
         final MainActivity activity = (MainActivity) getActivity();
         firestoreUtils = new FirestoreUtils(activity.firestore);
 
-        projectsViewModel =
-                ViewModelProviders.of(this).get(ProjectsViewModel.class);
         View root = inflater.inflate(R.layout.fragment_projects, container, false);
 
         ListView leaderProjectsListView = root.findViewById(R.id.leaderProjects_listView);

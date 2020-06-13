@@ -11,9 +11,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SponsorProjectActivity"></activity>
+        <activity android:name=".activity.SponsorProjectActivity"></activity>
         <activity
-            android:name=".LoginActivity"
+            android:name=".activity.LoginActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,18 +22,18 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SignupActivity"
+            android:name=".activity.SignupActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".NotificationViewActivity">
+        <activity android:name=".activity.NotificationViewActivity">
             <intent-filter>
                 <action android:name="com.example.teamup.NOTIFICATION" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".ProjectActivity" />
+        <activity android:name=".activity.ProjectActivity" />
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:label="@string/title_activity_profile"
             android:theme="@style/AppTheme.NoActionBar" />
 

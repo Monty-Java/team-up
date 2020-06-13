@@ -14,7 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.teamup.ProjectActivity;
+import com.example.teamup.activity.ProjectActivity;
 import com.example.teamup.R;
 
 import java.util.ArrayList;

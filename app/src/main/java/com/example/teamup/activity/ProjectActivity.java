@@ -1,4 +1,4 @@
-package com.example.teamup;
+package com.example.teamup.activity;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -16,11 +16,13 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.teamup.R;
 import com.example.teamup.utilities.FirebaseAuthUtils;
 import com.example.teamup.utilities.FirestoreUtils;
 import com.example.teamup.utilities.NotificationType;
@@ -32,6 +34,7 @@ import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -102,9 +105,13 @@ public class ProjectActivity extends AppCompatActivity {
                 onDetailsClick();
                 break;
             case R.id.action_sponsor:
-                Intent sponsorIntent = new Intent(this, SponsorProjectActivity.class);
-                sponsorIntent.putExtra("project", progetto.getTitolo());
-                startActivity(sponsorIntent);
+                if (firebaseAuthUtils.getCurrentUser().getDisplayName().equals(progetto.getLeader())) {
+                    Intent sponsorIntent = new Intent(this, SponsorProjectActivity.class);
+                    sponsorIntent.putExtra("project", progetto.getTitolo());
+                    startActivity(sponsorIntent);
+                } else {
+                    Toast.makeText(this, "Only the Leader can sponsor the project.", Toast.LENGTH_LONG).show();
+                }
                 break;
             default:
                 Log.w(TAG, "onOptionsItemSelected: item non riconosciuto");
@@ -252,6 +259,7 @@ public class ProjectActivity extends AppCompatActivity {
                         team,
                         (Map<String, Boolean>) data.get(FirestoreUtils.KEY_OBJ),
                         (boolean) data.get(FirestoreUtils.KEY_SPONSORED));
+
                 displayProject(progetto);
 
             } else
@@ -268,6 +276,14 @@ public class ProjectActivity extends AppCompatActivity {
         Log.d(TAG, "displayProject");
 
         this.setTitle(project.getTitolo());
+
+        //  Calcola il progresso totale del progetto prima di rimuovere la lista di obiettivi completi
+        updateProgress(project);
+
+        //  Rimuove gli obiettivi completi dall'istanza di Progetto (gli obiettivi rimangono memorizzati in Firestore)
+        for (Iterator<Map.Entry<String, Boolean>> entries = project.getObiettivi().entrySet().iterator(); entries.hasNext();) {
+            if (entries.next().getValue()) entries.remove();
+        }
 
         //  Imposta le ListView per visualizzare gli obiettivi e i teammates
         List<String> objectivesList = new ArrayList<>(project.getObiettivi().keySet());
@@ -325,8 +341,6 @@ public class ProjectActivity extends AppCompatActivity {
                 }
             });
         }
-
-        updateProgress(project);
     }
 
     public void updateProgress(Progetto project) {

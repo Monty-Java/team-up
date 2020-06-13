@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="@dimen/activity_horizontal_margin"
-    tools:context=".ui.projects.ProjectsFragment" >
+    tools:context=".fragment.projects.ProjectsFragment" >
 
     <TextView
         android:id="@+id/leader_textView"

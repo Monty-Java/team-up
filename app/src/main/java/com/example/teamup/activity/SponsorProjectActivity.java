@@ -1,4 +1,4 @@
-package com.example.teamup;
+package com.example.teamup.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.anjlab.android.iab.v3.BillingProcessor;
 import com.anjlab.android.iab.v3.TransactionDetails;
+import com.example.teamup.R;
 import com.example.teamup.utilities.FirestoreUtils;
 import com.google.firebase.firestore.FirebaseFirestore;
 

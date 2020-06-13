@@ -1,23 +1,19 @@
-package com.example.teamup;
+package com.example.teamup.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
 
+import com.example.teamup.R;
 import com.example.teamup.utilities.FirebaseAuthUtils;
 import com.example.teamup.utilities.FirestoreUtils;
 import com.example.teamup.utilities.NotificationType;
-import com.example.teamup.utilities.Progetto;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
 import java.util.List;

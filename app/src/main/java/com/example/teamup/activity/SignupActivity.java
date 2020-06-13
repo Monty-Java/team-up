@@ -1,4 +1,4 @@
-package com.example.teamup;
+package com.example.teamup.activity;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.teamup.R;
 import com.example.teamup.utilities.FirebaseAuthUtils;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
