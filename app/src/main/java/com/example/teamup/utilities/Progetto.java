@@ -20,7 +20,7 @@ public class Progetto {
     private Map<String, Boolean> obiettivi;
     private boolean sponsored;
 
-    public Progetto(String id, String leader, String titolo, String descrizione, List<String> etichette, List<String> teammates, Map<String, Boolean> goalsToAchieve) {
+    public Progetto(String id, String leader, String titolo, String descrizione, List<String> etichette, List<String> teammates, Map<String, Boolean> goalsToAchieve, boolean sponsored) {
         Log.d(TAG, "Costruttore");
 
         this.id = id;
@@ -35,7 +35,7 @@ public class Progetto {
 
         this.obiettivi.putAll(goalsToAchieve);
 
-        sponsored = false;
+        this.sponsored = sponsored;
 
         /*for (String goal : goalsToAchieve) {
             this.obiettivi.put(goal, false);
@@ -140,4 +140,6 @@ public class Progetto {
     public double numeroObiettivi() { return obiettivi.size(); }
 
     public boolean hasTeammates() { return !teammates.isEmpty(); }
+
+    public boolean isSponsored() { return sponsored; }
 }

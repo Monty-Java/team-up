@@ -23,6 +23,8 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -76,14 +78,34 @@ public class DiscoverFragment extends Fragment {
                     //   Crea una lista di Progetti corrispondenti alla ListView dei titoli di progetto
                     if (snapshot.contains(FirestoreUtils.KEY_SPONSORED)) {
                         //  TODO: progetti che contengono il campo "sponsored" vanno posti in testa alla lista
+                        mProjects.add(new Progetto(snapshot.getId(),
+                                snapshot.getData().get(FirestoreUtils.KEY_LEADER).toString(),
+                                snapshot.getData().get(FirestoreUtils.KEY_TITLE).toString(),
+                                snapshot.getData().get(FirestoreUtils.KEY_DESC).toString(),
+                                (List<String>) snapshot.getData().get(FirestoreUtils.KEY_TAGS),
+                                (List<String>) snapshot.getData().get(FirestoreUtils.KEY_TEAMMATES),
+                                (Map<String, Boolean>) snapshot.getData().get(FirestoreUtils.KEY_OBJ),
+                                true));
+                    } else {
+                        mProjects.add(new Progetto(snapshot.getId(),
+                                snapshot.getData().get(FirestoreUtils.KEY_LEADER).toString(),
+                                snapshot.getData().get(FirestoreUtils.KEY_TITLE).toString(),
+                                snapshot.getData().get(FirestoreUtils.KEY_DESC).toString(),
+                                (List<String>) snapshot.getData().get(FirestoreUtils.KEY_TAGS),
+                                (List<String>) snapshot.getData().get(FirestoreUtils.KEY_TEAMMATES),
+                                (Map<String, Boolean>) snapshot.getData().get(FirestoreUtils.KEY_OBJ),
+                                false));
                     }
-                    mProjects.add(new Progetto(snapshot.getId(),
-                            snapshot.getData().get(FirestoreUtils.KEY_LEADER).toString(),
-                            snapshot.getData().get(FirestoreUtils.KEY_TITLE).toString(),
-                            snapshot.getData().get(FirestoreUtils.KEY_DESC).toString(),
-                            (List<String>) snapshot.getData().get(FirestoreUtils.KEY_TAGS),
-                            (List<String>) snapshot.getData().get(FirestoreUtils.KEY_TEAMMATES),
-                            (Map<String, Boolean>) snapshot.getData().get(FirestoreUtils.KEY_OBJ)));
+
+
+                    //  Riordina la lista ponendo i progetti sponsorizzati in testa
+                    int j = 0;
+                    for (int i = 0; i < mProjects.size(); i++) {
+                        if (mProjects.get(i).isSponsored()) {
+                            Collections.swap(mProjects, i, j);
+                            j++;
+                        }
+                    }
                 }
 
                 LinearLayoutManager layoutManager = new LinearLayoutManager(parentActivity, RecyclerView.VERTICAL, false);

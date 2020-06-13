@@ -3,6 +3,7 @@ package com.example.teamup;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -17,6 +18,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.teamup.utilities.FirebaseAuthUtils;
@@ -69,7 +71,11 @@ public class ProjectActivity extends AppCompatActivity {
         if (firebaseAuthUtils.getCurrentUser() == null) mFab.hide();
 
         Intent intent = getIntent();
-        readProjectData(intent.getStringExtra(FirestoreUtils.KEY_TITLE));
+
+        //  TODO: dopo aver sistemato le notifiche per bene, rimettere il minSdk a 24
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            readProjectData(intent.getStringExtra(FirestoreUtils.KEY_TITLE));
+        }
     }
 
     @Override
@@ -204,13 +210,6 @@ public class ProjectActivity extends AppCompatActivity {
             teammateRequestDialogBuilder.setPositiveButton("OK", (dialog, which) -> {
 
                 firestoreUtils.storeNotification(progetto.getTitolo(), progetto.getLeader(), firebaseAuthUtils.getCurrentUser().getDisplayName(), NotificationType.TEAMMATE_REQUEST);
-
-                //  Questo codice andrà spostato nella schermata
-                //  che il leader visualizzerà quando riceverà la richiesta
-                /*
-                progetto.addTeammate(firebaseAuthUtils.getCurrentUser().getDisplayName());
-                firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_TEAMMATES, progetto.getTeammates());
-                 */
             });
             teammateRequestDialogBuilder.setNegativeButton("Cancel", (dialog, which) -> {
                 dialog.cancel();
@@ -227,6 +226,7 @@ public class ProjectActivity extends AppCompatActivity {
      *
      * @param title
      */
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public void readProjectData(String title) {
         Map<String, Object> data = new HashMap<>();
         Query query = firestoreUtils.getFirestoreInstance()
@@ -237,11 +237,11 @@ public class ProjectActivity extends AppCompatActivity {
             if (task.isSuccessful()) {
                 data.putAll(task.getResult().getDocuments().get(0).getData());
                 data.put(KEY_ID, task.getResult().getDocuments().get(0).getId());
+                data.putIfAbsent(FirestoreUtils.KEY_SPONSORED, false);
 
                 List<String> team = new ArrayList<>();
                 if (data.get(FirestoreUtils.KEY_TEAMMATES) != null)
                     team.addAll((List<String>) data.get(FirestoreUtils.KEY_TEAMMATES));
-
 
                 progetto = new Progetto(
                         data.get(KEY_ID).toString(),
@@ -250,7 +250,8 @@ public class ProjectActivity extends AppCompatActivity {
                         data.get(FirestoreUtils.KEY_DESC).toString(),
                         (List<String>) data.get(FirestoreUtils.KEY_TAGS),
                         team,
-                        (Map<String, Boolean>) data.get(FirestoreUtils.KEY_OBJ));
+                        (Map<String, Boolean>) data.get(FirestoreUtils.KEY_OBJ),
+                        (boolean) data.get(FirestoreUtils.KEY_SPONSORED));
                 displayProject(progetto);
 
             } else
