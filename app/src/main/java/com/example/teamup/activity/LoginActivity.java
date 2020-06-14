@@ -71,8 +71,6 @@ public class LoginActivity extends AppCompatActivity {
         String email = _emailText.getText().toString();
         String password = _passwordText.getText().toString();
 
-        // TODO: Implement your own authentication logic here.
-
         firebaseAuthUtils.signIn(email, password, () -> {
             progressDialog.dismiss();
             onLoginSuccess();

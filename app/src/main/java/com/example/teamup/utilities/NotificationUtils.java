@@ -3,6 +3,7 @@ package com.example.teamup.utilities;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.util.Log;
@@ -10,6 +11,7 @@ import android.util.Log;
 import androidx.core.app.NotificationCompat;
 
 import com.example.teamup.R;
+import com.example.teamup.activity.NotificationViewActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -20,28 +22,30 @@ public class NotificationUtils extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
+
+        Context context = getApplicationContext();
+
         String messageTitle = remoteMessage.getNotification().getTitle();
         String messageBody = remoteMessage.getNotification().getBody();
-        String clickAction = remoteMessage.getNotification().getClickAction();
         String notificationType = remoteMessage.getData().get("notificationType");
         String sentFrom = remoteMessage.getData().get("sender");
-        String recepient = remoteMessage.getData().get("recipient");
+        String recipient = remoteMessage.getData().get("recipient");
         String project = remoteMessage.getData().get("project");
 
         //  Costruisce la notifica
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, getString(R.string.default_notification_channel_id))
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, getString(R.string.default_notification_channel_id))
                 .setSmallIcon(R.drawable.team_up_logo)
                 .setContentTitle(messageTitle)
                 .setContentText(messageBody);
 
-        Intent viewNotificationIntent = new Intent(clickAction);
+        Intent viewNotificationIntent = new Intent(context, NotificationViewActivity.class);
         viewNotificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         viewNotificationIntent.putExtra("type", notificationType);
         viewNotificationIntent.putExtra("sender", sentFrom);
-        viewNotificationIntent.putExtra("recipient", recepient);
+        viewNotificationIntent.putExtra("recipient", recipient);
         viewNotificationIntent.putExtra("project", project);
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, viewNotificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, viewNotificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         notificationBuilder.setContentIntent(pendingIntent);
 
         int notificationId = (int) System.currentTimeMillis();

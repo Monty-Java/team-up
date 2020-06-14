@@ -110,6 +110,9 @@ public class FirebaseAuthUtils {
         firebaseAuth.signInWithEmailAndPassword(email, pass)
                 .addOnCompleteListener(activity, task -> {
             if (task.isSuccessful()) {
+
+                obtainToken();
+
                 // On complete call either onLoginSuccess or onLoginFailed
                 new android.os.Handler().post(
                         onLoginSuccessful::run);
