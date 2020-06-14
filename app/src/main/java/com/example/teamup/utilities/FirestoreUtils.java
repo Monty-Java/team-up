@@ -18,8 +18,8 @@ public class FirestoreUtils {
     private static final String TAG = FirestoreUtils.class.getSimpleName();
     //  Costanti usate come chiavi per leggere e scrivere dati Firestore
     public static final String KEY_USERS = "users";
-    private static final String KEY_NAME = "display_name";
-    private static final String KEY_SKILLS = "skills";
+    public static final String KEY_NAME = "display_name";
+    public static final String KEY_SKILLS = "skills";
     public static final String KEY_NOTIFICATIONS = "notifications";
 
     public static final String KEY_PROJECTS = "projects";

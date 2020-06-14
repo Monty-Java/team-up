@@ -7,21 +7,23 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import com.example.teamup.R;
 import com.example.teamup.utilities.FirebaseAuthUtils;
 import com.example.teamup.utilities.FirestoreUtils;
 import com.example.teamup.utilities.NotificationType;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
-
-//  TODO: visualizzare il profilo dell'utente che ha inviato la notifica
-
-//  TODO: BUG - l'Activity si apre soltanto se l'utente clicca sulla notifica mentre l'app è già aperta
 
 public class NotificationViewActivity extends AppCompatActivity {
     private static final String TAG = NotificationViewActivity.class.getSimpleName();
@@ -29,10 +31,20 @@ public class NotificationViewActivity extends AppCompatActivity {
     FirestoreUtils firestoreUtils;
     FirebaseAuthUtils firebaseAuthUtils;
 
+    //  UI
+    private ImageView mProfileImageView;
+    private TextView mNameTextView;
+    private ListView mSkillsListView;
+    private List<String> mSkills;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notification_view);
+
+        mProfileImageView = findViewById(R.id.profile_imageView);
+        mNameTextView = findViewById(R.id.nameTextView);
+        mSkillsListView = findViewById(R.id.skills_ListView);
 
         firestoreUtils = new FirestoreUtils(FirebaseFirestore.getInstance());
         firebaseAuthUtils = new FirebaseAuthUtils(FirebaseAuth.getInstance(), firestoreUtils.getFirestoreInstance(), this);
@@ -40,6 +52,8 @@ public class NotificationViewActivity extends AppCompatActivity {
         NotificationType notificationType = NotificationType.valueOf(getIntent().getStringExtra("type"));
         String sendResponseTo = getIntent().getStringExtra("sender");
         String project = getIntent().getStringExtra("project");
+
+        mNameTextView.setText(sendResponseTo);
 
         Log.d(TAG, sendResponseTo);
         Log.d(TAG, project);
@@ -53,9 +67,23 @@ public class NotificationViewActivity extends AppCompatActivity {
             //  Visualizza un'anteprima del profilo dell'utente che ha fatto la richiesta,
             //  due pulsanti per accettare o rifiutare
             //  Inviare la notifica appropriata
+            firestoreUtils.getFirestoreInstance().collection(FirestoreUtils.KEY_USERS)
+                    .whereEqualTo(FirestoreUtils.KEY_NAME, sendResponseTo)
+                    .get().addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            mSkills = (List<String>) task.getResult().getDocuments().get(0).getData().get(FirestoreUtils.KEY_SKILLS);
+
+                            ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                                    this.getApplicationContext(),
+                                    android.R.layout.simple_list_item_1,
+                                    mSkills
+                            );
+
+                            mSkillsListView.setAdapter(adapter);
+                        }
+            });
 
             negativeButton.setVisibility(View.VISIBLE);
-
 
             positiveButton.setText("Accept");
             negativeButton.setText("Reject");
