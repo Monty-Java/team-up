@@ -39,7 +39,7 @@ public class NotificationUtils extends FirebaseMessagingService {
                 .setContentText(messageBody);
 
         Intent viewNotificationIntent = new Intent(context, NotificationViewActivity.class);
-        viewNotificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        viewNotificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         viewNotificationIntent.putExtra("type", notificationType);
         viewNotificationIntent.putExtra("sender", sentFrom);
         viewNotificationIntent.putExtra("recipient", recipient);

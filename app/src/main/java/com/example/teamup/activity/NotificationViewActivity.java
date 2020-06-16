@@ -38,6 +38,12 @@ public class NotificationViewActivity extends AppCompatActivity {
     private List<String> mSkills;
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notification_view);
@@ -49,7 +55,11 @@ public class NotificationViewActivity extends AppCompatActivity {
         firestoreUtils = new FirestoreUtils(FirebaseFirestore.getInstance());
         firebaseAuthUtils = new FirebaseAuthUtils(FirebaseAuth.getInstance(), firestoreUtils.getFirestoreInstance(), this);
 
-        NotificationType notificationType = NotificationType.valueOf(getIntent().getStringExtra("type"));
+        String type = getIntent().getStringExtra("type");
+
+        Log.d(TAG, "TYPE: " + type);
+
+        NotificationType notificationType = NotificationType.valueOf(type);
         String sendResponseTo = getIntent().getStringExtra("sender");
         String project = getIntent().getStringExtra("project");
 
