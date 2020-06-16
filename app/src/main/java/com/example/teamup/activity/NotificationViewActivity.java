@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.teamup.R;
 import com.example.teamup.utilities.FirebaseAuthUtils;
@@ -99,8 +100,6 @@ public class NotificationViewActivity extends AppCompatActivity {
             negativeButton.setText("Reject");
 
             positiveButton.setOnClickListener(view -> {
-                Log.d(TAG, "DATA: " + project + ' ' + sendResponseTo + ' ' + firebaseAuthUtils.getCurrentUser().getDisplayName());
-
                 //  Uno schifo :(
                 firestoreUtils.getFirestoreInstance().collection(FirestoreUtils.KEY_PROJECTS).whereEqualTo(FirestoreUtils.KEY_TITLE, project)
                         .get().addOnCompleteListener(task -> {
@@ -109,10 +108,13 @@ public class NotificationViewActivity extends AppCompatActivity {
                                 List<String> team = new ArrayList<>();
                                 if (task.getResult().getDocuments().get(0).get(FirestoreUtils.KEY_TEAMMATES) != null)
                                     team.addAll((List<String>) task.getResult().getDocuments().get(0).get(FirestoreUtils.KEY_TEAMMATES));
-                                team.add(sendResponseTo);
-                                firestoreUtils.updateProjectData(id, FirestoreUtils.KEY_TEAMMATES, team);
 
-                                firestoreUtils.storeNotification(project, sendResponseTo, firebaseAuthUtils.getCurrentUser().getDisplayName(), NotificationType.LEADER_ACCEPT);
+                                //  Verifica che l'utente non sia già teammate del progetto per evitare di inserirlo più di una volta
+                                if (!team.contains(sendResponseTo)) {
+                                    team.add(sendResponseTo);
+                                    firestoreUtils.updateProjectData(id, FirestoreUtils.KEY_TEAMMATES, team);
+                                    firestoreUtils.storeNotification(project, sendResponseTo, firebaseAuthUtils.getCurrentUser().getDisplayName(), NotificationType.LEADER_ACCEPT);
+                                } else Toast.makeText(this, sendResponseTo + " is already a teammate on this project.", Toast.LENGTH_LONG).show();
                             } else Log.d(TAG, "Error responding or updating project");
                 });
 
