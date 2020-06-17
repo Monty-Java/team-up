@@ -2,6 +2,7 @@ package com.example.teamup.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -40,6 +41,8 @@ public class NotificationViewActivity extends AppCompatActivity {
 
     @Override
     protected void onNewIntent(Intent intent) {
+        Log.d(TAG, "onNewIntent");
+
         super.onNewIntent(intent);
         setIntent(intent);
     }
@@ -49,6 +52,8 @@ public class NotificationViewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notification_view);
 
+        Log.d(TAG, "onCreate");
+
         mProfileImageView = findViewById(R.id.profile_imageView);
         mNameTextView = findViewById(R.id.nameTextView);
         mSkillsListView = findViewById(R.id.skills_ListView);
@@ -56,7 +61,8 @@ public class NotificationViewActivity extends AppCompatActivity {
         firestoreUtils = new FirestoreUtils(FirebaseFirestore.getInstance());
         firebaseAuthUtils = new FirebaseAuthUtils(FirebaseAuth.getInstance(), firestoreUtils.getFirestoreInstance(), this);
 
-        String type = getIntent().getStringExtra("type");
+        Intent intent = getIntent();
+        String type = intent.getStringExtra("type");
 
         Log.d(TAG, "TYPE: " + type);
 
