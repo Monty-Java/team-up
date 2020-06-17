@@ -51,7 +51,7 @@ public class NotificationViewActivity extends AppCompatActivity {
         firestoreUtils = new FirestoreUtils(FirebaseFirestore.getInstance());
         firebaseAuthUtils = new FirebaseAuthUtils(FirebaseAuth.getInstance(), firestoreUtils.getFirestoreInstance(), this);
 
-        //  Rimuove il documento notifica da Firestore
+        //  Rimuove il documento relativo alla notifica corrente da Firestore
         firestoreUtils.getFirestoreInstance().collection(FirestoreUtils.KEY_USERS)
                 .whereEqualTo(FirestoreUtils.KEY_NAME, getIntent().getStringExtra("recipient"))
                 .get().addOnCompleteListener(task -> {

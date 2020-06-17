@@ -21,6 +21,7 @@ public class NotificationUtils extends FirebaseMessagingService {
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
 
+        //  Ottiene i dati memorizzati nel payload della notifica
         String notificationType = remoteMessage.getData().get("notificationType");
         String sentFrom = remoteMessage.getData().get("sender");
         String recipient = remoteMessage.getData().get("recipient");
@@ -49,6 +50,7 @@ public class NotificationUtils extends FirebaseMessagingService {
                     .setContentTitle("Notification")
                     .setContentText("Notification body.");
         }
+        notificationBuilder.setAutoCancel(true);
 
         //  Costruisce l'Intent che permette di visualizzare la notifica
         Intent viewNotificationIntent = new Intent(this, NotificationViewActivity.class);
