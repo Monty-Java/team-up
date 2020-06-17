@@ -3,16 +3,12 @@ package com.example.teamup.utilities;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
 import com.example.teamup.R;
-import com.example.teamup.activity.MainActivity;
 import com.example.teamup.activity.NotificationViewActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -25,20 +21,36 @@ public class NotificationUtils extends FirebaseMessagingService {
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
 
-        //String clickAction = remoteMessage.getNotification().getClickAction();  //  Non viene mai usato ma forse per qualche motivo arcano fa funzionare le notifiche?
-        //String messageTitle = remoteMessage.getNotification().getTitle();
-        //String messageBody = remoteMessage.getNotification().getBody();
         String notificationType = remoteMessage.getData().get("notificationType");
         String sentFrom = remoteMessage.getData().get("sender");
         String recipient = remoteMessage.getData().get("recipient");
         String project = remoteMessage.getData().get("project");
 
-        //  Costruisce la notifica
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, getString(R.string.default_notification_channel_id))
-                .setSmallIcon(R.drawable.team_up_logo)
-                .setContentTitle("messageTitle")
-                .setContentText("messageBody");
+        //  Costruisce una notifica in base a notificationType
+        NotificationCompat.Builder notificationBuilder;
+        if (NotificationType.valueOf(notificationType) == NotificationType.TEAMMATE_REQUEST) {
+            notificationBuilder = new NotificationCompat.Builder(this, getString(R.string.default_notification_channel_id))
+                    .setSmallIcon(R.drawable.team_up_logo)
+                    .setContentTitle("Teammate Request")
+                    .setContentText(sentFrom + " has requested to join your team on " + project);
+        } else if (NotificationType.valueOf(notificationType) == NotificationType.LEADER_ACCEPT) {
+            notificationBuilder = new NotificationCompat.Builder(this, getString(R.string.default_notification_channel_id))
+                    .setSmallIcon(R.drawable.team_up_logo)
+                    .setContentTitle("Teammate Request Accepted")
+                    .setContentText(sentFrom + " has accepted your request to join the team on " + project);
+        } else if (NotificationType.valueOf(notificationType) == NotificationType.LEADER_REJECT) {
+            notificationBuilder = new NotificationCompat.Builder(this, getString(R.string.default_notification_channel_id))
+                    .setSmallIcon(R.drawable.team_up_logo)
+                    .setContentTitle("Teammate Request Rejected")
+                    .setContentText(sentFrom + " has rejected your request to join the team on " + project);
+        } else {
+            notificationBuilder = new NotificationCompat.Builder(this, getString(R.string.default_notification_channel_id))
+                    .setSmallIcon(R.drawable.team_up_logo)
+                    .setContentTitle("Notification")
+                    .setContentText("Notification body.");
+        }
 
+        //  Costruisce l'Intent che permette di visualizzare la notifica
         Intent viewNotificationIntent = new Intent(this, NotificationViewActivity.class);
         viewNotificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         viewNotificationIntent.putExtra("type", notificationType);
@@ -46,7 +58,7 @@ public class NotificationUtils extends FirebaseMessagingService {
         viewNotificationIntent.putExtra("recipient", recipient);
         viewNotificationIntent.putExtra("project", project);
 
-        int notificationId = (int) System.currentTimeMillis();
+        int notificationId = (int) System.currentTimeMillis();  //  Intero univoco per identificare la notifica
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, viewNotificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         notificationBuilder.setContentIntent(pendingIntent);
@@ -63,8 +75,6 @@ public class NotificationUtils extends FirebaseMessagingService {
 
         assert notificationManager != null;
         notificationManager.notify(notificationId, notificationBuilder.build());
-
-        Log.d(TAG, "Notification received");
     }
 
     @Override

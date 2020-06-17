@@ -1,9 +1,5 @@
 package com.example.teamup.activity;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,17 +7,17 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.teamup.R;
 import com.example.teamup.utilities.FirebaseAuthUtils;
 import com.example.teamup.utilities.FirestoreUtils;
 import com.example.teamup.utilities.NotificationType;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -52,35 +48,42 @@ public class NotificationViewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notification_view);
 
-        Log.d(TAG, "onCreate");
+        firestoreUtils = new FirestoreUtils(FirebaseFirestore.getInstance());
+        firebaseAuthUtils = new FirebaseAuthUtils(FirebaseAuth.getInstance(), firestoreUtils.getFirestoreInstance(), this);
+
+        //  Rimuove il documento notifica da Firestore
+        firestoreUtils.getFirestoreInstance().collection(FirestoreUtils.KEY_USERS)
+                .whereEqualTo(FirestoreUtils.KEY_NAME, getIntent().getStringExtra("recipient"))
+                .get().addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        task.getResult().getDocuments().get(0).getReference().collection(FirestoreUtils.KEY_NOTIFICATIONS)
+                                .whereEqualTo("project", getIntent().getStringExtra("project"))
+                                .get().addOnCompleteListener(t -> {
+                                    if (t.isSuccessful()) {
+                                        t.getResult().getDocuments().get(0).getReference().delete().addOnCompleteListener(remove -> {
+                                            if (remove.isSuccessful()) Log.d(TAG, "Notification received and removed from Firestore");
+                                        });
+                                    }
+                        });
+                    }
+        });
 
         mProfileImageView = findViewById(R.id.profile_imageView);
         mNameTextView = findViewById(R.id.nameTextView);
         mSkillsListView = findViewById(R.id.skills_ListView);
 
-        firestoreUtils = new FirestoreUtils(FirebaseFirestore.getInstance());
-        firebaseAuthUtils = new FirebaseAuthUtils(FirebaseAuth.getInstance(), firestoreUtils.getFirestoreInstance(), this);
+        Log.d(TAG, "Notification: " + getIntent().getStringExtra("type"));
 
-        Intent intent = getIntent();
-        String type = intent.getStringExtra("type");
-
-        Log.d(TAG, "TYPE: " + type);
-
-        NotificationType notificationType = NotificationType.valueOf(type);
+        NotificationType notificationType = NotificationType.valueOf(getIntent().getStringExtra("type"));
         String sendResponseTo = getIntent().getStringExtra("sender");
         String project = getIntent().getStringExtra("project");
 
         mNameTextView.setText(sendResponseTo);
 
-        Log.d(TAG, sendResponseTo);
-        Log.d(TAG, project);
-
         Button positiveButton = findViewById(R.id.positiveButton);
-
         Button negativeButton = findViewById(R.id.negativeButton);
 
         if (notificationType.equals(NotificationType.TEAMMATE_REQUEST)) {
-
             //  Visualizza un'anteprima del profilo dell'utente che ha fatto la richiesta,
             //  due pulsanti per accettare o rifiutare
             //  Inviare la notifica appropriata
