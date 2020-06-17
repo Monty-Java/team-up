@@ -25,9 +25,9 @@ public class NotificationUtils extends FirebaseMessagingService {
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
 
-        String clickAction = remoteMessage.getNotification().getClickAction();  //  Non viene mai usato ma forse per qualche motivo arcano fa funzionare le notifiche?
-        String messageTitle = remoteMessage.getNotification().getTitle();
-        String messageBody = remoteMessage.getNotification().getBody();
+        //String clickAction = remoteMessage.getNotification().getClickAction();  //  Non viene mai usato ma forse per qualche motivo arcano fa funzionare le notifiche?
+        //String messageTitle = remoteMessage.getNotification().getTitle();
+        //String messageBody = remoteMessage.getNotification().getBody();
         String notificationType = remoteMessage.getData().get("notificationType");
         String sentFrom = remoteMessage.getData().get("sender");
         String recipient = remoteMessage.getData().get("recipient");
@@ -36,8 +36,8 @@ public class NotificationUtils extends FirebaseMessagingService {
         //  Costruisce la notifica
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, getString(R.string.default_notification_channel_id))
                 .setSmallIcon(R.drawable.team_up_logo)
-                .setContentTitle(messageTitle)
-                .setContentText(messageBody);
+                .setContentTitle("messageTitle")
+                .setContentText("messageBody");
 
         Intent viewNotificationIntent = new Intent(this, NotificationViewActivity.class);
         viewNotificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
