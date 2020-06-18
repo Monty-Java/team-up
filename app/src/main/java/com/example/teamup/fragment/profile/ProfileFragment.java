@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.example.teamup.R;
 import com.example.teamup.utilities.FirebaseAuthUtils;
 import com.example.teamup.utilities.FirestoreUtils;
@@ -36,7 +37,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;
@@ -78,21 +78,32 @@ public class ProfileFragment extends Fragment {
         mEmailTextView = layout.findViewById(R.id.email_textView);
         mViewSkillsButton = layout.findViewById(R.id.viewSkills_button);
 
+        FirebaseUser firebaseUser = firebaseAuthUtils.getCurrentUser();
+
         firestoreUtils.getFirestoreInstance().collection(FirestoreUtils.KEY_USERS)
                 .get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 for (DocumentSnapshot snapshot : task.getResult()) {
-                    if (snapshot.getReference().getId().equals(firebaseAuthUtils.getCurrentUser().getEmail())) {
-                        mUser = new Utente(firebaseAuthUtils.getCurrentUser().getDisplayName(),
-                                firebaseAuthUtils.getCurrentUser().getEmail(),
+                    if (snapshot.getReference().getId().equals(firebaseUser.getEmail())) {
+                        mUser = new Utente(
+                                firebaseUser.getPhotoUrl(),
+                                firebaseUser.getDisplayName(),
+                                firebaseUser.getEmail(),
                                 (List<String>) snapshot.getData().get(FirestoreUtils.KEY_SKILLS));
                         break;
                     }
                 }
 
-                //  TODO: implementare funzionalità per mettere foto profilo
-                mProfilePicImageView.setImageResource(R.drawable.ic_launcher_foreground);
                 mProfilePicImageView.setOnClickListener(this::onProfileImageClick);
+                if (mUser.getProfileImageUri() != null) {
+                    Glide.with(this.getContext())
+                            .load(mUser.getProfileImageUri())
+                            .into(mProfilePicImageView);
+                } else {
+                    Glide.with(this.getContext())
+                            .load(R.drawable.default_profile_image)
+                            .into(mProfilePicImageView);
+                }
 
                 //  Ottiene i dati dell'utente da Firestore e li popola
                 mDisplayNameTextView.setText(mUser.getDisplayName());
@@ -104,7 +115,7 @@ public class ProfileFragment extends Fragment {
                     ListView skillsListView = skillsDialog.findViewById(R.id.skillsListView);
 
 
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(
                             this.getContext(),
                             android.R.layout.simple_list_item_1,
                             mUser.getComptetenze()
@@ -162,12 +173,6 @@ public class ProfileFragment extends Fragment {
         });
 
         return root;
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
     }
 
     private void onProfileImageClick(View view) {
