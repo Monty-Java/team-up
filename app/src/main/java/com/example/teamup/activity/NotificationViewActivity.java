@@ -17,6 +17,7 @@ import com.example.teamup.R;
 import com.example.teamup.utilities.FirebaseAuthUtils;
 import com.example.teamup.utilities.FirestoreUtils;
 import com.example.teamup.utilities.NotificationType;
+import com.example.teamup.utilities.NotificationUtils;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -38,7 +39,6 @@ public class NotificationViewActivity extends AppCompatActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         Log.d(TAG, "onNewIntent");
-
         super.onNewIntent(intent);
         setIntent(intent);
     }
@@ -48,16 +48,18 @@ public class NotificationViewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notification_view);
 
+        Log.d(TAG, "onCreate");
+
         firestoreUtils = new FirestoreUtils(FirebaseFirestore.getInstance());
         firebaseAuthUtils = new FirebaseAuthUtils(FirebaseAuth.getInstance(), firestoreUtils.getFirestoreInstance(), this);
 
         //  Rimuove il documento relativo alla notifica corrente da Firestore
         firestoreUtils.getFirestoreInstance().collection(FirestoreUtils.KEY_USERS)
-                .whereEqualTo(FirestoreUtils.KEY_NAME, getIntent().getStringExtra("recipient"))
+                .whereEqualTo(FirestoreUtils.KEY_NAME, getIntent().getStringExtra(NotificationUtils.RECIPIENT))
                 .get().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         task.getResult().getDocuments().get(0).getReference().collection(FirestoreUtils.KEY_NOTIFICATIONS)
-                                .whereEqualTo("project", getIntent().getStringExtra("project"))
+                                .whereEqualTo(NotificationUtils.PROJECT, getIntent().getStringExtra(NotificationUtils.PROJECT))
                                 .get().addOnCompleteListener(t -> {
                                     if (t.isSuccessful()) {
                                         t.getResult().getDocuments().get(0).getReference().delete().addOnCompleteListener(remove -> {
@@ -72,11 +74,9 @@ public class NotificationViewActivity extends AppCompatActivity {
         mNameTextView = findViewById(R.id.nameTextView);
         mSkillsListView = findViewById(R.id.skills_ListView);
 
-        Log.d(TAG, "Notification: " + getIntent().getStringExtra("type"));
-
-        NotificationType notificationType = NotificationType.valueOf(getIntent().getStringExtra("type"));
-        String sendResponseTo = getIntent().getStringExtra("sender");
-        String project = getIntent().getStringExtra("project");
+        NotificationType notificationType = NotificationType.valueOf(getIntent().getStringExtra(NotificationUtils.TYPE));
+        String sendResponseTo = getIntent().getStringExtra(NotificationUtils.SENDER);
+        String project = getIntent().getStringExtra(NotificationUtils.PROJECT);
 
         mNameTextView.setText(sendResponseTo);
 
@@ -91,6 +91,9 @@ public class NotificationViewActivity extends AppCompatActivity {
                     .whereEqualTo(FirestoreUtils.KEY_NAME, sendResponseTo)
                     .get().addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
+
+                            //  TODO: istanziare oggetto Utente qui
+
                             mSkills = (List<String>) task.getResult().getDocuments().get(0).getData().get(FirestoreUtils.KEY_SKILLS);
 
                             ArrayAdapter<String> adapter = new ArrayAdapter<String>(
@@ -127,28 +130,22 @@ public class NotificationViewActivity extends AppCompatActivity {
                             } else Log.d(TAG, "Error responding or updating project");
                 });
 
-                Intent homeIntent = new Intent(this, MainActivity.class);
-                startActivity(homeIntent);
-                finish();
+                onNotificationAcknowledged(notificationType, project);
             });
 
             negativeButton.setOnClickListener(view -> {
                 firestoreUtils.storeNotification(project, sendResponseTo, firebaseAuthUtils.getCurrentUser().getDisplayName(), NotificationType.LEADER_REJECT);
-
-                //  TODO: REFACTOR
-                Intent homeIntent = new Intent(this, MainActivity.class);
-                startActivity(homeIntent);
-                finish();
+                onNotificationAcknowledged(notificationType, project);
             });
 
         } else if (notificationType.equals(NotificationType.LEADER_ACCEPT)) {
             negativeButton.setVisibility(View.INVISIBLE);
 
+            //  TODO: nascondi Skills TextView, visualizzare un messaggio che si congratula con l'utente per essere stato accettato
+
             //  Intent che apre ProjectActivity col progetto per il quale si è fatta la richiesta
             positiveButton.setOnClickListener(view -> {
-                Intent viewProjectIntent = new Intent(this, ProjectActivity.class);
-                viewProjectIntent.putExtra(FirestoreUtils.KEY_TITLE, project);
-                startActivity(viewProjectIntent);
+                onNotificationAcknowledged(notificationType, project);
             });
             Log.d(TAG, "Request Accepted");
         } else if (notificationType.equals(NotificationType.LEADER_REJECT)) {
@@ -156,10 +153,26 @@ public class NotificationViewActivity extends AppCompatActivity {
             //  Messaggio per indicare che il leader ha rifiutato la richiesta
             Log.d(TAG, "Request Rejected");
 
+            //  TODO: nascondi Skills TextView, visualizzare un messaggio che  informa l'utente che la richiesta è stata rifiutata
+
             positiveButton.setOnClickListener(view -> {
-                Intent homeIntent = new Intent(this, MainActivity.class);
-                startActivity(homeIntent);
+                onNotificationAcknowledged(notificationType, project);
             });
         }
+    }
+
+    //  Se la notifica equivale a LEADER_ACCEPT, porta l'utente
+    //  alla schermata del progetto per il quale è appena diventato teammate,
+    //  altrimenti riporta l'utente alla schermata principale.
+    private void onNotificationAcknowledged(NotificationType response, String project) {
+        if (response == NotificationType.TEAMMATE_REQUEST || response == NotificationType.LEADER_REJECT) {
+            Intent homeIntent = new Intent(this, MainActivity.class);
+            startActivity(homeIntent);
+        } else if (response == NotificationType.LEADER_ACCEPT) {
+            Intent viewProjectIntent = new Intent(this, ProjectActivity.class);
+            viewProjectIntent.putExtra(FirestoreUtils.KEY_TITLE, project);
+            startActivity(viewProjectIntent);
+        }
+        finish();
     }
 }

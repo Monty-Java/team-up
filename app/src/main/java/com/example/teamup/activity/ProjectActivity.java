@@ -111,6 +111,32 @@ public class ProjectActivity extends AppCompatActivity {
                     Toast.makeText(this, "Only the Leader can sponsor the project.", Toast.LENGTH_LONG).show();
                 }
                 break;
+            case R.id.action_leave:
+                if (!firebaseAuthUtils.getCurrentUser().getDisplayName().equals(progetto.getLeader()) &&
+                    progetto.getTeammates().contains(firebaseAuthUtils.getCurrentUser().getDisplayName())) {
+                    AlertDialog.Builder leaveProjectDialogBuilder = new AlertDialog.Builder(this);
+                    leaveProjectDialogBuilder.setTitle("Leave Project");
+                    leaveProjectDialogBuilder.setMessage("Are you sure you want to leave the team on project " +
+                            progetto.getTitolo() + "? This action cannot be undone (although you can always request to rejoin later).");
+
+                    leaveProjectDialogBuilder.setPositiveButton("OK", ((dialog, which) -> {
+                        progetto.removeTeammate(firebaseAuthUtils.getCurrentUser().getDisplayName());
+                        firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_TEAMMATES, progetto.getTeammates());
+                        dialog.dismiss();
+
+                        Intent homeIntent = new Intent(this, MainActivity.class);
+                        startActivity(homeIntent);
+                        finish();
+                    }));
+
+                    leaveProjectDialogBuilder.setNegativeButton("Cancel", (((dialog, which) -> {
+                        dialog.dismiss();
+                    })));
+
+                    AlertDialog leaveTeamDialog = leaveProjectDialogBuilder.create();
+                    leaveTeamDialog.show();
+                }
+                break;
             default:
                 Log.w(TAG, "onOptionsItemSelected: item non riconosciuto");
         }
@@ -337,6 +363,16 @@ public class ProjectActivity extends AppCompatActivity {
                     }
                 }
             });
+
+            mTeammatesList.setOnItemClickListener(((parent, view, position, id) -> {
+                String teammate = mTeammatesList.getItemAtPosition(position).toString();
+                Log.d(TAG, teammate);
+                if (!teammate.equals(firebaseAuthUtils.getCurrentUser().getDisplayName())) {
+                    //  TODO: Dialog o Activity per visualizzare il profilo dell'utente selezionato
+                } else {
+                    //  TODO: possibilmente aprire il fragment del proprio profilo personale?
+                }
+            }));
         }
     }
 

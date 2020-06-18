@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content" android:layout_height="wrap_content"
+    android:layout_centerInParent="true"
+    android:padding="@dimen/activity_horizontal_margin">
+
+    <TextView
+        android:id="@+id/add_skill_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add A New Skill"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+        android:layout_centerHorizontal="true"/>
+
+    <EditText
+        android:id="@+id/add_skill_editText"
+        android:layout_below="@+id/add_skill_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:hint="My New Skill" />
+
+    <Button
+        android:id="@+id/add_skill_positiveButton"
+        android:layout_below="@+id/add_skill_editText"
+        android:layout_toEndOf="@+id/add_skill_negativeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="OK" />
+
+    <Button
+        android:id="@+id/add_skill_negativeButton"
+        android:layout_below="@id/add_skill_editText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cancel" />
+
+
+</RelativeLayout>

@@ -36,10 +36,6 @@ public class Progetto {
         this.obiettivi.putAll(goalsToAchieve);
 
         this.sponsored = sponsored;
-
-        /*for (String goal : goalsToAchieve) {
-            this.obiettivi.put(goal, false);
-        }*/
     }
 
     public void setTitolo(String title) {

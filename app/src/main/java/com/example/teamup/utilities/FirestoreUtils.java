@@ -32,7 +32,6 @@ public class FirestoreUtils {
     public static final String KEY_SPONSORED = "sponsored";
 
     private FirebaseFirestore firestore;
-    public String mToken;
 
     public FirestoreUtils(FirebaseFirestore firestore) {
         this.firestore = firestore;
@@ -82,10 +81,10 @@ public class FirestoreUtils {
             if (task.isSuccessful()) {
 
                 Map<String, Object> notif = new HashMap<String, Object>();
-                notif.put("sentFrom", data);
-                notif.put("recipient", recipientDisplayName);
-                notif.put("project", projectTitle);
-                notif.put("type", notifType);
+                notif.put(NotificationUtils.SENDER, data);
+                notif.put(NotificationUtils.RECIPIENT, recipientDisplayName);
+                notif.put(NotificationUtils.PROJECT, projectTitle);
+                notif.put(NotificationUtils.TYPE, notifType);
 
                 task.getResult().getDocuments().get(0).getReference()
                         .collection(KEY_NOTIFICATIONS)

@@ -15,6 +15,10 @@ import com.google.firebase.messaging.RemoteMessage;
 
 public class NotificationUtils extends FirebaseMessagingService {
     public static final String TAG = NotificationUtils.class.getSimpleName();
+    public static final String TYPE = "notificationType";
+    public static final String SENDER = "sender";
+    public static final String RECIPIENT = "recipient";
+    public static final String PROJECT = "project";
 
     //  Ottiene il messaggio associato alla notifica ricevuta
     @Override
@@ -22,10 +26,10 @@ public class NotificationUtils extends FirebaseMessagingService {
         super.onMessageReceived(remoteMessage);
 
         //  Ottiene i dati memorizzati nel payload della notifica
-        String notificationType = remoteMessage.getData().get("notificationType");
-        String sentFrom = remoteMessage.getData().get("sender");
-        String recipient = remoteMessage.getData().get("recipient");
-        String project = remoteMessage.getData().get("project");
+        String notificationType = remoteMessage.getData().get(TYPE);
+        String sentFrom = remoteMessage.getData().get(SENDER);
+        String recipient = remoteMessage.getData().get(RECIPIENT);
+        String project = remoteMessage.getData().get(PROJECT);
 
         //  Costruisce una notifica in base a notificationType
         NotificationCompat.Builder notificationBuilder;
@@ -55,10 +59,10 @@ public class NotificationUtils extends FirebaseMessagingService {
         //  Costruisce l'Intent che permette di visualizzare la notifica
         Intent viewNotificationIntent = new Intent(this, NotificationViewActivity.class);
         viewNotificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        viewNotificationIntent.putExtra("type", notificationType);
-        viewNotificationIntent.putExtra("sender", sentFrom);
-        viewNotificationIntent.putExtra("recipient", recipient);
-        viewNotificationIntent.putExtra("project", project);
+        viewNotificationIntent.putExtra(TYPE, notificationType);
+        viewNotificationIntent.putExtra(SENDER, sentFrom);
+        viewNotificationIntent.putExtra(RECIPIENT, recipient);
+        viewNotificationIntent.putExtra(PROJECT, project);
 
         int notificationId = (int) System.currentTimeMillis();  //  Intero univoco per identificare la notifica
 
@@ -70,7 +74,7 @@ public class NotificationUtils extends FirebaseMessagingService {
         // Un NotificationChannel dev'essere definito per versioni di Android successive ad Oreo (incluso)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(getString(R.string.default_notification_channel_id),
-                    "Default Channel",
+                    "TeamUp Notification Channel",
                     NotificationManager.IMPORTANCE_HIGH);
             notificationManager.createNotificationChannel(channel);
         }
