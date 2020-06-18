@@ -1,24 +1,28 @@
 package com.example.teamup.utilities;
 
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
+import android.net.Uri;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class Utente {
     private static final String TAG = Utente.class.getSimpleName();
+
+    private Uri profileImageUri;
     private String displayName;
     private String email;
     private List<String> comptetenze;
 
-    public Utente(String name, String mail, List<String> skills) {
+    public Utente(Uri profileImageUri, String name, String mail, List<String> skills) {
+        this.profileImageUri = profileImageUri;
         displayName = name;
         email = mail;
         comptetenze = new ArrayList<>();
         comptetenze.addAll(skills);
+    }
+
+    public Uri getProfileImageUri() {
+        return profileImageUri;
     }
 
     public String getDisplayName() { return displayName; }

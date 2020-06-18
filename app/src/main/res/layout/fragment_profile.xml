@@ -14,10 +14,11 @@
 
         <ImageView
             android:id="@+id/profilePic_imageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingVertical="@dimen/activity_vertical_margin"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
             android:layout_centerHorizontal="true"
+            android:paddingVertical="@dimen/activity_vertical_margin"
+            android:scaleType="centerCrop"
             tools:src="@tools:sample/avatars" />
 
         <TextView
