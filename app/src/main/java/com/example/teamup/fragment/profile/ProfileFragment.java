@@ -2,7 +2,12 @@ package com.example.teamup.fragment.profile;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,16 +27,30 @@ import com.example.teamup.R;
 import com.example.teamup.utilities.FirebaseAuthUtils;
 import com.example.teamup.utilities.FirestoreUtils;
 import com.example.teamup.utilities.Utente;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
+import java.util.Objects;
+
+import static android.app.Activity.RESULT_OK;
 
 //  TODO: funzionalità per rendere l'e-mail e la foto profilo private
 
 public class ProfileFragment extends Fragment {
+
     public static final String TAG = ProfileFragment.class.getSimpleName();
+
+    private static final int TAKE_IMAGE_CODE = 10001;
 
     private FirestoreUtils firestoreUtils;
     private FirebaseAuthUtils firebaseAuthUtils;
@@ -73,6 +92,7 @@ public class ProfileFragment extends Fragment {
 
                 //  TODO: implementare funzionalità per mettere foto profilo
                 mProfilePicImageView.setImageResource(R.drawable.ic_launcher_foreground);
+                mProfilePicImageView.setOnClickListener(this::onProfileImageClick);
 
                 //  Ottiene i dati dell'utente da Firestore e li popola
                 mDisplayNameTextView.setText(mUser.getDisplayName());
@@ -142,6 +162,82 @@ public class ProfileFragment extends Fragment {
         });
 
         return root;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+    }
+
+    private void onProfileImageClick(View view) {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (intent.resolveActivity(requireActivity().getPackageManager()) != null) {
+            startActivityForResult(intent, TAKE_IMAGE_CODE);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == TAKE_IMAGE_CODE) {
+            switch (resultCode) {
+                case RESULT_OK:
+                    Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+                    mProfilePicImageView.setImageBitmap(bitmap);
+                    handleUpload(bitmap);
+            }
+        }
+    }
+
+    private void handleUpload(Bitmap bitmap) {
+        Log.d(TAG, "handleUpload");
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+
+        String uid = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+        StorageReference reference = FirebaseStorage.getInstance().getReference()
+                .child("profileImages")
+                .child(uid + ".jpeg");
+        reference.putBytes(byteArrayOutputStream.toByteArray())
+                .addOnSuccessListener(taskSnapshot -> getDownloadUrl(reference))
+                .addOnFailureListener(e -> Log.e(TAG, "onFailure: ", e.getCause()));
+    }
+
+    private void getDownloadUrl(StorageReference reference) {
+        Log.d(TAG, "getDownloadUrl");
+
+        reference.getDownloadUrl()
+                .addOnSuccessListener(uri -> {
+                    Log.d(TAG, "onSuccess: " + uri);
+                        setUserProfileUrl(uri);
+                });
+    }
+
+    private void setUserProfileUrl(Uri uri) {
+        Log.d(TAG, "setUserProfileUrl");
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        UserProfileChangeRequest request = new UserProfileChangeRequest.Builder()
+                .setPhotoUri(uri)
+                .build();
+
+        user.updateProfile(request)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(requireActivity(), "Updated successfully", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(requireActivity(), "Profile image failed...", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     @Override
