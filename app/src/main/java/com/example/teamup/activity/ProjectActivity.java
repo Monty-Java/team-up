@@ -71,8 +71,6 @@ public class ProjectActivity extends AppCompatActivity {
         firestoreUtils = new FirestoreUtils(FirebaseFirestore.getInstance());
         firebaseAuthUtils = new FirebaseAuthUtils(FirebaseAuth.getInstance(), firestoreUtils.getFirestoreInstance(), this);
 
-        if (firebaseAuthUtils.getCurrentUser() == null) mFab.hide();
-
         Intent intent = getIntent();
 
         //  TODO BRUNO: dopo aver sistemato le notifiche per bene, rimettere il minSdk a 24

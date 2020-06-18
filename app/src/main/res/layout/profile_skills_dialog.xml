@@ -23,14 +23,20 @@
         android:layout_below="@+id/title_skills"
         android:layout_centerHorizontal="true" />
 
-    <!-- TODO: checkbox per impostare la visibilità del progetto. Progetti privati non verranno mostrati nella schermata Discover -->
-
     <Button
         android:id="@+id/closeDialogButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/skillsListView"
-        android:layout_centerHorizontal="true"
+        android:layout_alignParentRight="true"
         android:text="Close" />
+
+    <Button
+        android:id="@+id/addSkillButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/skillsListView"
+        android:text="Add Skill" />
 
 </RelativeLayout>

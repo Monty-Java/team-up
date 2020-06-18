@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.teamup.R;
+import com.example.teamup.activity.MainActivity;
 import com.example.teamup.utilities.FirebaseAuthUtils;
 import com.example.teamup.utilities.FirestoreUtils;
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,7 +30,6 @@ import java.util.List;
 //  TODO: funzionalità per rendere l'e-mail e la foto profilo private
 
 public class ProfileFragment extends Fragment {
-
     private FirestoreUtils firestoreUtils;
     private FirebaseAuthUtils firebaseAuthUtils;
 
@@ -62,7 +63,6 @@ public class ProfileFragment extends Fragment {
         mDisplayNameTextView.setText(firebaseAuthUtils.getCurrentUser().getDisplayName());
         mEmailTextView.setText(firebaseAuthUtils.getCurrentUser().getEmail());
 
-        //  TODO: modificare il dialog in modo da poter aggiungere, rimuovere o modificare le competenze
         mViewSkillsButton.setOnClickListener(view -> {
             Dialog skillsDialog = new Dialog(this.getContext());
             skillsDialog.setContentView(R.layout.profile_skills_dialog);
@@ -85,22 +85,24 @@ public class ProfileFragment extends Fragment {
                     }
                 }
             });
+            Button addSkillButton = skillsDialog.findViewById(R.id.addSkillButton);
             Button closeButton = skillsDialog.findViewById(R.id.closeDialogButton);
+
+            skillsListView.setOnItemClickListener((parent, listview, position, id) -> {
+                //  TODO: dialog con PositiveButton e NegativeButton per rimuovere una competenza
+                String skill = skillsListView.getItemAtPosition(position).toString();
+                Log.d("ProfileFragment", skill);
+            });
+
+            addSkillButton.setOnClickListener(l -> {
+                //  TODO: dialog con EditText per aggiungere una competenza
+            });
+
             closeButton.setOnClickListener(v -> {
                 skillsDialog.hide();
             });
             skillsDialog.show();
         });
-
-        /*
-                final TextView textView = root.findViewById(R.id.missionStatementTextView);
-        mViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });
-         */
 
         return root;
     }

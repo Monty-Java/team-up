@@ -147,6 +147,7 @@ public class NotificationViewActivity extends AppCompatActivity {
             //  Intent che apre ProjectActivity col progetto per il quale si è fatta la richiesta
             positiveButton.setOnClickListener(view -> {
                 Intent viewProjectIntent = new Intent(this, ProjectActivity.class);
+                viewProjectIntent.putExtra(FirestoreUtils.KEY_TITLE, project);
                 startActivity(viewProjectIntent);
             });
             Log.d(TAG, "Request Accepted");
