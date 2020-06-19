@@ -202,8 +202,7 @@ public class ProjectActivity extends AppCompatActivity {
         //  TODO: sistemare il layout
         //  TODO: raffinare questo controllo
 
-        if (Objects.equals(firebaseAuthUtils.getCurrentUser().getDisplayName(), progetto.getLeader()) ||
-            progetto.getTeammates().contains(firebaseAuthUtils.getCurrentUser().getDisplayName())) {
+        if (Objects.equals(firebaseAuthUtils.getCurrentUser().getDisplayName(), progetto.getLeader())) {
             AlertDialog.Builder addObjectiveBuilder = new AlertDialog.Builder(this);
             addObjectiveBuilder.setTitle("New Objective");
 
@@ -232,7 +231,7 @@ public class ProjectActivity extends AppCompatActivity {
 
             AlertDialog addObjectiveDialog = addObjectiveBuilder.create();
             addObjectiveDialog.show();
-        } else {
+        } else if (!progetto.getTeammates().contains(firebaseAuthUtils.getCurrentUser().getDisplayName())) {
             AlertDialog.Builder teammateRequestDialogBuilder = new AlertDialog.Builder(this);
             teammateRequestDialogBuilder.setTitle("Become a Teammate!");
             TextView requestTextView = new TextView(this);
@@ -325,10 +324,13 @@ public class ProjectActivity extends AppCompatActivity {
         mTeammatesList.setAdapter(mTeammatesAdapter);
         mDescriptionTextView.setText(project.getDescrizione());
 
+        mObjectivesAdapter.notifyDataSetChanged();
+        mTeammatesAdapter.notifyDataSetChanged();
+
         //  TODO: verificare se l'utente è Teammate - limitare le modifiche al progetto
 
         //  TODO: raffinare questo controllo
-        if (firebaseAuthUtils.getCurrentUser() != null && firebaseAuthUtils.getCurrentUser().getDisplayName().equals(progetto.getLeader())) {
+        if (firebaseAuthUtils.getCurrentUser() != null) {
 
             //  Un long click permette di modificare la descrizione del progetto corrente
             mDescriptionTextView.setOnLongClickListener(view -> {

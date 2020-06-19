@@ -18,6 +18,7 @@ import com.example.teamup.utilities.FirebaseAuthUtils;
 import com.example.teamup.utilities.FirestoreUtils;
 import com.example.teamup.utilities.NotificationType;
 import com.example.teamup.utilities.NotificationUtils;
+import com.example.teamup.utilities.Utente;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -35,6 +36,8 @@ public class NotificationViewActivity extends AppCompatActivity {
     private TextView mNameTextView;
     private ListView mSkillsListView;
     private List<String> mSkills;
+
+    private Utente mSender;
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -92,14 +95,14 @@ public class NotificationViewActivity extends AppCompatActivity {
                     .get().addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
 
-                            //  TODO: istanziare oggetto Utente qui
-
-                            mSkills = (List<String>) task.getResult().getDocuments().get(0).getData().get(FirestoreUtils.KEY_SKILLS);
+                            mSender = new Utente(null, sendResponseTo,
+                                    task.getResult().getDocuments().get(0).getReference().getId(),
+                                    (List<String>) task.getResult().getDocuments().get(0).getData().get(FirestoreUtils.KEY_SKILLS));
 
                             ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                                     this.getApplicationContext(),
                                     android.R.layout.simple_list_item_1,
-                                    mSkills
+                                    mSender.getComptetenze()
                             );
 
                             mSkillsListView.setAdapter(adapter);

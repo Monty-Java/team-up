@@ -231,18 +231,8 @@ public class ProfileFragment extends Fragment {
                 .build();
 
         user.updateProfile(request)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Toast.makeText(requireActivity(), "Updated successfully", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(requireActivity(), "Profile image failed...", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                .addOnSuccessListener(aVoid -> Toast.makeText(requireActivity(), "Updated successfully", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> Toast.makeText(requireActivity(), "Profile image failed...", Toast.LENGTH_SHORT).show());
     }
 
     @Override
