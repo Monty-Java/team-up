@@ -69,6 +69,24 @@ public class DiscoverFragment extends Fragment {
 
         mProjects = new ArrayList<>();
 
+        displayProjects();
+
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                listAdapter.getFilter().filter(s);
+                return false;
+            }
+        });
+
+    }
+
+    private void displayProjects() {
         //  Ottiene i riferimenti ai progetti memorizzati e li visualizza nella ListView
         Query query = firestoreUtils.getFirestoreInstance().collection(FirestoreUtils.KEY_PROJECTS);
         query.get().addOnCompleteListener(task -> {
@@ -114,19 +132,5 @@ public class DiscoverFragment extends Fragment {
                 listAdapter.notifyDataSetChanged();
             }
         });
-
-        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String s) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String s) {
-                listAdapter.getFilter().filter(s);
-                return false;
-            }
-        });
-
     }
 }

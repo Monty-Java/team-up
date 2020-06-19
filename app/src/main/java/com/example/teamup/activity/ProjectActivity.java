@@ -89,15 +89,8 @@ public class ProjectActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_home:
-                //  Se l'utente è autenticato ritorna alla MainActivity, altrimenti ritorna ad AuthActivity
-                if (firebaseAuthUtils.getCurrentUser() != null) {
-                    Intent homeIntent = new Intent(this, MainActivity.class);
-                    startActivity(homeIntent);
-                } else {
-                    Intent authIntent = new Intent(this, LoginActivity.class);
-                    startActivity(authIntent);
-                }
-                this.finish();
+                Intent homeIntent = new Intent(this, MainActivity.class);
+                startActivity(homeIntent);
                 break;
             case R.id.action_details:
                 onDetailsClick();
@@ -124,8 +117,8 @@ public class ProjectActivity extends AppCompatActivity {
                         firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_TEAMMATES, progetto.getTeammates());
                         dialog.dismiss();
 
-                        Intent homeIntent = new Intent(this, MainActivity.class);
-                        startActivity(homeIntent);
+                        Intent leaveProjectIntent = new Intent(this, MainActivity.class);
+                        startActivity(leaveProjectIntent);
                         finish();
                     }));
 
@@ -157,7 +150,7 @@ public class ProjectActivity extends AppCompatActivity {
                 progetto.getEtichette());
         projectTags.setAdapter(adapter);
 
-        if (firebaseAuthUtils.getCurrentUser() != null && firebaseAuthUtils.getCurrentUser().getDisplayName().equals(progetto.getLeader())) {
+        if (firebaseAuthUtils.getCurrentUser().getDisplayName().equals(progetto.getLeader())) {
             projectTags.setOnItemClickListener((parent, view, position, id) -> {
                         //  TODO: refactoring || optimizing
                         String tag = projectTags.getItemAtPosition(position).toString();
@@ -199,55 +192,62 @@ public class ProjectActivity extends AppCompatActivity {
     public void onFabProjectClick(View view) {
         Log.d(TAG, "onFabProjectClick");
 
-        //  TODO: sistemare il layout
-        //  TODO: raffinare questo controllo
-
         if (Objects.equals(firebaseAuthUtils.getCurrentUser().getDisplayName(), progetto.getLeader())) {
-            AlertDialog.Builder addObjectiveBuilder = new AlertDialog.Builder(this);
-            addObjectiveBuilder.setTitle("New Objective");
-
-            EditText objectiveEditText = new EditText(this);
-            objectiveEditText.setHint("Objective");
-            objectiveEditText.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
-            addObjectiveBuilder.setView(objectiveEditText);
-            addObjectiveBuilder.setPositiveButton("OK", (dialog, which) -> {
-
-                String objectiveText = objectiveEditText.getText().toString();
-                if (!objectiveText.equals("") || !progetto.getObiettivi().containsKey(objectiveText)) {
-                    progetto.addObiettivoDaRaggiungere(objectiveText);
-                    firestoreUtils.updateProjectData(
-                            progetto.getId(),
-                            FirestoreUtils.KEY_OBJ,
-                            progetto.getObiettivi());
-                    mObjectivesAdapter.notifyDataSetChanged();
-                }
-            });
-
-            addObjectiveBuilder.setNegativeButton("Cancel", (dialog, which) -> {
-                dialog.cancel();
-                dialog.dismiss();
-            });
-
-            AlertDialog addObjectiveDialog = addObjectiveBuilder.create();
-            addObjectiveDialog.show();
+            addNewObjective();
         } else if (!progetto.getTeammates().contains(firebaseAuthUtils.getCurrentUser().getDisplayName())) {
-            AlertDialog.Builder teammateRequestDialogBuilder = new AlertDialog.Builder(this);
-            teammateRequestDialogBuilder.setTitle("Become a Teammate!");
-            TextView requestTextView = new TextView(this);
-            requestTextView.setText("Would you like to send a request to become a teammate for this project?");
-            teammateRequestDialogBuilder.setView(requestTextView);
-            teammateRequestDialogBuilder.setPositiveButton("OK", (dialog, which) -> {
-
-                firestoreUtils.storeNotification(progetto.getTitolo(), progetto.getLeader(), firebaseAuthUtils.getCurrentUser().getDisplayName(), firebaseAuthUtils.getCurrentUser().getUid(), NotificationType.TEAMMATE_REQUEST);
-            });
-            teammateRequestDialogBuilder.setNegativeButton("Cancel", (dialog, which) -> {
-                dialog.cancel();
-                dialog.dismiss();
-            });
-            AlertDialog teammateRequestDialog = teammateRequestDialogBuilder.create();
-            teammateRequestDialog.show();
+            sendTeammateRequest();
         }
+    }
+
+    private void addNewObjective() {
+        //  TODO: sistemare il layout
+
+        AlertDialog.Builder addObjectiveBuilder = new AlertDialog.Builder(this);
+        addObjectiveBuilder.setTitle("New Objective");
+
+        EditText objectiveEditText = new EditText(this);
+        objectiveEditText.setHint("Objective");
+        objectiveEditText.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        addObjectiveBuilder.setView(objectiveEditText);
+        addObjectiveBuilder.setPositiveButton("OK", (dialog, which) -> {
+
+            String objectiveText = objectiveEditText.getText().toString();
+            if (!objectiveText.equals("") || !progetto.getObiettivi().containsKey(objectiveText)) {
+                progetto.addObiettivoDaRaggiungere(objectiveText);
+                firestoreUtils.updateProjectData(
+                        progetto.getId(),
+                        FirestoreUtils.KEY_OBJ,
+                        progetto.getObiettivi());
+                mObjectivesAdapter.notifyDataSetChanged();
+            }
+        });
+
+        addObjectiveBuilder.setNegativeButton("Cancel", (dialog, which) -> {
+            dialog.cancel();
+            dialog.dismiss();
+        });
+
+        AlertDialog addObjectiveDialog = addObjectiveBuilder.create();
+        addObjectiveDialog.show();
+    }
+
+    private void sendTeammateRequest() {
+        AlertDialog.Builder teammateRequestDialogBuilder = new AlertDialog.Builder(this);
+        teammateRequestDialogBuilder.setTitle("Become a Teammate!");
+        TextView requestTextView = new TextView(this);
+        requestTextView.setText("Would you like to send a request to become a teammate for this project?");
+        teammateRequestDialogBuilder.setView(requestTextView);
+        teammateRequestDialogBuilder.setPositiveButton("OK", (dialog, which) -> {
+
+            firestoreUtils.storeNotification(progetto.getTitolo(), progetto.getLeader(), firebaseAuthUtils.getCurrentUser().getDisplayName(), firebaseAuthUtils.getCurrentUser().getUid(), NotificationType.TEAMMATE_REQUEST);
+        });
+        teammateRequestDialogBuilder.setNegativeButton("Cancel", (dialog, which) -> {
+            dialog.cancel();
+            dialog.dismiss();
+        });
+        AlertDialog teammateRequestDialog = teammateRequestDialogBuilder.create();
+        teammateRequestDialog.show();
     }
 
     /**
@@ -284,7 +284,6 @@ public class ProjectActivity extends AppCompatActivity {
                         (boolean) data.get(FirestoreUtils.KEY_SPONSORED));
 
                 displayProject(progetto);
-
             } else
                 Log.e(TAG, "Error reading data");
         });

@@ -40,7 +40,6 @@ public class NotificationViewActivity extends AppCompatActivity {
     private ImageView mProfileImageView;
     private TextView mNameTextView;
     private ListView mSkillsListView;
-    private List<String> mSkills;
 
     private Utente mSender;
 
@@ -61,22 +60,7 @@ public class NotificationViewActivity extends AppCompatActivity {
         firestoreUtils = new FirestoreUtils(FirebaseFirestore.getInstance());
         firebaseAuthUtils = new FirebaseAuthUtils(FirebaseAuth.getInstance(), firestoreUtils.getFirestoreInstance(), this);
 
-        //  Rimuove il documento relativo alla notifica corrente da Firestore
-        firestoreUtils.getFirestoreInstance().collection(FirestoreUtils.KEY_USERS)
-                .whereEqualTo(FirestoreUtils.KEY_NAME, getIntent().getStringExtra(NotificationUtils.RECIPIENT))
-                .get().addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        task.getResult().getDocuments().get(0).getReference().collection(FirestoreUtils.KEY_NOTIFICATIONS)
-                                .whereEqualTo(NotificationUtils.PROJECT, getIntent().getStringExtra(NotificationUtils.PROJECT))
-                                .get().addOnCompleteListener(t -> {
-                                    if (t.isSuccessful()) {
-                                        t.getResult().getDocuments().get(0).getReference().delete().addOnCompleteListener(remove -> {
-                                            if (remove.isSuccessful()) Log.d(TAG, "Notification received and removed from Firestore");
-                                        });
-                                    }
-                        });
-                    }
-        });
+        onNotificationOpened();
 
         mProfileImageView = findViewById(R.id.profile_imageView);
         mNameTextView = findViewById(R.id.nameTextView);
@@ -86,9 +70,7 @@ public class NotificationViewActivity extends AppCompatActivity {
         String sendResponseTo = getIntent().getStringExtra(NotificationUtils.SENDER);
         String project = getIntent().getStringExtra(NotificationUtils.PROJECT);
         String senderUid = getIntent().getStringExtra(NotificationUtils.UID);
-        Log.d(TAG, "UID: " + senderUid);
 
-        //  TODO: usare UID per ottenere un riferimento alla foto profilo dell'utente che ha inviato la notifica
         getProfilePic(senderUid, mProfileImageView);
 
         mNameTextView.setText(sendResponseTo);
@@ -172,6 +154,25 @@ public class NotificationViewActivity extends AppCompatActivity {
                 onNotificationAcknowledged(notificationType, project);
             });
         }
+    }
+
+    private void onNotificationOpened() {
+        //  Rimuove il documento relativo alla notifica corrente da Firestore
+        firestoreUtils.getFirestoreInstance().collection(FirestoreUtils.KEY_USERS)
+                .whereEqualTo(FirestoreUtils.KEY_NAME, getIntent().getStringExtra(NotificationUtils.RECIPIENT))
+                .get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                task.getResult().getDocuments().get(0).getReference().collection(FirestoreUtils.KEY_NOTIFICATIONS)
+                        .whereEqualTo(NotificationUtils.PROJECT, getIntent().getStringExtra(NotificationUtils.PROJECT))
+                        .get().addOnCompleteListener(t -> {
+                    if (t.isSuccessful()) {
+                        t.getResult().getDocuments().get(0).getReference().delete().addOnCompleteListener(remove -> {
+                            if (remove.isSuccessful()) Log.d(TAG, "Notification received and removed from Firestore");
+                        });
+                    }
+                });
+            }
+        });
     }
 
     //  Se la notifica equivale a LEADER_ACCEPT, porta l'utente
