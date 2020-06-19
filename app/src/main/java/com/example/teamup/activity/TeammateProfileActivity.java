@@ -1,14 +1,20 @@
 package com.example.teamup.activity;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.teamup.R;
 import com.example.teamup.utilities.FirestoreUtils;
 import com.example.teamup.utilities.Utente;
-import com.google.firebase.auth.FirebaseUser;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -16,6 +22,12 @@ import java.util.List;
 
 public class TeammateProfileActivity extends AppCompatActivity {
     public static final String TAG = TeammateProfileActivity.class.getSimpleName();
+
+    //  UI
+    ImageView mProfilePicImageView;
+    TextView mEmailTextView;
+    ListView mSkillsListView;
+    FloatingActionButton mFab;
 
     Utente mTeammate;
 
@@ -26,6 +38,12 @@ public class TeammateProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_teammate_profile);
         String teammate = getIntent().getStringExtra("teammate");
+        setTitle(teammate);
+
+        mProfilePicImageView = findViewById(R.id.profilePicImageView);
+        mEmailTextView = findViewById(R.id.emailTextView);
+        mSkillsListView = findViewById(R.id.skillsListView2);
+        mFab = findViewById(R.id.floatingActionButton2);
 
         firestoreUtils = new FirestoreUtils(FirebaseFirestore.getInstance());
         firestoreUtils.getFirestoreInstance().collection(FirestoreUtils.KEY_USERS)
@@ -33,6 +51,8 @@ public class TeammateProfileActivity extends AppCompatActivity {
             if (task.isSuccessful()) {
                 for (DocumentSnapshot snapshot : task.getResult()) {
                     if (snapshot.getData().get(FirestoreUtils.KEY_NAME).equals(teammate)) {
+
+                        //  TODO: ottenere la foto dell'utente dallo storage
                         mTeammate = new Utente(
                                 null,
                                 teammate,
@@ -42,10 +62,21 @@ public class TeammateProfileActivity extends AppCompatActivity {
                     }
                 }
 
-                Log.d(TAG, mTeammate.getDisplayName());
-                Log.d(TAG, mTeammate.getEmail());
-                Log.d(TAG, mTeammate.getComptetenze().toString());
+                mEmailTextView.setText(mTeammate.getEmail());
+
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                        android.R.layout.simple_list_item_1,
+                        mTeammate.getComptetenze());
+                mSkillsListView.setAdapter(adapter);
             }
         });
+    }
+
+    public void onTeammateFabClick(View view) {
+        Intent emailIntent = new Intent(Intent.ACTION_SENDTO,
+                Uri.fromParts("mailto", mTeammate.getEmail(), null));
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Subject");
+        emailIntent.putExtra(Intent.EXTRA_TEXT, "Body");
+        startActivity(Intent.createChooser(emailIntent, "Send e-mail to " + mTeammate.getDisplayName()));
     }
 }
