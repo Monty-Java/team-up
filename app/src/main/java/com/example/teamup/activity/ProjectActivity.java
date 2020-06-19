@@ -350,7 +350,6 @@ public class ProjectActivity extends AppCompatActivity {
                 return false;
             });
 
-            //  TODO: realizzare onItemClickListener analogo per la lista di Teammates, permettendo all'utente di vedere i loro profili personali
             //  Permette all'utente di modificare il valore degli objectives
             //  Possono assumere false o true, true indica che sono completi.
             mObjectivesList.setOnItemClickListener((parent, view, position, id) -> {
@@ -368,7 +367,9 @@ public class ProjectActivity extends AppCompatActivity {
                 String teammate = mTeammatesList.getItemAtPosition(position).toString();
                 Log.d(TAG, teammate);
                 if (!teammate.equals(firebaseAuthUtils.getCurrentUser().getDisplayName())) {
-                    //  TODO: Dialog o Activity per visualizzare il profilo dell'utente selezionato
+                    Intent teammateProfileIntent = new Intent(this, TeammateProfileActivity.class);
+                    teammateProfileIntent.putExtra("teammate", teammate);
+                    startActivity(teammateProfileIntent);
                 } else {
                     //  TODO: possibilmente aprire il fragment del proprio profilo personale?
                 }
