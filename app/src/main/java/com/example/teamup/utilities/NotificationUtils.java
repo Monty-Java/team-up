@@ -19,6 +19,7 @@ public class NotificationUtils extends FirebaseMessagingService {
     public static final String SENDER = "sender";
     public static final String RECIPIENT = "recipient";
     public static final String PROJECT = "project";
+    public static final String UID = "uid";
 
     //  Ottiene il messaggio associato alla notifica ricevuta
     @Override
@@ -30,6 +31,7 @@ public class NotificationUtils extends FirebaseMessagingService {
         String sentFrom = remoteMessage.getData().get(SENDER);
         String recipient = remoteMessage.getData().get(RECIPIENT);
         String project = remoteMessage.getData().get(PROJECT);
+        String uid = remoteMessage.getData().get(UID);
 
         //  Costruisce una notifica in base a notificationType
         NotificationCompat.Builder notificationBuilder;
@@ -63,6 +65,7 @@ public class NotificationUtils extends FirebaseMessagingService {
         viewNotificationIntent.putExtra(SENDER, sentFrom);
         viewNotificationIntent.putExtra(RECIPIENT, recipient);
         viewNotificationIntent.putExtra(PROJECT, project);
+        viewNotificationIntent.putExtra(UID, uid);
 
         int notificationId = (int) System.currentTimeMillis();  //  Intero univoco per identificare la notifica
 

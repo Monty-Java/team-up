@@ -1,6 +1,7 @@
 package com.example.teamup.activity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,7 +22,11 @@ import com.example.teamup.utilities.NotificationUtils;
 import com.example.teamup.utilities.Utente;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,6 +85,11 @@ public class NotificationViewActivity extends AppCompatActivity {
         NotificationType notificationType = NotificationType.valueOf(getIntent().getStringExtra(NotificationUtils.TYPE));
         String sendResponseTo = getIntent().getStringExtra(NotificationUtils.SENDER);
         String project = getIntent().getStringExtra(NotificationUtils.PROJECT);
+        String senderUid = getIntent().getStringExtra(NotificationUtils.UID);
+        Log.d(TAG, "UID: " + senderUid);
+
+        //  TODO: usare UID per ottenere un riferimento alla foto profilo dell'utente che ha inviato la notifica
+        getProfilePic(senderUid, mProfileImageView);
 
         mNameTextView.setText(sendResponseTo);
 
@@ -128,7 +138,7 @@ public class NotificationViewActivity extends AppCompatActivity {
                                 if (!team.contains(sendResponseTo)) {
                                     team.add(sendResponseTo);
                                     firestoreUtils.updateProjectData(id, FirestoreUtils.KEY_TEAMMATES, team);
-                                    firestoreUtils.storeNotification(project, sendResponseTo, firebaseAuthUtils.getCurrentUser().getDisplayName(), NotificationType.LEADER_ACCEPT);
+                                    firestoreUtils.storeNotification(project, sendResponseTo, firebaseAuthUtils.getCurrentUser().getDisplayName(), firebaseAuthUtils.getCurrentUser().getUid(), NotificationType.LEADER_ACCEPT);
                                 } else Toast.makeText(this, sendResponseTo + " is already a teammate on this project.", Toast.LENGTH_LONG).show();
                             } else Log.d(TAG, "Error responding or updating project");
                 });
@@ -137,7 +147,7 @@ public class NotificationViewActivity extends AppCompatActivity {
             });
 
             negativeButton.setOnClickListener(view -> {
-                firestoreUtils.storeNotification(project, sendResponseTo, firebaseAuthUtils.getCurrentUser().getDisplayName(), NotificationType.LEADER_REJECT);
+                firestoreUtils.storeNotification(project, sendResponseTo, firebaseAuthUtils.getCurrentUser().getDisplayName(), firebaseAuthUtils.getCurrentUser().getUid(), NotificationType.LEADER_REJECT);
                 onNotificationAcknowledged(notificationType, project);
             });
 
@@ -177,5 +187,21 @@ public class NotificationViewActivity extends AppCompatActivity {
             startActivity(viewProjectIntent);
         }
         finish();
+    }
+
+    //  TODO: duplicato del metodo in MainActivity -- spostarlo in una classe Util e renderlo public
+    private void getProfilePic(String uid, ImageView imageView) {
+        FirebaseStorage storage = FirebaseStorage.getInstance("gs://teamup-41bb3.appspot.com");
+        StorageReference gsReference = storage
+                .getReferenceFromUrl("gs://teamup-41bb3.appspot.com/profileImages")
+                .child(uid + ".jpeg");
+        try {
+            File localProfilePic = File.createTempFile("profile_pic", "jpeg");
+            gsReference.getFile(localProfilePic).addOnSuccessListener(taskSnapshot -> {
+                imageView.setImageURI(Uri.fromFile(localProfilePic));
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

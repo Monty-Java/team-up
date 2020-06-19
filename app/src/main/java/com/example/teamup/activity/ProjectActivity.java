@@ -239,7 +239,7 @@ public class ProjectActivity extends AppCompatActivity {
             teammateRequestDialogBuilder.setView(requestTextView);
             teammateRequestDialogBuilder.setPositiveButton("OK", (dialog, which) -> {
 
-                firestoreUtils.storeNotification(progetto.getTitolo(), progetto.getLeader(), firebaseAuthUtils.getCurrentUser().getDisplayName(), NotificationType.TEAMMATE_REQUEST);
+                firestoreUtils.storeNotification(progetto.getTitolo(), progetto.getLeader(), firebaseAuthUtils.getCurrentUser().getDisplayName(), firebaseAuthUtils.getCurrentUser().getUid(), NotificationType.TEAMMATE_REQUEST);
             });
             teammateRequestDialogBuilder.setNegativeButton("Cancel", (dialog, which) -> {
                 dialog.cancel();

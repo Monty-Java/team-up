@@ -75,13 +75,14 @@ public class FirestoreUtils {
         });
     }
 
-    public void storeNotification(String projectTitle, String recipientDisplayName, Object data, NotificationType notifType) {
+    public void storeNotification(String projectTitle, String recipientDisplayName, String userName, String uid, NotificationType notifType) {
         firestore.collection(KEY_USERS).whereEqualTo(KEY_NAME, recipientDisplayName)
                 .get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
 
                 Map<String, Object> notif = new HashMap<String, Object>();
-                notif.put(NotificationUtils.SENDER, data);
+                notif.put(NotificationUtils.SENDER, userName);
+                notif.put(NotificationUtils.UID, uid);
                 notif.put(NotificationUtils.RECIPIENT, recipientDisplayName);
                 notif.put(NotificationUtils.PROJECT, projectTitle);
                 notif.put(NotificationUtils.TYPE, notifType);

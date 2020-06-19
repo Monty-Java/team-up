@@ -28,8 +28,6 @@ import com.example.teamup.R;
 import com.example.teamup.utilities.FirebaseAuthUtils;
 import com.example.teamup.utilities.FirestoreUtils;
 import com.example.teamup.utilities.Utente;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;

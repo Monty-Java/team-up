@@ -1,6 +1,7 @@
 package com.example.teamup.activity;
 
 import android.app.Dialog;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -19,7 +20,6 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.bumptech.glide.Glide;
 import com.example.teamup.R;
 import com.example.teamup.utilities.FirebaseAuthUtils;
 import com.example.teamup.utilities.FirestoreUtils;
@@ -27,7 +27,11 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -60,6 +64,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = findViewById(R.id.nav_view);
         //  Ottiene i riferimenti agli elementi dell'UI
         View headerView = navigationView.getHeaderView(0);
+
+        userProfilePicture = headerView.findViewById(R.id.imageView_profilePic);
         userDisplayName = headerView.findViewById(R.id.display_name);
         userEmail = headerView.findViewById(R.id.email);
 
@@ -83,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         FirebaseUser firebaseUser = firebaseAuthUtils.getCurrentUser();
         if (firebaseUser != null) {
             //  Aggiorna l'UI con i dati dell'utente
+            getProfilePic(firebaseUser.getUid(), userProfilePicture);
             userDisplayName.setText(firebaseUser.getDisplayName());
             userEmail.setText(firebaseUser.getEmail());
         }
@@ -195,5 +202,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         return true;
+    }
+
+    private void getProfilePic(String uid, ImageView imageView) {
+        FirebaseStorage storage = FirebaseStorage.getInstance("gs://teamup-41bb3.appspot.com");
+        StorageReference gsReference = storage
+                .getReferenceFromUrl("gs://teamup-41bb3.appspot.com/profileImages")
+                .child(uid + ".jpeg");
+        try {
+            File localProfilePic = File.createTempFile("profile_pic", "jpeg");
+            gsReference.getFile(localProfilePic).addOnSuccessListener(taskSnapshot -> {
+                imageView.setImageURI(Uri.fromFile(localProfilePic));
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
