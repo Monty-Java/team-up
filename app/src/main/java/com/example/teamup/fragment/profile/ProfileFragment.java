@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -72,103 +73,14 @@ public class ProfileFragment extends Fragment {
         firebaseAuthUtils = new FirebaseAuthUtils(FirebaseAuth.getInstance(), firestoreUtils.getFirestoreInstance(), this.getActivity());
 
         mProfilePicImageView = layout.findViewById(R.id.profilePic_imageView);
+        mProfilePicImageView.setOnClickListener(this::onProfileImageClick);     //  Listener per creare una nuova foto profilo
+
         mDisplayNameTextView = layout.findViewById(R.id.displayName_textView);
         mEmailTextView = layout.findViewById(R.id.email_textView);
         mViewSkillsButton = layout.findViewById(R.id.viewSkills_button);
 
         FirebaseUser firebaseUser = firebaseAuthUtils.getCurrentUser();
-
-        firestoreUtils.getFirestoreInstance().collection(FirestoreUtils.KEY_USERS)
-                .get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                for (DocumentSnapshot snapshot : task.getResult()) {
-                    if (snapshot.getReference().getId().equals(firebaseUser.getEmail())) {
-                        mUser = new Utente(
-                                firebaseUser.getPhotoUrl(),
-                                firebaseUser.getDisplayName(),
-                                firebaseUser.getEmail(),
-                                (List<String>) snapshot.getData().get(FirestoreUtils.KEY_SKILLS));
-                        break;
-                    }
-                }
-
-                mProfilePicImageView.setOnClickListener(this::onProfileImageClick);
-                if (mUser.getProfileImageUri() != null) {
-                    Glide.with(this.getContext())
-                            .load(mUser.getProfileImageUri())
-                            .into(mProfilePicImageView);
-                } else {
-                    Glide.with(this.getContext())
-                            .load(R.drawable.default_profile_image)
-                            .into(mProfilePicImageView);
-                }
-
-                //  Ottiene i dati dell'utente da Firestore e li popola
-                mDisplayNameTextView.setText(mUser.getDisplayName());
-                mEmailTextView.setText(mUser.getEmail());
-
-                mViewSkillsButton.setOnClickListener(view -> {
-                    Dialog skillsDialog = new Dialog(this.getContext());
-                    skillsDialog.setContentView(R.layout.profile_skills_dialog);
-                    ListView skillsListView = skillsDialog.findViewById(R.id.skillsListView);
-
-
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                            this.getContext(),
-                            android.R.layout.simple_list_item_1,
-                            mUser.getComptetenze()
-                    );
-
-                    skillsListView.setAdapter(adapter);
-
-                    Button addSkillButton = skillsDialog.findViewById(R.id.addSkillButton);
-                    Button closeButton = skillsDialog.findViewById(R.id.closeDialogButton);
-
-                    //  Click su una competenza crea un AlertDialog che permette all'utente di rimuovere la competenza dalla lista
-                    skillsListView.setOnItemClickListener((parent, listview, position, id) -> {
-                        String skill = skillsListView.getItemAtPosition(position).toString();
-
-                        AlertDialog.Builder removeSkillDialogBuilder = new AlertDialog.Builder(this.getContext());
-                        removeSkillDialogBuilder.setTitle("Remove Skill");
-                        removeSkillDialogBuilder.setMessage("Are you sure you want to remove " + skill + " from your list of skills?");
-                        removeSkillDialogBuilder.setPositiveButton("OK", ((dialog, which) -> {
-                            mUser.removeSkill(skill);
-                            firestoreUtils.updateUserData(mUser.getDisplayName(), FirestoreUtils.KEY_SKILLS, mUser.getComptetenze());
-                            dialog.dismiss();
-                        }));
-                        removeSkillDialogBuilder.setNegativeButton("Cancel", ((dialog, which) -> { dialog.dismiss(); }));
-
-                        AlertDialog removeSkillDialog = removeSkillDialogBuilder.create();
-                        removeSkillDialog.show();
-                    });
-
-                    //  Crea un Dialog che permette di aggiungere una nuova competenza
-                    addSkillButton.setOnClickListener(l -> {
-                        Dialog addSkillDialog = new Dialog(this.getContext());
-                        addSkillDialog.setContentView(R.layout.add_skill_dialog);
-                        Button positiveButton = addSkillDialog.findViewById(R.id.add_skill_positiveButton);
-                        Button negativeButton = addSkillDialog.findViewById(R.id.add_skill_negativeButton);
-                        negativeButton.setOnClickListener(v -> addSkillDialog.dismiss());
-                        positiveButton.setOnClickListener(v -> {
-                            EditText newSkillEditText = addSkillDialog.findViewById(R.id.add_skill_editText);
-                            if (!newSkillEditText.getText().toString().equals("")) {
-                                mUser.getComptetenze().add(newSkillEditText.getText().toString());
-                                firestoreUtils.updateUserData(mUser.getDisplayName(), FirestoreUtils.KEY_SKILLS, mUser.getComptetenze());
-                                addSkillDialog.dismiss();
-                            } else Toast.makeText(this.getContext(), "No skill specified", Toast.LENGTH_LONG).show();
-                        });
-                        addSkillDialog.show();
-                    });
-
-                    closeButton.setOnClickListener(v -> {
-                        skillsDialog.hide();
-                    });
-                    skillsDialog.show();
-                });
-
-
-            }
-        });
+        getUserData(firebaseUser);
 
         return root;
     }
@@ -192,6 +104,102 @@ public class ProfileFragment extends Fragment {
                     handleUpload(bitmap);
             }
         }
+    }
+
+    private void getUserData(FirebaseUser user) {
+        //  Ottiene i dati relativi all'utente corrente da Firestore e li usa per istanziare un oggetto Utente
+        firestoreUtils.getFirestoreInstance().collection(FirestoreUtils.KEY_USERS)
+                .get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                for (DocumentSnapshot snapshot : task.getResult()) {
+                    if (snapshot.getReference().getId().equals(user.getEmail())) {
+                        mUser = new Utente(
+                                user.getPhotoUrl(),
+                                user.getDisplayName(),
+                                user.getEmail(),
+                                (List<String>) snapshot.getData().get(FirestoreUtils.KEY_SKILLS));
+                        break;
+                    }
+                }
+
+                if (mUser.getProfileImageUri() != null) {
+                    Glide.with(this.getContext())
+                            .load(mUser.getProfileImageUri())
+                            .into(mProfilePicImageView);
+                } else {
+                    Glide.with(this.getContext())
+                            .load(R.drawable.default_profile_image)
+                            .into(mProfilePicImageView);
+                }
+
+                mDisplayNameTextView.setText(mUser.getDisplayName());
+                mEmailTextView.setText(mUser.getEmail());
+
+                mViewSkillsButton.setOnClickListener(view -> viewUserSkills());
+            }
+        });
+    }
+
+    private void viewUserSkills() {
+        Dialog skillsDialog = new Dialog(this.getContext());
+        skillsDialog.setContentView(R.layout.profile_skills_dialog);
+        ListView skillsListView = skillsDialog.findViewById(R.id.skillsListView);
+        Button addSkillButton = skillsDialog.findViewById(R.id.addSkillButton);
+        Button closeButton = skillsDialog.findViewById(R.id.closeDialogButton);
+
+        ArrayAdapter<String> skillsAdapter = new ArrayAdapter<>(
+                this.getContext(),
+                android.R.layout.simple_list_item_1,
+                mUser.getComptetenze()
+        );
+        skillsListView.setAdapter(skillsAdapter);
+
+        //  Click su una competenza crea un AlertDialog che permette all'utente di rimuovere la competenza dalla lista
+        skillsListView.setOnItemClickListener((parent, listview, position, id) -> removeSkill(parent, skillsAdapter, position));
+
+        //  Crea un Dialog che permette di aggiungere una nuova competenza
+        addSkillButton.setOnClickListener(l -> addSkill());
+
+        closeButton.setOnClickListener(v -> skillsDialog.hide());
+        skillsDialog.show();
+    }
+
+    private void removeSkill(AdapterView<?> parent, ArrayAdapter<String> adapter, int position) {
+        String skill = parent.getItemAtPosition(position).toString();
+
+        AlertDialog.Builder removeSkillDialogBuilder = new AlertDialog.Builder(this.getContext());
+        removeSkillDialogBuilder.setTitle("Remove Skill");
+        removeSkillDialogBuilder.setMessage("Are you sure you want to remove " + skill + " from your list of skills?");
+
+        removeSkillDialogBuilder.setPositiveButton("OK", ((dialog, which) -> {
+            mUser.removeSkill(skill);
+            firestoreUtils.updateUserData(mUser.getDisplayName(), FirestoreUtils.KEY_SKILLS, mUser.getComptetenze());
+            adapter.notifyDataSetChanged();
+            dialog.dismiss();
+        }));
+        removeSkillDialogBuilder.setNegativeButton("Cancel", ((dialog, which) -> dialog.dismiss()));
+
+        AlertDialog removeSkillDialog = removeSkillDialogBuilder.create();
+        removeSkillDialog.show();
+    }
+
+    private void addSkill() {
+        Dialog addSkillDialog = new Dialog(this.getContext());
+        addSkillDialog.setContentView(R.layout.add_skill_dialog);
+        Button positiveButton = addSkillDialog.findViewById(R.id.add_skill_positiveButton);
+        Button negativeButton = addSkillDialog.findViewById(R.id.add_skill_negativeButton);
+
+        negativeButton.setOnClickListener(v -> addSkillDialog.dismiss());
+        positiveButton.setOnClickListener(v -> {
+            EditText newSkillEditText = addSkillDialog.findViewById(R.id.add_skill_editText);
+            if (!newSkillEditText.getText().toString().equals("")) {
+                mUser.getComptetenze().add(newSkillEditText.getText().toString());
+                firestoreUtils.updateUserData(mUser.getDisplayName(), FirestoreUtils.KEY_SKILLS, mUser.getComptetenze());
+                addSkillDialog.dismiss();
+            } else Toast.makeText(this.getContext(), "No skill specified", Toast.LENGTH_LONG).show();
+        });
+
+        addSkillDialog.show();
     }
 
     private void handleUpload(Bitmap bitmap) {

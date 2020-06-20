@@ -19,13 +19,11 @@ import java.util.List;
 import java.util.Objects;
 
 public class FirebaseAuthUtils {
-
     private static final String TAG = FirebaseAuthUtils.class.getSimpleName();
 
     private FirebaseAuth firebaseAuth;
     private final FirestoreUtils firestoreUtils;
     private Activity activity;
-    public String tokenId;
 
     public FirebaseAuthUtils(FirebaseAuth firebaseAuth, FirebaseFirestore firestore, Activity activity) {
         this.firebaseAuth = firebaseAuth;

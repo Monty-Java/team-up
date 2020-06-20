@@ -98,7 +98,7 @@ public class ProjectsFragment extends Fragment {
                 teammateProjectsList = new ArrayList<>();
                 for (DocumentSnapshot snapshot : task.getResult()) {
 
-                    //  Aggiunge i progetti che contengono il campo "teammates" nella lista team
+                    //  Aggiunge i progetti che contengono il campo "teammates" nella lista teammateProjectsList
                     if (snapshot.getData().containsKey(FirestoreUtils.KEY_TEAMMATES)) {
                         List<String> team = (List<String>) snapshot.getData().get(FirestoreUtils.KEY_TEAMMATES);
 
