@@ -39,6 +39,7 @@ public class NotificationViewActivity extends AppCompatActivity {
     //  UI
     private ImageView mProfileImageView;
     private TextView mNameTextView;
+    private TextView mSkillTitleTextView;
     private ListView mSkillsListView;
 
     private Utente mSender;
@@ -64,6 +65,7 @@ public class NotificationViewActivity extends AppCompatActivity {
 
         mProfileImageView = findViewById(R.id.profile_imageView);
         mNameTextView = findViewById(R.id.nameTextView);
+        mSkillTitleTextView = findViewById(R.id.skillsTitle);
         mSkillsListView = findViewById(R.id.skills_ListView);
 
         NotificationType notificationType = NotificationType.valueOf(getIntent().getStringExtra(NotificationUtils.TYPE));
@@ -71,7 +73,7 @@ public class NotificationViewActivity extends AppCompatActivity {
         String project = getIntent().getStringExtra(NotificationUtils.PROJECT);
         String senderUid = getIntent().getStringExtra(NotificationUtils.UID);
 
-        getProfilePic(senderUid, mProfileImageView);
+        firestoreUtils.getProfilePic(senderUid, mProfileImageView);
 
         mNameTextView.setText(sendResponseTo);
 
@@ -102,6 +104,7 @@ public class NotificationViewActivity extends AppCompatActivity {
             });
 
             negativeButton.setVisibility(View.VISIBLE);
+            mSkillTitleTextView.setVisibility(View.VISIBLE);
 
             positiveButton.setText("Accept");
             negativeButton.setText("Reject");
@@ -135,21 +138,17 @@ public class NotificationViewActivity extends AppCompatActivity {
 
         } else if (notificationType.equals(NotificationType.LEADER_ACCEPT)) {
             negativeButton.setVisibility(View.INVISIBLE);
+            mSkillTitleTextView.setVisibility(View.INVISIBLE);
 
-            //  TODO: nascondi Skills TextView, visualizzare un messaggio che si congratula con l'utente per essere stato accettato
 
+            positiveButton.setText("OK");
             //  Intent che apre ProjectActivity col progetto per il quale si è fatta la richiesta
-            positiveButton.setOnClickListener(view -> {
-                onNotificationAcknowledged(notificationType, project);
-            });
-            Log.d(TAG, "Request Accepted");
+            positiveButton.setOnClickListener(view -> onNotificationAcknowledged(notificationType, project));
         } else if (notificationType.equals(NotificationType.LEADER_REJECT)) {
             negativeButton.setVisibility(View.INVISIBLE);
-            //  Messaggio per indicare che il leader ha rifiutato la richiesta
-            Log.d(TAG, "Request Rejected");
+            mSkillTitleTextView.setVisibility(View.INVISIBLE);
 
-            //  TODO: nascondi Skills TextView, visualizzare un messaggio che  informa l'utente che la richiesta è stata rifiutata
-
+            positiveButton.setText("OK");
             positiveButton.setOnClickListener(view -> {
                 onNotificationAcknowledged(notificationType, project);
             });
@@ -188,21 +187,5 @@ public class NotificationViewActivity extends AppCompatActivity {
             startActivity(viewProjectIntent);
         }
         finish();
-    }
-
-    //  TODO: duplicato del metodo in MainActivity -- spostarlo in una classe Util e renderlo public
-    private void getProfilePic(String uid, ImageView imageView) {
-        FirebaseStorage storage = FirebaseStorage.getInstance("gs://teamup-41bb3.appspot.com");
-        StorageReference gsReference = storage
-                .getReferenceFromUrl("gs://teamup-41bb3.appspot.com/profileImages")
-                .child(uid + ".jpeg");
-        try {
-            File localProfilePic = File.createTempFile("profile_pic", "jpeg");
-            gsReference.getFile(localProfilePic).addOnSuccessListener(taskSnapshot -> {
-                imageView.setImageURI(Uri.fromFile(localProfilePic));
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

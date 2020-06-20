@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final String TAG = "MainActivity";
 
     public FirebaseAuthUtils firebaseAuthUtils;
-    public FirebaseFirestore firestore;
+    public FirestoreUtils firestoreUtils;
 
     private AppBarConfiguration mAppBarConfiguration;
 
@@ -84,12 +84,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        firestore = FirebaseFirestore.getInstance();
-        firebaseAuthUtils = new FirebaseAuthUtils(FirebaseAuth.getInstance(), firestore, this);
+        firebaseAuthUtils = new FirebaseAuthUtils(FirebaseAuth.getInstance(), FirebaseFirestore.getInstance(), this);
+        firestoreUtils = firebaseAuthUtils.getFirestoreUtils();
         FirebaseUser firebaseUser = firebaseAuthUtils.getCurrentUser();
         if (firebaseUser != null) {
             //  Aggiorna l'UI con i dati dell'utente
-            getProfilePic(firebaseUser.getUid(), userProfilePicture);
+            firestoreUtils.getProfilePic(firebaseUser.getUid(), userProfilePicture);
             userDisplayName.setText(firebaseUser.getDisplayName());
             userEmail.setText(firebaseUser.getEmail());
         }
@@ -108,8 +108,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             EditText description = newProjectDialog.findViewById(R.id.description_editText);
             EditText objectives = newProjectDialog.findViewById(R.id.objectives_editText);
             EditText tags = newProjectDialog.findViewById(R.id.projectTag_editText);
-
-            FirestoreUtils firestoreUtils = firebaseAuthUtils.getFirestoreUtils();
 
             String[] obj = objectives.getText().toString().split("\n");
             Map<String, Boolean> objectiveMap = new HashMap<>();
@@ -202,20 +200,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         return true;
-    }
-
-    private void getProfilePic(String uid, ImageView imageView) {
-        FirebaseStorage storage = FirebaseStorage.getInstance("gs://teamup-41bb3.appspot.com");
-        StorageReference gsReference = storage
-                .getReferenceFromUrl("gs://teamup-41bb3.appspot.com/profileImages")
-                .child(uid + ".jpeg");
-        try {
-            File localProfilePic = File.createTempFile("profile_pic", "jpeg");
-            gsReference.getFile(localProfilePic).addOnSuccessListener(taskSnapshot -> {
-                imageView.setImageURI(Uri.fromFile(localProfilePic));
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

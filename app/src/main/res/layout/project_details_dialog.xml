@@ -39,8 +39,6 @@
         android:layout_below="@+id/tags_title"
         android:layout_centerHorizontal="true" />
 
-    <!-- TODO: checkbox per impostare la visibilità del progetto. Progetti privati non verranno mostrati nella schermata Discover -->
-
     <Button
         android:id="@+id/closeDialogButton"
         android:layout_width="wrap_content"

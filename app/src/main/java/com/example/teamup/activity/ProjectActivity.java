@@ -72,11 +72,7 @@ public class ProjectActivity extends AppCompatActivity {
         firebaseAuthUtils = new FirebaseAuthUtils(FirebaseAuth.getInstance(), firestoreUtils.getFirestoreInstance(), this);
 
         Intent intent = getIntent();
-
-        //  TODO BRUNO: dopo aver sistemato le notifiche per bene, rimettere il minSdk a 24
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            readProjectData(intent.getStringExtra(FirestoreUtils.KEY_TITLE));
-        }
+        readProjectData(intent.getStringExtra(FirestoreUtils.KEY_TITLE));
     }
 
     @Override
@@ -256,7 +252,6 @@ public class ProjectActivity extends AppCompatActivity {
      *
      * @param title
      */
-    @RequiresApi(api = Build.VERSION_CODES.N)   //  TODO BRUNO: rimuovere questo dopo
     public void readProjectData(String title) {
         Map<String, Object> data = new HashMap<>();
         Query query = firestoreUtils.getFirestoreInstance()

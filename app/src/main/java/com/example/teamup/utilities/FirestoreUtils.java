@@ -1,6 +1,8 @@
 package com.example.teamup.utilities;
 
+import android.net.Uri;
 import android.util.Log;
+import android.widget.ImageView;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
@@ -8,7 +10,11 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -140,6 +146,21 @@ public class FirestoreUtils {
             snapshot.getReference().set(data);
         } else {
             Log.e(TAG, "Error updating document");
+        }
+    }
+
+    public void getProfilePic(String uid, ImageView imageView) {
+        FirebaseStorage storage = FirebaseStorage.getInstance("gs://teamup-41bb3.appspot.com");
+        StorageReference gsReference = storage
+                .getReferenceFromUrl("gs://teamup-41bb3.appspot.com/profileImages")
+                .child(uid + ".jpeg");
+        try {
+            File localProfilePic = File.createTempFile("profile_pic", "jpeg");
+            gsReference.getFile(localProfilePic).addOnSuccessListener(taskSnapshot -> {
+                imageView.setImageURI(Uri.fromFile(localProfilePic));
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

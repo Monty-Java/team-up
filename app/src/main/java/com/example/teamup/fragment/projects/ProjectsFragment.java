@@ -38,7 +38,7 @@ public class ProjectsFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
 
         final MainActivity activity = (MainActivity) getActivity();
-        firestoreUtils = new FirestoreUtils(activity.firestore);
+        firestoreUtils = new FirestoreUtils(activity.firestoreUtils.getFirestoreInstance());
 
         View root = inflater.inflate(R.layout.fragment_projects, container, false);
 
