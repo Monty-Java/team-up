@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:padding="@dimen/activity_vertical_margin">
+
+    <TextView
+        android:id="@+id/editTag_DialogTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="Edit or Remove Tag"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1" />
+
+    <EditText
+        android:id="@+id/editTagDialog_editText"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/editTag_DialogTitle"
+        android:hint="Tag" />
+
+    <Button
+        android:id="@+id/editTagDialog_cancelButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/editTagDialog_editText"
+        android:layout_toStartOf="@+id/editTagDialog_removeButton"
+        android:text="Cancel" />
+
+    <Button
+        android:id="@+id/editTagDialog_removeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toStartOf="@+id/editTagDialog_editButton"
+        android:layout_below="@+id/editTagDialog_editText"
+        android:text="Remove" />
+
+    <Button
+        android:id="@+id/editTagDialog_editButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/editTagDialog_editText"
+        android:text="OK" />
+
+</RelativeLayout>

@@ -3,23 +3,19 @@ package com.example.teamup.activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.teamup.R;
@@ -101,30 +97,7 @@ public class ProjectActivity extends AppCompatActivity {
                 }
                 break;
             case R.id.action_leave:
-                if (!firebaseAuthUtils.getCurrentUser().getDisplayName().equals(progetto.getLeader()) &&
-                    progetto.getTeammates().contains(firebaseAuthUtils.getCurrentUser().getDisplayName())) {
-                    AlertDialog.Builder leaveProjectDialogBuilder = new AlertDialog.Builder(this);
-                    leaveProjectDialogBuilder.setTitle("Leave Project");
-                    leaveProjectDialogBuilder.setMessage("Are you sure you want to leave the team on project " +
-                            progetto.getTitolo() + "? This action cannot be undone (although you can always request to rejoin later).");
-
-                    leaveProjectDialogBuilder.setPositiveButton("OK", ((dialog, which) -> {
-                        progetto.removeTeammate(firebaseAuthUtils.getCurrentUser().getDisplayName());
-                        firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_TEAMMATES, progetto.getTeammates());
-                        dialog.dismiss();
-
-                        Intent leaveProjectIntent = new Intent(this, MainActivity.class);
-                        startActivity(leaveProjectIntent);
-                        finish();
-                    }));
-
-                    leaveProjectDialogBuilder.setNegativeButton("Cancel", (((dialog, which) -> {
-                        dialog.dismiss();
-                    })));
-
-                    AlertDialog leaveTeamDialog = leaveProjectDialogBuilder.create();
-                    leaveTeamDialog.show();
-                }
+                leaveProject();
                 break;
             default:
                 Log.w(TAG, "onOptionsItemSelected: item non riconosciuto");
@@ -139,49 +112,29 @@ public class ProjectActivity extends AppCompatActivity {
         detailsDialog.setContentView(R.layout.project_details_dialog);
         TextView projectId = detailsDialog.findViewById(R.id.projectId_textView);
         ListView projectTags = detailsDialog.findViewById(R.id.tagsListView);
+        Button closeButton = detailsDialog.findViewById(R.id.closeDialogButton);
+        Button addTagButton = detailsDialog.findViewById(R.id.addTagButton);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+        projectId.setText("Project ID: " + progetto.getId());
+        ArrayAdapter<String> tagsAdapter = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_list_item_1,
                 progetto.getEtichette());
-        projectTags.setAdapter(adapter);
+        projectTags.setAdapter(tagsAdapter);
 
         if (firebaseAuthUtils.getCurrentUser().getDisplayName().equals(progetto.getLeader())) {
             projectTags.setOnItemClickListener((parent, view, position, id) -> {
-                        //  TODO: refactoring || optimizing
                         String tag = projectTags.getItemAtPosition(position).toString();
-                        AlertDialog.Builder editTagDialogBuilder = new AlertDialog.Builder(this);
-                        editTagDialogBuilder.setTitle("Edit Tag");
-
-                        EditText tagEditText = new EditText(this);
-                        tagEditText.setText(tag);
-                        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                                ViewGroup.LayoutParams.MATCH_PARENT,
-                                ViewGroup.LayoutParams.WRAP_CONTENT);
-                        tagEditText.setLayoutParams(layoutParams);
-
-                        editTagDialogBuilder.setView(tagEditText);
-                        editTagDialogBuilder.setPositiveButton("OK", (dialog, which) -> {
-                            if (tagEditText.getText().toString().equals("")) {
-                                progetto.removeEtichetta(tag);
-                            } else if (!progetto.getEtichette().contains(tagEditText.getText().toString())) {
-                                progetto.addEtichetta(tagEditText.getText().toString());
-                            } else {
-                                Log.w(TAG, "onDetailsClick: Non è stato possibile modificare l'etichetta");
-                            }
-                            firestoreUtils.updateProjectData(progetto.getId(), "tags", progetto.getEtichette());
-                            adapter.notifyDataSetChanged();
-                        });
-                    AlertDialog editTagDialog = editTagDialogBuilder.create();
-                    editTagDialog.show();
+                        editProjectTags(tag);
+                        tagsAdapter.notifyDataSetChanged();
             });
+
+            addTagButton.setOnClickListener(v -> addNewTag());
+        } else {
+            addTagButton.setEnabled(false);
         }
 
-        Button closeButton = detailsDialog.findViewById(R.id.closeDialogButton);
-        projectId.setText("Project ID: " + progetto.getId());
-        closeButton.setOnClickListener(v -> {
-            detailsDialog.hide();
-        });
+        closeButton.setOnClickListener(v -> detailsDialog.dismiss());
         detailsDialog.show();
     }
 
@@ -196,35 +149,21 @@ public class ProjectActivity extends AppCompatActivity {
     }
 
     private void addNewObjective() {
-        //  TODO: sistemare il layout
+        Dialog addObjectiveDialog = new Dialog(this);
+        addObjectiveDialog.setContentView(R.layout.add_project_objective_dialog);
+        EditText addObjectiveEditText = addObjectiveDialog.findViewById(R.id.add_objective_editText);
+        Button addObjectivePositiveButton = addObjectiveDialog.findViewById(R.id.add_objective_positiveButton);
+        Button addObjectiveNegativeButton = addObjectiveDialog.findViewById(R.id.add_objective_negativeButton);
+        addObjectiveNegativeButton.setOnClickListener(v -> addObjectiveDialog.dismiss());
 
-        AlertDialog.Builder addObjectiveBuilder = new AlertDialog.Builder(this);
-        addObjectiveBuilder.setTitle("New Objective");
-
-        EditText objectiveEditText = new EditText(this);
-        objectiveEditText.setHint("Objective");
-        objectiveEditText.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
-        addObjectiveBuilder.setView(objectiveEditText);
-        addObjectiveBuilder.setPositiveButton("OK", (dialog, which) -> {
-
-            String objectiveText = objectiveEditText.getText().toString();
-            if (!objectiveText.equals("") || !progetto.getObiettivi().containsKey(objectiveText)) {
-                progetto.addObiettivoDaRaggiungere(objectiveText);
-                firestoreUtils.updateProjectData(
-                        progetto.getId(),
-                        FirestoreUtils.KEY_OBJ,
-                        progetto.getObiettivi());
-                mObjectivesAdapter.notifyDataSetChanged();
+        addObjectivePositiveButton.setOnClickListener(v -> {
+            if (!addObjectiveEditText.getText().toString().equals("")) {
+                progetto.addObiettivoDaRaggiungere(addObjectiveEditText.getText().toString());
+                firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_OBJ, progetto.getObiettivi());
+                addObjectiveDialog.dismiss();
             }
         });
 
-        addObjectiveBuilder.setNegativeButton("Cancel", (dialog, which) -> {
-            dialog.cancel();
-            dialog.dismiss();
-        });
-
-        AlertDialog addObjectiveDialog = addObjectiveBuilder.create();
         addObjectiveDialog.show();
     }
 
@@ -244,6 +183,87 @@ public class ProjectActivity extends AppCompatActivity {
         });
         AlertDialog teammateRequestDialog = teammateRequestDialogBuilder.create();
         teammateRequestDialog.show();
+    }
+
+    private void editProjectTags(String tagToEdit) {
+        Dialog editTagsDialog = new Dialog(this);
+        editTagsDialog.setContentView(R.layout.edit_project_tag_dialog);
+
+        EditText editTagEditText = editTagsDialog.findViewById(R.id.editTagDialog_editText);
+        editTagEditText.setHint(tagToEdit);
+
+        Button editTagRemoveButton = editTagsDialog.findViewById(R.id.editTagDialog_removeButton);
+        Button editTagEditButton = editTagsDialog.findViewById(R.id.editTagDialog_editButton);
+        Button editTagCancelButton = editTagsDialog.findViewById(R.id.editTagDialog_cancelButton);
+        editTagCancelButton.setOnClickListener(v -> editTagsDialog.dismiss());
+
+        //  Rimuove l'etichetta selezionata dal progetto corrente
+        editTagRemoveButton.setOnClickListener(v -> {
+            progetto.getEtichette().remove(tagToEdit);
+            firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_TAGS, progetto.getEtichette());
+            editTagsDialog.dismiss();
+        });
+
+        //  Sostituisce l'etichetta nuova con quella attuale e aggiorna Firestore
+        editTagEditButton.setOnClickListener(v -> {
+            if (!editTagEditText.getText().toString().equals(tagToEdit)) {
+                progetto.getEtichette().remove(tagToEdit);
+                progetto.getEtichette().add(editTagEditText.getText().toString());
+                firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_TAGS, progetto.getEtichette());
+                editTagsDialog.dismiss();
+            }
+        });
+
+        editTagsDialog.show();
+    }
+
+    private void addNewTag() {
+        Dialog addTagDialog = new Dialog(this);
+        addTagDialog.setContentView(R.layout.add_project_tag_dialog);
+
+        EditText addTagEditText = addTagDialog.findViewById(R.id.add_tag_editText);
+        Button addTagPositiveButton = addTagDialog.findViewById(R.id.add_tag_positiveButton);
+        Button addTagNegativeButton = addTagDialog.findViewById(R.id.add_tag_negativeButton);
+        addTagNegativeButton.setOnClickListener(v -> addTagDialog.dismiss());
+
+        addTagPositiveButton.setOnClickListener(v -> {
+            if (!addTagEditText.getText().toString().equals("")) {
+                progetto.getEtichette().add(addTagEditText.getText().toString());
+                firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_TAGS, progetto.getEtichette());
+                addTagDialog.dismiss();
+            } else {
+                //  TODO: quella roba di errore nell'edit text che non so fare
+            }
+        });
+        addTagDialog.show();
+    }
+
+    private void editProjectDescription() {
+        Dialog editDescriptionDialog = new Dialog(this);
+        editDescriptionDialog.setContentView(R.layout.edit_project_description_dialog);
+        EditText editDescriptionEditText = editDescriptionDialog.findViewById(R.id.edit_description_editText);
+        Button editDescriptionPositiveButton = editDescriptionDialog.findViewById(R.id.edit_description_positiveButton);
+        Button editDescriptionNegativeButton = editDescriptionDialog.findViewById(R.id.edit_description_negativeButton);
+        editDescriptionNegativeButton.setOnClickListener(v -> editDescriptionDialog.dismiss());
+
+        editDescriptionPositiveButton.setOnClickListener(v -> {
+            if (!editDescriptionEditText.getText().toString().equals("")) {
+                progetto.setDescrizione(editDescriptionEditText.getText().toString());
+                firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_DESC, progetto.getDescrizione());
+                editDescriptionDialog.dismiss();
+            }
+        });
+        editDescriptionDialog.show();
+    }
+
+    private void viewTeammateProfile(String teammate) {
+        if (!teammate.equals(firebaseAuthUtils.getCurrentUser().getDisplayName())) {
+            Intent teammateProfileIntent = new Intent(this, TeammateProfileActivity.class);
+            teammateProfileIntent.putExtra("teammate", teammate);
+            startActivity(teammateProfileIntent);
+        } else {
+            //  TODO: possibilmente aprire il fragment del proprio profilo personale?
+        }
     }
 
     /**
@@ -294,6 +314,9 @@ public class ProjectActivity extends AppCompatActivity {
 
         this.setTitle(project.getTitolo());
 
+        if (!project.getLeader().equals(firebaseAuthUtils.getCurrentUser().getDisplayName()))
+            mFab.hide();
+
         //  Calcola il progresso totale del progetto prima di rimuovere la lista di obiettivi completi
         updateProgress(project);
 
@@ -321,28 +344,10 @@ public class ProjectActivity extends AppCompatActivity {
         mObjectivesAdapter.notifyDataSetChanged();
         mTeammatesAdapter.notifyDataSetChanged();
 
-        //  TODO: verificare se l'utente è Teammate - limitare le modifiche al progetto
-
-        //  TODO: raffinare questo controllo
         if (firebaseAuthUtils.getCurrentUser() != null) {
-
             //  Un long click permette di modificare la descrizione del progetto corrente
             mDescriptionTextView.setOnLongClickListener(view -> {
-                //  TODO: sistemare layout
-                AlertDialog.Builder editDescriptionDialogBuilder = new AlertDialog.Builder(this);
-                editDescriptionDialogBuilder.setTitle("Edit Description");
-                EditText descriptionEditText = new EditText(this);
-                descriptionEditText.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-                editDescriptionDialogBuilder.setView(descriptionEditText);
-
-                editDescriptionDialogBuilder.setPositiveButton("OK", (dialog, which) -> {
-                    if (descriptionEditText.getText() != null) {
-                        project.setDescrizione(descriptionEditText.getText().toString());
-                        firestoreUtils.updateProjectData(project.getId(), FirestoreUtils.KEY_DESC, project.getDescrizione());
-                    }
-                });
-                AlertDialog editDescriptionDialog = editDescriptionDialogBuilder.create();
-                editDescriptionDialog.show();
+                editProjectDescription();
                 return false;
             });
 
@@ -358,18 +363,13 @@ public class ProjectActivity extends AppCompatActivity {
                     }
                 }
             });
+            mObjectivesAdapter.notifyDataSetChanged();
 
             mTeammatesList.setOnItemClickListener(((parent, view, position, id) -> {
                 String teammate = mTeammatesList.getItemAtPosition(position).toString();
-                Log.d(TAG, teammate);
-                if (!teammate.equals(firebaseAuthUtils.getCurrentUser().getDisplayName())) {
-                    Intent teammateProfileIntent = new Intent(this, TeammateProfileActivity.class);
-                    teammateProfileIntent.putExtra("teammate", teammate);
-                    startActivity(teammateProfileIntent);
-                } else {
-                    //  TODO: possibilmente aprire il fragment del proprio profilo personale?
-                }
+                viewTeammateProfile(teammate);
             }));
+            mTeammatesAdapter.notifyDataSetChanged();
         }
     }
 
@@ -377,5 +377,32 @@ public class ProjectActivity extends AppCompatActivity {
         Log.d(TAG, "updateProgress");
 
         mProgressTextView.setText("Progress: " + (int) ((project.obiettiviCompleti() / project.numeroObiettivi()) * 100) + '%');
+    }
+
+    private void leaveProject() {
+        if (!firebaseAuthUtils.getCurrentUser().getDisplayName().equals(progetto.getLeader()) &&
+                progetto.getTeammates().contains(firebaseAuthUtils.getCurrentUser().getDisplayName())) {
+            AlertDialog.Builder leaveProjectDialogBuilder = new AlertDialog.Builder(this);
+            leaveProjectDialogBuilder.setTitle("Leave Project");
+            leaveProjectDialogBuilder.setMessage("Are you sure you want to leave the team on project " +
+                    progetto.getTitolo() + "? This action cannot be undone (although you can always request to rejoin later).");
+
+            leaveProjectDialogBuilder.setPositiveButton("OK", ((dialog, which) -> {
+                progetto.removeTeammate(firebaseAuthUtils.getCurrentUser().getDisplayName());
+                firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_TEAMMATES, progetto.getTeammates());
+                dialog.dismiss();
+
+                Intent leaveProjectIntent = new Intent(this, MainActivity.class);
+                startActivity(leaveProjectIntent);
+                finish();
+            }));
+
+            leaveProjectDialogBuilder.setNegativeButton("Cancel", (((dialog, which) -> {
+                dialog.dismiss();
+            })));
+
+            AlertDialog leaveTeamDialog = leaveProjectDialogBuilder.create();
+            leaveTeamDialog.show();
+        }
     }
 }
