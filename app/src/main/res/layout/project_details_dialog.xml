@@ -12,7 +12,8 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:padding="@dimen/activity_vertical_margin"
-        android:text="Project Details" />
+        android:text="Project Details"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
     <TextView
         android:id="@+id/projectId_textView"
@@ -29,7 +30,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/projectId_textView"
         android:layout_centerHorizontal="true"
-        android:text="Tags" />
+        android:text="Tags"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
     <ListView
         android:id="@+id/tagsListView"

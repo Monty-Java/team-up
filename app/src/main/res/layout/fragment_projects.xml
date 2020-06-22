@@ -12,7 +12,10 @@
         android:id="@+id/leader_textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Leader" />
+        android:gravity="center_horizontal"
+        android:paddingVertical="@dimen/activity_vertical_margin"
+        android:text="Leader"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
     <ListView
         android:id="@+id/leaderProjects_listView"
@@ -23,7 +26,10 @@
         android:id="@+id/teammate_textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Teammate" />
+        android:gravity="center_horizontal"
+        android:paddingVertical="@dimen/activity_vertical_margin"
+        android:text="Teammate"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
     <ListView
         android:id="@+id/teammateProjects_listView"

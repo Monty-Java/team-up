@@ -8,9 +8,9 @@
         android:id="@+id/add_tag_textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
         android:text="Add A New Tag"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-        android:layout_centerHorizontal="true"/>
+        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
     <EditText
         android:id="@+id/add_tag_editText"

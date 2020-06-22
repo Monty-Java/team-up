@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:text="Edit or Remove Tag"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
     <EditText
         android:id="@+id/editTagDialog_editText"
