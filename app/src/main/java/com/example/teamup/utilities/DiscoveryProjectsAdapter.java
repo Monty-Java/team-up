@@ -14,8 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.teamup.activity.ProjectActivity;
 import com.example.teamup.R;
+import com.example.teamup.activity.ProjectActivity;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -98,14 +98,16 @@ public class DiscoveryProjectsAdapter
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
             projects.clear();
-            projects.addAll((Collection<? extends Progetto>) results.values);
+
+            @SuppressWarnings(value = "unchecked")
+            Collection<? extends Progetto> progetti = (Collection<? extends Progetto>) results.values;
+
+            projects.addAll(progetti);
             notifyDataSetChanged();
         }
     };
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-
-        private Progetto project;
 
         private final ConstraintLayout projectLayout;
         private final TextView projectTitle;
@@ -123,10 +125,11 @@ public class DiscoveryProjectsAdapter
         }
 
         void bindTo(Progetto project) {
-            this.project = project;
 
             projectTitle.setText(project.getTitolo());
-            projectTags.setText("Tags: " + project.getEtichette().toString());
+
+            String tagsText = "Tags: " + project.getEtichette().toString();
+            projectTags.setText(tagsText);
 
 
             projectLayout.setOnClickListener(this);

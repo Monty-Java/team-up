@@ -9,7 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:text="Add A New Objective"
+        android:text="@string/objective_dialog_title"
         android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
     <EditText
@@ -18,7 +18,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:hint="New Objective" />
+        android:hint="@string/new_objective_hint"
+        android:inputType="textCapSentences"
+        android:importantForAutofill="no" />
 
     <Button
         android:id="@+id/add_objective_positiveButton"
@@ -26,14 +28,14 @@
         android:layout_toEndOf="@+id/add_objective_negativeButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="OK" />
+        android:text="@string/ok_text" />
 
     <Button
         android:id="@+id/add_objective_negativeButton"
         android:layout_below="@id/add_objective_editText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Cancel" />
+        android:text="@string/cancel_text" />
 
 
 </RelativeLayout>

@@ -4,17 +4,20 @@
     <string name="nav_header_title">Android Studio</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
-    <string name="action_settings">Settings</string>
 
     <string name="menu_projects">My Projects</string>
     <string name="menu_profile">My Profile</string>
     <string name="menu_discover">Discover</string>
-    <string name="menu_settings">Settings</string>
     <string name="menu_logout">Log Out</string>
 
     <string name="home_second">Home Second</string>
     <string name="verify_account_title">Verify Account</string>
     <string name="verify_account_message">Please check your e-mail for the verification link to activate your account.</string>
+
+    <string name="teammte_request_text">Would you like to send a request to become a teammate for this project?</string>
+
+    <string name="accept_text">Accept</string>
+    <string name="reject_text">Reject</string>
 
     <!-- EditText hints -->
     <string name="hint_name">Name</string>
@@ -23,9 +26,48 @@
     <string name="hint_pass">Password</string>
     <string name="hint_skills">Skills</string>
 
-    <string name="app_mission">TeamUp! vuole andare incontro a tutte le persone che hanno dovuto rinunciare o hanno riscontrato difficoltà nel realizzare i propri progetti, cercando di riunire persone con lo stesso obiettivo o passione in modo tale da potersi aiutare a vicenda.</string>
-    <string name="prompt_sign_in">Sign In to an Existing Account</string>
-    <string name="login">Log In</string>
-
     <string name="default_notification_channel_id">CH_01</string>
+    <string name="teamup_logo_description">TeamUp Logo</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Password</string>
+    <string name="login_text">Login</string>
+    <string name="new_account_prompt_text">No account yet? Create one</string>
+    <string name="profile_pic_description">Profile Picture</string>
+    <string name="skills_text">Skills</string>
+    <string name="objectives_text">Objectives</string>
+    <string name="team_text">Team</string>
+    <string name="project_description_text">Project description</string>
+    <string name="create_account_text">Create Account</string>
+    <string name="login_prompt_text">Already a member? Login</string>
+    <string name="pay_text">Pay</string>
+    <string name="objective_dialog_title">Add A New Objective</string>
+    <string name="new_objective_hint">New Objective</string>
+    <string name="ok_text">OK</string>
+    <string name="cancel_text">Cancel</string>
+    <string name="tag_dialog_title">Add A New Tag</string>
+    <string name="tag_dialog_hint">New Project Tag</string>
+    <string name="skill_dialog_title">Add A New Skill</string>
+    <string name="skill_dialog_hint">My New Skill</string>
+    <string name="default_project_title">My Project</string>
+    <string name="default_tag_text">Project Tag</string>
+    <string name="edit_project_description_dialog_title">Edit Project Description</string>
+    <string name="project_description_hint">Project Description</string>
+    <string name="edit_tag_dialog_title">Edit or Remove Tag</string>
+    <string name="tag_hint">Tag</string>
+    <string name="remove_text">Remove</string>
+    <string name="display_name_text">Display Name</string>
+    <string name="view_skills_text">View Skills</string>
+    <string name="leader_text">Leader</string>
+    <string name="teammate_text">Teammate</string>
+    <string name="new_project_dialog_title">New Project</string>
+    <string name="tags_hint">Tags</string>
+    <string name="confirm_text">Confirm</string>
+    <string name="add_skill_prompt">Add Skill</string>
+    <string name="details_dialog_title">Project Details</string>
+    <string name="default_project_id_text">Project ID</string>
+    <string name="add_tag_prompt">Add Tag</string>
+    <string name="home_menu_option">Home</string>
+    <string name="pay_menu_option">Increase Project Visibility</string>
+    <string name="leave_project_menu_option">Leave Project</string>
+    <string name="close_text">Close</string>
 </resources>

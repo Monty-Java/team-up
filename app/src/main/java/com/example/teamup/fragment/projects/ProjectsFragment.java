@@ -24,9 +24,9 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ProjectsFragment extends Fragment {
-    private static final String TAG = ProjectsFragment.class.getSimpleName();
 
     //  UI
     private List<String> leaderProjectsList;
@@ -37,7 +37,7 @@ public class ProjectsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        final MainActivity activity = (MainActivity) getActivity();
+        final MainActivity activity = (MainActivity) requireActivity();
         firestoreUtils = new FirestoreUtils(activity.firestoreUtils.getFirestoreInstance());
 
         View root = inflater.inflate(R.layout.fragment_projects, container, false);
@@ -80,10 +80,10 @@ public class ProjectsFragment extends Fragment {
             if (task.isSuccessful()) {
                 leaderProjectsList = new ArrayList<>();
 
-                for (QueryDocumentSnapshot snapshot : task.getResult())
-                    leaderProjectsList.add(snapshot.getData().get(FirestoreUtils.KEY_TITLE).toString());
+                for (QueryDocumentSnapshot snapshot : Objects.requireNonNull(task.getResult()))
+                    leaderProjectsList.add((String) snapshot.getData().get(FirestoreUtils.KEY_TITLE));
 
-                ArrayAdapter<String> listAdapter = new ArrayAdapter<String>(
+                ArrayAdapter<String> listAdapter = new ArrayAdapter<>(
                         activity,
                         android.R.layout.simple_list_item_1,
                         leaderProjectsList
@@ -96,20 +96,23 @@ public class ProjectsFragment extends Fragment {
         firebaseFirestore.collection(FirestoreUtils.KEY_PROJECTS).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 teammateProjectsList = new ArrayList<>();
-                for (DocumentSnapshot snapshot : task.getResult()) {
+                for (DocumentSnapshot snapshot : Objects.requireNonNull(task.getResult())) {
 
                     //  Aggiunge i progetti che contengono il campo "teammates" nella lista teammateProjectsList
-                    if (snapshot.getData().containsKey(FirestoreUtils.KEY_TEAMMATES)) {
-                        List<String> team = (List<String>) snapshot.getData().get(FirestoreUtils.KEY_TEAMMATES);
+                    if (Objects.requireNonNull(snapshot.getData()).containsKey(FirestoreUtils.KEY_TEAMMATES)) {
+                        @SuppressWarnings(value = "unchecked") List<String> team = (List<String>) snapshot.getData().get(FirestoreUtils.KEY_TEAMMATES);
 
-                        //  Itera la lista team cercando i progetti in cui l'utente corrente è coinvolto
-                        for (String s : team) {
-                            if (s.contains(firebaseUser.getDisplayName())) {
-                                teammateProjectsList.add(snapshot.getData().get(FirestoreUtils.KEY_TITLE).toString());
+                        if (team != null) {
+                            //  Itera la lista team cercando i progetti in cui l'utente corrente è coinvolto
+                            for (String s : team) {
+                                if (s.contains(Objects.requireNonNull(firebaseUser.getDisplayName()))) {
+                                    teammateProjectsList.add((String) snapshot.getData().get(FirestoreUtils.KEY_TITLE));
+                                }
                             }
                         }
 
-                        ArrayAdapter<String> listAdapter = new ArrayAdapter<String>(
+
+                        ArrayAdapter<String> listAdapter = new ArrayAdapter<>(
                                 activity,
                                 android.R.layout.simple_list_item_1,
                                 teammateProjectsList

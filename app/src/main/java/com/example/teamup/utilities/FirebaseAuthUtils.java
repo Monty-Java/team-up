@@ -53,9 +53,12 @@ public class FirebaseAuthUtils {
     private void obtainToken() {
         //  Ottiene un token che permette a inviare notifiche ad altri dispositivi
         FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(task -> {
-            if (task.isSuccessful())
-                firestoreUtils.updateUserData(firebaseAuth.getCurrentUser().getDisplayName(), "token",
-                        task.getResult().getToken());
+            if (task.isSuccessful()) {
+                String username = Objects.requireNonNull(firebaseAuth.getCurrentUser()).getDisplayName();
+                String token = Objects.requireNonNull(task.getResult()).getToken();
+
+                firestoreUtils.updateUserData(username, "token", token);
+            }
         });
     }
 
@@ -113,7 +116,7 @@ public class FirebaseAuthUtils {
 
                 // On complete call either onLoginSuccess or onLoginFailed
                 new android.os.Handler().post(
-                        onLoginSuccessful::run);
+                        onLoginSuccessful);
             } else {
                 Log.e(TAG, "Login Failed");
 
@@ -126,7 +129,8 @@ public class FirebaseAuthUtils {
         Log.d(TAG, "logout");
 
         //  Rimuove il Token associato all'utente corrente
-        firestoreUtils.updateUserData(firebaseAuth.getCurrentUser().getDisplayName(), "token", FieldValue.delete());
+        String username = Objects.requireNonNull(firebaseAuth.getCurrentUser()).getDisplayName();
+        firestoreUtils.updateUserData(username, "token", FieldValue.delete());
 
         FirebaseAuth.getInstance().signOut();
         Intent logoutIntent = new Intent(activity, LoginActivity.class);

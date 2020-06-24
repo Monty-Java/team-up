@@ -97,11 +97,11 @@ public class ProfileFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == TAKE_IMAGE_CODE) {
-            switch (resultCode) {
-                case RESULT_OK:
-                    Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-                    mProfilePicImageView.setImageBitmap(bitmap);
-                    handleUpload(bitmap);
+            if (resultCode == RESULT_OK) {
+                assert data != null;
+                Bitmap bitmap = (Bitmap) Objects.requireNonNull(data.getExtras()).get("data");
+                mProfilePicImageView.setImageBitmap(bitmap);
+                if (bitmap != null) handleUpload(bitmap);
             }
         }
     }
@@ -111,23 +111,27 @@ public class ProfileFragment extends Fragment {
         firestoreUtils.getFirestoreInstance().collection(FirestoreUtils.KEY_USERS)
                 .get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                for (DocumentSnapshot snapshot : task.getResult()) {
+                for (DocumentSnapshot snapshot : Objects.requireNonNull(task.getResult())) {
                     if (snapshot.getReference().getId().equals(user.getEmail())) {
+
+                        @SuppressWarnings(value = "unchecked")
+                        List<String> skills = (List<String>) Objects.requireNonNull(snapshot.getData()).get(FirestoreUtils.KEY_SKILLS);
+
                         mUser = new Utente(
                                 user.getPhotoUrl(),
                                 user.getDisplayName(),
                                 user.getEmail(),
-                                (List<String>) snapshot.getData().get(FirestoreUtils.KEY_SKILLS));
+                                skills);
                         break;
                     }
                 }
 
                 if (mUser.getProfileImageUri() != null) {
-                    Glide.with(this.getContext())
+                    Glide.with(this.requireContext())
                             .load(mUser.getProfileImageUri())
                             .into(mProfilePicImageView);
                 } else {
-                    Glide.with(this.getContext())
+                    Glide.with(this.requireContext())
                             .load(R.drawable.default_profile_image)
                             .into(mProfilePicImageView);
                 }
@@ -141,14 +145,14 @@ public class ProfileFragment extends Fragment {
     }
 
     private void viewUserSkills() {
-        Dialog skillsDialog = new Dialog(this.getContext());
+        Dialog skillsDialog = new Dialog(this.requireContext());
         skillsDialog.setContentView(R.layout.profile_skills_dialog);
         ListView skillsListView = skillsDialog.findViewById(R.id.skillsListView);
         Button addSkillButton = skillsDialog.findViewById(R.id.addSkillButton);
         Button closeButton = skillsDialog.findViewById(R.id.closeDialogButton);
 
         ArrayAdapter<String> skillsAdapter = new ArrayAdapter<>(
-                this.getContext(),
+                this.requireContext(),
                 android.R.layout.simple_list_item_1,
                 mUser.getComptetenze()
         );
@@ -184,7 +188,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private void addSkill() {
-        Dialog addSkillDialog = new Dialog(this.getContext());
+        Dialog addSkillDialog = new Dialog(this.requireContext());
         addSkillDialog.setContentView(R.layout.add_skill_dialog);
         Button positiveButton = addSkillDialog.findViewById(R.id.add_skill_positiveButton);
         Button negativeButton = addSkillDialog.findViewById(R.id.add_skill_negativeButton);
@@ -230,15 +234,16 @@ public class ProfileFragment extends Fragment {
     private void setUserProfileUrl(Uri uri) {
         Log.d(TAG, "setUserProfileUrl");
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = firebaseAuthUtils.getCurrentUser();
+        if (user != null) {
+            UserProfileChangeRequest request = new UserProfileChangeRequest.Builder()
+                    .setPhotoUri(uri)
+                    .build();
 
-        UserProfileChangeRequest request = new UserProfileChangeRequest.Builder()
-                .setPhotoUri(uri)
-                .build();
-
-        user.updateProfile(request)
-                .addOnSuccessListener(aVoid -> Toast.makeText(requireActivity(), "Updated successfully", Toast.LENGTH_SHORT).show())
-                .addOnFailureListener(e -> Toast.makeText(requireActivity(), "Profile image failed...", Toast.LENGTH_SHORT).show());
+            user.updateProfile(request)
+                    .addOnSuccessListener(aVoid -> Toast.makeText(requireActivity(), "Updated successfully", Toast.LENGTH_SHORT).show())
+                    .addOnFailureListener(e -> Toast.makeText(requireActivity(), "Profile image failed...", Toast.LENGTH_SHORT).show());
+        } else Toast.makeText(this.requireContext(), "Error. Unable to obtain user data", Toast.LENGTH_LONG).show();
     }
 
     @Override

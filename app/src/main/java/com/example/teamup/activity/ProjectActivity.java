@@ -23,8 +23,8 @@ import com.example.teamup.utilities.FirebaseAuthUtils;
 import com.example.teamup.utilities.FirestoreUtils;
 import com.example.teamup.utilities.NotificationType;
 import com.example.teamup.utilities.Progetto;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
@@ -48,10 +48,6 @@ public class ProjectActivity extends AppCompatActivity {
     private ListView mTeammatesList;
     private TextView mDescriptionTextView;
     private TextView mProgressTextView;
-    private FloatingActionButton mFab;
-
-    private ArrayAdapter<String> mObjectivesAdapter;
-    private ArrayAdapter<String> mTeammatesAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,11 +58,14 @@ public class ProjectActivity extends AppCompatActivity {
         mTeammatesList = findViewById(R.id.team_listView);
         mDescriptionTextView = findViewById(R.id.description_textView);
         mProgressTextView = findViewById(R.id.progress_textView);
-        mFab = findViewById(R.id.floatingActionButton);
 
         firestoreUtils = new FirestoreUtils(FirebaseFirestore.getInstance());
         firebaseAuthUtils = new FirebaseAuthUtils(FirebaseAuth.getInstance(), firestoreUtils.getFirestoreInstance(), this);
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
         Intent intent = getIntent();
         readProjectData(intent.getStringExtra(FirestoreUtils.KEY_TITLE));
     }
@@ -88,7 +87,7 @@ public class ProjectActivity extends AppCompatActivity {
                 onDetailsClick();
                 break;
             case R.id.action_sponsor:
-                if (firebaseAuthUtils.getCurrentUser().getDisplayName().equals(progetto.getLeader())) {
+                if (Objects.equals(firebaseAuthUtils.getCurrentUser().getDisplayName(), progetto.getLeader())) {
                     Intent sponsorIntent = new Intent(this, SponsorProjectActivity.class);
                     sponsorIntent.putExtra("project", progetto.getTitolo());
                     startActivity(sponsorIntent);
@@ -115,14 +114,16 @@ public class ProjectActivity extends AppCompatActivity {
         Button closeButton = detailsDialog.findViewById(R.id.closeDialogButton);
         Button addTagButton = detailsDialog.findViewById(R.id.addTagButton);
 
-        projectId.setText("Project ID: " + progetto.getId());
+        String projectIdText = "Project ID: " + progetto.getId();
+        projectId.setText(projectIdText);
         ArrayAdapter<String> tagsAdapter = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_list_item_1,
                 progetto.getEtichette());
         projectTags.setAdapter(tagsAdapter);
 
-        if (firebaseAuthUtils.getCurrentUser().getDisplayName().equals(progetto.getLeader())) {
+
+        if (Objects.equals(firebaseAuthUtils.getCurrentUser().getDisplayName(), progetto.getLeader())) {
             projectTags.setOnItemClickListener((parent, view, position, id) -> {
                         String tag = projectTags.getItemAtPosition(position).toString();
                         editProjectTags(tag);
@@ -161,7 +162,7 @@ public class ProjectActivity extends AppCompatActivity {
                 progetto.addObiettivoDaRaggiungere(addObjectiveEditText.getText().toString());
                 firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_OBJ, progetto.getObiettivi());
                 addObjectiveDialog.dismiss();
-            }
+            } else addObjectiveEditText.setError("Objective field cannot be empty");
         });
 
         addObjectiveDialog.show();
@@ -171,16 +172,17 @@ public class ProjectActivity extends AppCompatActivity {
         AlertDialog.Builder teammateRequestDialogBuilder = new AlertDialog.Builder(this);
         teammateRequestDialogBuilder.setTitle("Become a Teammate!");
         TextView requestTextView = new TextView(this);
-        requestTextView.setText("Would you like to send a request to become a teammate for this project?");
+        requestTextView.setText(R.string.teammte_request_text);
         teammateRequestDialogBuilder.setView(requestTextView);
-        teammateRequestDialogBuilder.setPositiveButton("OK", (dialog, which) -> {
 
-            firestoreUtils.storeNotification(progetto.getTitolo(), progetto.getLeader(), firebaseAuthUtils.getCurrentUser().getDisplayName(), firebaseAuthUtils.getCurrentUser().getUid(), NotificationType.TEAMMATE_REQUEST);
-        });
-        teammateRequestDialogBuilder.setNegativeButton("Cancel", (dialog, which) -> {
-            dialog.cancel();
-            dialog.dismiss();
-        });
+        teammateRequestDialogBuilder.setPositiveButton(R.string.ok_text, (dialog, which) ->
+                firestoreUtils.storeNotification(progetto.getTitolo(),
+                        progetto.getLeader(),
+                        firebaseAuthUtils.getCurrentUser().getDisplayName(),
+                        firebaseAuthUtils.getCurrentUser().getUid(),
+                        NotificationType.TEAMMATE_REQUEST));
+
+        teammateRequestDialogBuilder.setNegativeButton(R.string.cancel_text, (dialog, which) -> dialog.dismiss());
         AlertDialog teammateRequestDialog = teammateRequestDialogBuilder.create();
         teammateRequestDialog.show();
     }
@@ -224,6 +226,7 @@ public class ProjectActivity extends AppCompatActivity {
         EditText addTagEditText = addTagDialog.findViewById(R.id.add_tag_editText);
         Button addTagPositiveButton = addTagDialog.findViewById(R.id.add_tag_positiveButton);
         Button addTagNegativeButton = addTagDialog.findViewById(R.id.add_tag_negativeButton);
+
         addTagNegativeButton.setOnClickListener(v -> addTagDialog.dismiss());
 
         addTagPositiveButton.setOnClickListener(v -> {
@@ -231,9 +234,8 @@ public class ProjectActivity extends AppCompatActivity {
                 progetto.getEtichette().add(addTagEditText.getText().toString());
                 firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_TAGS, progetto.getEtichette());
                 addTagDialog.dismiss();
-            } else {
-                //  TODO: quella roba di errore nell'edit text che non so fare
-            }
+            } else
+                addTagEditText.setError("Tag field cannot be empty");
         });
         addTagDialog.show();
     }
@@ -244,6 +246,7 @@ public class ProjectActivity extends AppCompatActivity {
         EditText editDescriptionEditText = editDescriptionDialog.findViewById(R.id.edit_description_editText);
         Button editDescriptionPositiveButton = editDescriptionDialog.findViewById(R.id.edit_description_positiveButton);
         Button editDescriptionNegativeButton = editDescriptionDialog.findViewById(R.id.edit_description_negativeButton);
+
         editDescriptionNegativeButton.setOnClickListener(v -> editDescriptionDialog.dismiss());
 
         editDescriptionPositiveButton.setOnClickListener(v -> {
@@ -251,7 +254,8 @@ public class ProjectActivity extends AppCompatActivity {
                 progetto.setDescrizione(editDescriptionEditText.getText().toString());
                 firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_DESC, progetto.getDescrizione());
                 editDescriptionDialog.dismiss();
-            }
+            } else
+                editDescriptionEditText.setError("Project needs a description");
         });
         editDescriptionDialog.show();
     }
@@ -261,8 +265,6 @@ public class ProjectActivity extends AppCompatActivity {
             Intent teammateProfileIntent = new Intent(this, TeammateProfileActivity.class);
             teammateProfileIntent.putExtra("teammate", teammate);
             startActivity(teammateProfileIntent);
-        } else {
-            //  TODO: possibilmente aprire il fragment del proprio profilo personale?
         }
     }
 
@@ -270,7 +272,7 @@ public class ProjectActivity extends AppCompatActivity {
      * Ottiene da Firestore i dati relativi al progetto indicato da title
      * e istanzia un oggetto Progetto con le informazioni lette
      *
-     * @param title
+     * @param title: titolo del progetto
      */
     public void readProjectData(String title) {
         Map<String, Object> data = new HashMap<>();
@@ -280,22 +282,31 @@ public class ProjectActivity extends AppCompatActivity {
 
         query.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                data.putAll(task.getResult().getDocuments().get(0).getData());
-                data.put(KEY_ID, task.getResult().getDocuments().get(0).getId());
-                data.putIfAbsent(FirestoreUtils.KEY_SPONSORED, false);
+                //  Ottiene i dati da Firestore, assicurando che non siano null
+                List<DocumentSnapshot> documents = Objects.requireNonNull(task.getResult()).getDocuments();
+                Map<String, Object> firestoreData = Objects.requireNonNull(documents.get(0).getData());
 
-                List<String> team = new ArrayList<>();
-                if (data.get(FirestoreUtils.KEY_TEAMMATES) != null)
-                    team.addAll((List<String>) data.get(FirestoreUtils.KEY_TEAMMATES));
+                data.putAll(firestoreData);
+                data.put(KEY_ID, documents.get(0).getId());
+                data.putIfAbsent(FirestoreUtils.KEY_SPONSORED, false);
+                data.putIfAbsent(FirestoreUtils.KEY_TEAMMATES, new ArrayList<String>());
+
+                //  I cast sono giustificati in quanto gli elementi, se presenti nel database sono sempre dei tipi specificati
+                @SuppressWarnings(value = "unchecked")
+                List<String> team = new ArrayList<>((List<String>) Objects.requireNonNull(data.get(FirestoreUtils.KEY_TEAMMATES)));
+                @SuppressWarnings(value = "unchecked")
+                List<String> tags = new ArrayList<>((List<String>) Objects.requireNonNull(data.get(FirestoreUtils.KEY_TAGS)));
+                @SuppressWarnings(value = "unchecked")
+                Map<String, Boolean> objective = new HashMap<>((Map<String, Boolean>) Objects.requireNonNull(data.get(FirestoreUtils.KEY_OBJ)));
 
                 progetto = new Progetto(
-                        data.get(KEY_ID).toString(),
-                        Objects.requireNonNull(data.get(FirestoreUtils.KEY_LEADER)).toString(),
-                        data.get(FirestoreUtils.KEY_TITLE).toString(),
-                        data.get(FirestoreUtils.KEY_DESC).toString(),
-                        (List<String>) data.get(FirestoreUtils.KEY_TAGS),
+                        (String) data.get(KEY_ID),
+                        (String) data.get(FirestoreUtils.KEY_LEADER),
+                        (String) data.get(FirestoreUtils.KEY_TITLE),
+                        (String) data.get(FirestoreUtils.KEY_DESC),
+                        tags,
                         team,
-                        (Map<String, Boolean>) data.get(FirestoreUtils.KEY_OBJ),
+                        objective,
                         (boolean) data.get(FirestoreUtils.KEY_SPONSORED));
 
                 displayProject(progetto);
@@ -307,15 +318,12 @@ public class ProjectActivity extends AppCompatActivity {
     /**
      * Visualizza le informazioni relative al progetto
      *
-     * @param project
+     * @param project: progetto da visualizzare
      */
     private void displayProject(Progetto project) {
         Log.d(TAG, "displayProject");
 
         this.setTitle(project.getTitolo());
-
-        if (!project.getLeader().equals(firebaseAuthUtils.getCurrentUser().getDisplayName()))
-            mFab.hide();
 
         //  Calcola il progresso totale del progetto prima di rimuovere la lista di obiettivi completi
         updateProgress(project);
@@ -327,7 +335,7 @@ public class ProjectActivity extends AppCompatActivity {
 
         //  Imposta le ListView per visualizzare gli obiettivi e i teammates
         List<String> objectivesList = new ArrayList<>(project.getObiettivi().keySet());
-        mObjectivesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
+        ArrayAdapter<String> mObjectivesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
                 objectivesList);
 
         List<String> team = new ArrayList<>();
@@ -335,7 +343,7 @@ public class ProjectActivity extends AppCompatActivity {
         if (project.hasTeammates())
             team.addAll(project.getTeammates());
 
-        mTeammatesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
+        ArrayAdapter<String> mTeammatesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
                 team);
         mObjectivesList.setAdapter(mObjectivesAdapter);
         mTeammatesList.setAdapter(mTeammatesAdapter);
@@ -357,7 +365,7 @@ public class ProjectActivity extends AppCompatActivity {
                 if (progetto.getLeader().equals(firebaseAuthUtils.getCurrentUser().getDisplayName())) {
                     String objective = mObjectivesList.getItemAtPosition(position).toString();
 
-                    if (!progetto.getObiettivi().get(objective)) {
+                    if (!Objects.requireNonNull(progetto.getObiettivi().get(objective))) {
                         progetto.setObiettivoRaggiunto(objective);
                         firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_OBJ, progetto.getObiettivi());
                     }
@@ -374,20 +382,19 @@ public class ProjectActivity extends AppCompatActivity {
     }
 
     public void updateProgress(Progetto project) {
-        Log.d(TAG, "updateProgress");
-
-        mProgressTextView.setText("Progress: " + (int) ((project.obiettiviCompleti() / project.numeroObiettivi()) * 100) + '%');
+        String progressText = "Progress: " + (int) ((project.obiettiviCompleti() / project.numeroObiettivi()) * 100) + '%';
+        mProgressTextView.setText(progressText);
     }
 
     private void leaveProject() {
-        if (!firebaseAuthUtils.getCurrentUser().getDisplayName().equals(progetto.getLeader()) &&
+        if (!Objects.equals(firebaseAuthUtils.getCurrentUser().getDisplayName(), progetto.getLeader()) &&
                 progetto.getTeammates().contains(firebaseAuthUtils.getCurrentUser().getDisplayName())) {
             AlertDialog.Builder leaveProjectDialogBuilder = new AlertDialog.Builder(this);
             leaveProjectDialogBuilder.setTitle("Leave Project");
             leaveProjectDialogBuilder.setMessage("Are you sure you want to leave the team on project " +
                     progetto.getTitolo() + "? This action cannot be undone (although you can always request to rejoin later).");
 
-            leaveProjectDialogBuilder.setPositiveButton("OK", ((dialog, which) -> {
+            leaveProjectDialogBuilder.setPositiveButton(R.string.ok_text, ((dialog, which) -> {
                 progetto.removeTeammate(firebaseAuthUtils.getCurrentUser().getDisplayName());
                 firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_TEAMMATES, progetto.getTeammates());
                 dialog.dismiss();
@@ -397,9 +404,7 @@ public class ProjectActivity extends AppCompatActivity {
                 finish();
             }));
 
-            leaveProjectDialogBuilder.setNegativeButton("Cancel", (((dialog, which) -> {
-                dialog.dismiss();
-            })));
+            leaveProjectDialogBuilder.setNegativeButton(R.string.cancel_text, (((dialog, which) -> dialog.dismiss())));
 
             AlertDialog leaveTeamDialog = leaveProjectDialogBuilder.create();
             leaveTeamDialog.show();

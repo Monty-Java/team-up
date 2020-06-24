@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:padding="@dimen/activity_horizontal_margin">
@@ -12,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:padding="@dimen/activity_vertical_margin"
-        android:text="Project Details"
+        android:text="@string/details_dialog_title"
         android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
     <TextView
@@ -22,7 +20,7 @@
         android:padding="@dimen/activity_vertical_margin"
         android:layout_below="@+id/details_dialog_title"
         android:layout_centerHorizontal="true"
-        android:text="TextView" />
+        android:text="@string/default_project_id_text" />
 
     <TextView
         android:id="@+id/tags_title"
@@ -30,7 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/projectId_textView"
         android:layout_centerHorizontal="true"
-        android:text="Tags"
+        android:text="@string/tags_hint"
         android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
     <ListView
@@ -47,7 +45,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/tagsListView"
         android:layout_toStartOf="@+id/addTagButton"
-        android:text="Close" />
+        android:text="@string/close_text" />
 
     <Button
         android:id="@+id/addTagButton"
@@ -55,6 +53,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/tagsListView"
         android:layout_alignParentEnd="true"
-        android:text="Add Tag"/>
+        android:text="@string/add_tag_prompt"/>
 
 </RelativeLayout>

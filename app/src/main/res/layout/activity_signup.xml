@@ -19,7 +19,8 @@
             android:layout_height="130dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="24dp"
-            android:src="@drawable/team_up_logo" />
+            android:src="@drawable/team_up_logo"
+            android:contentDescription="@string/teamup_logo_description" />
 
         <!--  Name Label -->
         <com.google.android.material.textfield.TextInputLayout
@@ -31,7 +32,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textCapWords"
-                android:hint="@string/hint_name" />
+                android:hint="@string/hint_name"
+                android:importantForAutofill="no" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!--  Surname Label -->
@@ -44,7 +46,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textCapWords"
-                android:hint="@string/hint_surname" />
+                android:hint="@string/hint_surname"
+                android:importantForAutofill="no"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Email Label -->
@@ -57,7 +60,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textEmailAddress"
-                android:hint="@string/hint_email" />
+                android:hint="@string/hint_email"
+                android:importantForAutofill="no"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Password Label -->
@@ -70,7 +74,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
-                android:hint="@string/hint_pass"/>
+                android:hint="@string/hint_pass"
+                android:importantForAutofill="no"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!--  Skills Label -->
@@ -83,7 +88,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textCapWords"
-                android:hint="@string/hint_skills" />
+                android:hint="@string/hint_skills"
+                android:importantForAutofill="no"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Signup Button -->
@@ -94,16 +100,16 @@
             android:layout_marginTop="24dp"
             android:layout_marginBottom="24dp"
             android:padding="12dp"
-            android:text="Create Account"
+            android:text="@string/create_account_text"
             android:onClick="onSignupClick"/>
 
         <TextView android:id="@+id/link_login"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
-            android:text="Already a member? Login"
+            android:text="@string/login_prompt_text"
             android:gravity="center"
-            android:textSize="16dip"
+            android:textSize="16sp"
             android:onClick="onLoginClick"/>
 
     </LinearLayout>

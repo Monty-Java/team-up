@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:padding="@dimen/activity_horizontal_margin">
@@ -12,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:padding="@dimen/activity_vertical_margin"
-        android:text="Skills"
+        android:text="@string/skills_text"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"/>
 
     <ListView
@@ -28,15 +26,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/skillsListView"
-        android:layout_alignParentRight="true"
-        android:text="Close" />
+        android:layout_toStartOf="@+id/addSkillButton"
+        android:text="@string/close_text" />
 
     <Button
         android:id="@+id/addSkillButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
         android:layout_below="@id/skillsListView"
-        android:text="Add Skill" />
+        android:text="@string/add_skill_prompt" />
 
 </RelativeLayout>

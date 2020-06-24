@@ -1,7 +1,6 @@
 package com.example.teamup.activity;
 
 import android.app.Dialog;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -17,6 +16,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
@@ -27,11 +27,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -75,7 +71,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 R.id.nav_projects, R.id.nav_profile, R.id.nav_discover, R.id.nav_logout)
                 .setDrawerLayout(drawer)
                 .build();
-        navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        NavHostFragment hostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+        assert hostFragment != null;
+        navController = hostFragment.getNavController();
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
@@ -86,6 +84,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         firebaseAuthUtils = new FirebaseAuthUtils(FirebaseAuth.getInstance(), FirebaseFirestore.getInstance(), this);
         firestoreUtils = firebaseAuthUtils.getFirestoreUtils();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
         FirebaseUser firebaseUser = firebaseAuthUtils.getCurrentUser();
         if (firebaseUser != null) {
             //  Aggiorna l'UI con i dati dell'utente
@@ -101,7 +105,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         final Dialog newProjectDialog = new Dialog(MainActivity.this);
         newProjectDialog.setContentView(R.layout.new_project_dialog);
         TextView leader = newProjectDialog.findViewById(R.id.leaderName_textView);
-        leader.setText("Leader: " + userDisplayName.getText().toString());
+
+        String leaderText = "Leader: " + userDisplayName.getText().toString();
+        leader.setText(leaderText);
+
         Button newProjectConfirmButton = newProjectDialog.findViewById(R.id.button_confirmNewProject);
         newProjectConfirmButton.setOnClickListener(v -> {
             EditText title = newProjectDialog.findViewById(R.id.projectTitle_editText);

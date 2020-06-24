@@ -4,25 +4,25 @@
     <item
         android:id="@+id/action_home"
         android:orderInCategory="100"
-        android:title="Home"
+        android:title="@string/home_menu_option"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_sponsor"
         android:orderInCategory="200"
-        android:title="Increase Project Visibility"
+        android:title="@string/pay_menu_option"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_details"
         android:orderInCategory="300"
-        android:title="Project Details"
+        android:title="@string/details_dialog_title"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_leave"
         android:orderInCategory="400"
-        android:title="Leave Project"
+        android:title="@string/leave_project_menu_option"
         app:showAsAction="never" />
 
 </menu>

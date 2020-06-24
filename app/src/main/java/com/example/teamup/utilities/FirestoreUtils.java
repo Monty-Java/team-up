@@ -70,7 +70,8 @@ public class FirestoreUtils {
 
                 Log.d(TAG, newData.toString());
 
-                task.getResult().getDocuments().get(0).getReference()
+                DocumentSnapshot snapshot = Objects.requireNonNull(task.getResult()).getDocuments().get(0);
+                snapshot.getReference()
                         .set(newData, SetOptions.merge()).addOnCompleteListener(t -> {
                     if (t.isSuccessful()) {
                         Log.d(TAG, "Document updated");
@@ -86,14 +87,16 @@ public class FirestoreUtils {
                 .get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
 
-                Map<String, Object> notif = new HashMap<String, Object>();
+                Map<String, Object> notif = new HashMap<>();
                 notif.put(NotificationUtils.SENDER, userName);
                 notif.put(NotificationUtils.UID, uid);
                 notif.put(NotificationUtils.RECIPIENT, recipientDisplayName);
                 notif.put(NotificationUtils.PROJECT, projectTitle);
                 notif.put(NotificationUtils.TYPE, notifType);
 
-                task.getResult().getDocuments().get(0).getReference()
+                DocumentSnapshot snapshot = Objects.requireNonNull(task.getResult()).getDocuments().get(0);
+
+                snapshot.getReference()
                         .collection(KEY_NOTIFICATIONS)
                         .document()
                         .set(notif, SetOptions.merge()).addOnCompleteListener(t -> {
@@ -128,7 +131,9 @@ public class FirestoreUtils {
                         Map<String, Object> newData = new HashMap<>();
                         newData.put(field, data);
 
-                        task.getResult().getReference().set(newData, SetOptions.merge()).addOnCompleteListener(t -> {
+                        DocumentReference reference = Objects.requireNonNull(task.getResult()).getReference();
+
+                        reference.set(newData, SetOptions.merge()).addOnCompleteListener(t -> {
                             if (t.isSuccessful()) {
                                 Log.d(TAG, "Document updated");
                             } else {
@@ -156,9 +161,7 @@ public class FirestoreUtils {
                 .child(uid + ".jpeg");
         try {
             File localProfilePic = File.createTempFile("profile_pic", "jpeg");
-            gsReference.getFile(localProfilePic).addOnSuccessListener(taskSnapshot -> {
-                imageView.setImageURI(Uri.fromFile(localProfilePic));
-            });
+            gsReference.getFile(localProfilePic).addOnSuccessListener(taskSnapshot -> imageView.setImageURI(Uri.fromFile(localProfilePic)));
         } catch (IOException e) {
             e.printStackTrace();
         }

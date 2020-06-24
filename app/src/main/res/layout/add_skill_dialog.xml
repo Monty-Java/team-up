@@ -9,7 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:text="Add A New Skill"
+        android:text="@string/skill_dialog_title"
         android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
     <EditText
@@ -18,7 +18,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:hint="My New Skill" />
+        android:hint="@string/skill_dialog_hint"
+        android:importantForAutofill="no"
+        android:inputType="textCapWords" />
 
     <Button
         android:id="@+id/add_skill_positiveButton"
@@ -26,14 +28,13 @@
         android:layout_toEndOf="@+id/add_skill_negativeButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="OK" />
+        android:text="@string/ok_text" />
 
     <Button
         android:id="@+id/add_skill_negativeButton"
         android:layout_below="@id/add_skill_editText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Cancel" />
-
+        android:text="@string/cancel_text" />
 
 </RelativeLayout>

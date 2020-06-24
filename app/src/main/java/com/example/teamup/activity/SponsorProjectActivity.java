@@ -6,6 +6,7 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -13,7 +14,10 @@ import com.anjlab.android.iab.v3.BillingProcessor;
 import com.anjlab.android.iab.v3.TransactionDetails;
 import com.example.teamup.R;
 import com.example.teamup.utilities.FirestoreUtils;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Objects;
 
 public class SponsorProjectActivity extends AppCompatActivity implements BillingProcessor.IBillingHandler {
     public static final String TAG = SponsorProjectActivity.class.getSimpleName();
@@ -43,7 +47,8 @@ public class SponsorProjectActivity extends AppCompatActivity implements Billing
                 .whereEqualTo(FirestoreUtils.KEY_TITLE, mProject)
                 .get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                if (!task.getResult().getDocuments().get(0).contains(FirestoreUtils.KEY_SPONSORED)) {
+                DocumentSnapshot snapshot = Objects.requireNonNull(task.getResult()).getDocuments().get(0);
+                if (!snapshot.contains(FirestoreUtils.KEY_SPONSORED)) {
                     if (mBillingProcessor.isInitialized()) {
                         Log.d(TAG, "Process Payment");
                         mBillingProcessor.purchase(this, "android.test.purchased");
@@ -70,7 +75,7 @@ public class SponsorProjectActivity extends AppCompatActivity implements Billing
     }
 
     @Override
-    public void onProductPurchased(String productId, TransactionDetails details) {
+    public void onProductPurchased(@NonNull String productId, TransactionDetails details) {
         //  Chiamato quando il pagamento è stato effettuato con successo.
         //  Scrive un flag sul documento Firestore associato al progetto
         //  per permettere di posizionarlo in testa alla lista la prossima
@@ -106,7 +111,7 @@ public class SponsorProjectActivity extends AppCompatActivity implements Billing
                 .whereEqualTo(FirestoreUtils.KEY_TITLE, title)
                 .get().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        String projectId = task.getResult().getDocuments().get(0).getId();
+                        String projectId = Objects.requireNonNull(task.getResult()).getDocuments().get(0).getId();
                         mFirestore.updateProjectData(projectId, FirestoreUtils.KEY_SPONSORED, true);
                     } else Log.d(TAG, "Error updating project data");
         });

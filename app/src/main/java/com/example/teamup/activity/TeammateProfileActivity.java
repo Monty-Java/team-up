@@ -19,6 +19,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
+import java.util.Objects;
 
 public class TeammateProfileActivity extends AppCompatActivity {
     public static final String TAG = TeammateProfileActivity.class.getSimpleName();
@@ -49,15 +50,19 @@ public class TeammateProfileActivity extends AppCompatActivity {
         firestoreUtils.getFirestoreInstance().collection(FirestoreUtils.KEY_USERS)
                 .get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                for (DocumentSnapshot snapshot : task.getResult()) {
-                    if (snapshot.getData().get(FirestoreUtils.KEY_NAME).equals(teammate)) {
+                for (DocumentSnapshot snapshot : Objects.requireNonNull(task.getResult())) {
+                    String username = (String) Objects.requireNonNull(snapshot.getData()).get(FirestoreUtils.KEY_NAME);
+                    if (Objects.equals(username, teammate)) {
+
+                        @SuppressWarnings(value = "unchecked")
+                        List<String> skills = (List<String>) snapshot.getData().get(FirestoreUtils.KEY_SKILLS);
 
                         //  TODO: ottenere la foto dell'utente dallo storage
                         mTeammate = new Utente(
                                 null,
                                 teammate,
                                 snapshot.getReference().getId(),
-                                (List<String>) snapshot.getData().get(FirestoreUtils.KEY_SKILLS));
+                                skills);
                         break;
                     }
                 }
@@ -75,7 +80,7 @@ public class TeammateProfileActivity extends AppCompatActivity {
     public void onTeammateFabClick(View view) {
         Intent emailIntent = new Intent(Intent.ACTION_SENDTO,
                 Uri.fromParts("mailto", mTeammate.getEmail(), null));
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Subject");
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "TeamUp");
         emailIntent.putExtra(Intent.EXTRA_TEXT, "Body");
         startActivity(Intent.createChooser(emailIntent, "Send e-mail to " + mTeammate.getDisplayName()));
     }

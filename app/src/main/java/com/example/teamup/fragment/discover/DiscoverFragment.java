@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class DiscoverFragment extends Fragment {
     public static final String TAG = DiscoverFragment.class.getSimpleName();
@@ -91,28 +92,32 @@ public class DiscoverFragment extends Fragment {
         Query query = firestoreUtils.getFirestoreInstance().collection(FirestoreUtils.KEY_PROJECTS);
         query.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                for (QueryDocumentSnapshot snapshot : task.getResult()) {
+                for (QueryDocumentSnapshot snapshot : Objects.requireNonNull(task.getResult())) {
+
+                    @SuppressWarnings(value = "unchecked") List<String> tags = (List<String>) snapshot.getData().get(FirestoreUtils.KEY_TAGS);
+                    @SuppressWarnings(value = "unchecked") List<String> teammates = (List<String>) snapshot.getData().get(FirestoreUtils.KEY_TEAMMATES);
+                    @SuppressWarnings(value = "unchecked") Map<String, Boolean> objectives = (Map<String, Boolean>) snapshot.getData().get(FirestoreUtils.KEY_OBJ);
+
                     //   Crea una lista di Progetti corrispondenti alla ListView dei titoli di progetto
                     if (snapshot.contains(FirestoreUtils.KEY_SPONSORED)) {
                         mProjects.add(new Progetto(snapshot.getId(),
-                                snapshot.getData().get(FirestoreUtils.KEY_LEADER).toString(),
-                                snapshot.getData().get(FirestoreUtils.KEY_TITLE).toString(),
-                                snapshot.getData().get(FirestoreUtils.KEY_DESC).toString(),
-                                (List<String>) snapshot.getData().get(FirestoreUtils.KEY_TAGS),
-                                (List<String>) snapshot.getData().get(FirestoreUtils.KEY_TEAMMATES),
-                                (Map<String, Boolean>) snapshot.getData().get(FirestoreUtils.KEY_OBJ),
+                                (String) snapshot.getData().get(FirestoreUtils.KEY_LEADER),
+                                (String) snapshot.getData().get(FirestoreUtils.KEY_TITLE),
+                                (String) snapshot.getData().get(FirestoreUtils.KEY_DESC),
+                                tags,
+                                teammates,
+                                objectives,
                                 true));
                     } else {
                         mProjects.add(new Progetto(snapshot.getId(),
-                                snapshot.getData().get(FirestoreUtils.KEY_LEADER).toString(),
-                                snapshot.getData().get(FirestoreUtils.KEY_TITLE).toString(),
-                                snapshot.getData().get(FirestoreUtils.KEY_DESC).toString(),
-                                (List<String>) snapshot.getData().get(FirestoreUtils.KEY_TAGS),
-                                (List<String>) snapshot.getData().get(FirestoreUtils.KEY_TEAMMATES),
-                                (Map<String, Boolean>) snapshot.getData().get(FirestoreUtils.KEY_OBJ),
+                                (String) snapshot.getData().get(FirestoreUtils.KEY_LEADER),
+                                (String) snapshot.getData().get(FirestoreUtils.KEY_TITLE),
+                                (String) snapshot.getData().get(FirestoreUtils.KEY_DESC),
+                                tags,
+                                teammates,
+                                objectives,
                                 false));
                     }
-
 
                     //  Riordina la lista ponendo i progetti sponsorizzati in testa
                     int j = 0;

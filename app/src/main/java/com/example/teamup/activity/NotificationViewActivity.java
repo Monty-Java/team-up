@@ -1,7 +1,6 @@
 package com.example.teamup.activity;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,14 +20,12 @@ import com.example.teamup.utilities.NotificationType;
 import com.example.teamup.utilities.NotificationUtils;
 import com.example.teamup.utilities.Utente;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class NotificationViewActivity extends AppCompatActivity {
     private static final String TAG = NotificationViewActivity.class.getSimpleName();
@@ -36,10 +33,6 @@ public class NotificationViewActivity extends AppCompatActivity {
     FirestoreUtils firestoreUtils;
     FirebaseAuthUtils firebaseAuthUtils;
 
-    //  UI
-    private ImageView mProfileImageView;
-    private TextView mNameTextView;
-    private TextView mSkillTitleTextView;
     private ListView mSkillsListView;
 
     private Utente mSender;
@@ -63,9 +56,10 @@ public class NotificationViewActivity extends AppCompatActivity {
 
         onNotificationOpened();
 
-        mProfileImageView = findViewById(R.id.profile_imageView);
-        mNameTextView = findViewById(R.id.nameTextView);
-        mSkillTitleTextView = findViewById(R.id.skillsTitle);
+        //  UI
+        ImageView mProfileImageView = findViewById(R.id.profile_imageView);
+        TextView mNameTextView = findViewById(R.id.nameTextView);
+        TextView mSkillTitleTextView = findViewById(R.id.skillsTitle);
         mSkillsListView = findViewById(R.id.skills_ListView);
 
         NotificationType notificationType = NotificationType.valueOf(getIntent().getStringExtra(NotificationUtils.TYPE));
@@ -89,11 +83,16 @@ public class NotificationViewActivity extends AppCompatActivity {
                     .get().addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
 
-                            mSender = new Utente(null, sendResponseTo,
-                                    task.getResult().getDocuments().get(0).getReference().getId(),
-                                    (List<String>) task.getResult().getDocuments().get(0).getData().get(FirestoreUtils.KEY_SKILLS));
+                            List<DocumentSnapshot> documents = Objects.requireNonNull(task.getResult()).getDocuments();
+                            @SuppressWarnings(value = "unchecked")
+                            List<String> skills = (List<String>) Objects.requireNonNull(documents.get(0).getData()).get(FirestoreUtils.KEY_SKILLS);
 
-                            ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                            mSender = new Utente(null,
+                                    sendResponseTo,
+                                    documents.get(0).getReference().getId(),
+                                    skills);
+
+                            ArrayAdapter<String> adapter = new ArrayAdapter<>(
                                     this.getApplicationContext(),
                                     android.R.layout.simple_list_item_1,
                                     mSender.getComptetenze()
@@ -106,18 +105,20 @@ public class NotificationViewActivity extends AppCompatActivity {
             negativeButton.setVisibility(View.VISIBLE);
             mSkillTitleTextView.setVisibility(View.VISIBLE);
 
-            positiveButton.setText("Accept");
-            negativeButton.setText("Reject");
+            positiveButton.setText(R.string.accept_text);
+            negativeButton.setText(R.string.reject_text);
 
             positiveButton.setOnClickListener(view -> {
-                //  Uno schifo :(
                 firestoreUtils.getFirestoreInstance().collection(FirestoreUtils.KEY_PROJECTS).whereEqualTo(FirestoreUtils.KEY_TITLE, project)
                         .get().addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
-                                String id = task.getResult().getDocuments().get(0).getId();
+                                DocumentSnapshot snapshot = Objects.requireNonNull(task.getResult()).getDocuments().get(0);
+                                String id = snapshot.getId();
+                                @SuppressWarnings(value = "unchecked") List<String> teammates = (List<String>) snapshot.get(FirestoreUtils.KEY_TEAMMATES);
+
                                 List<String> team = new ArrayList<>();
-                                if (task.getResult().getDocuments().get(0).get(FirestoreUtils.KEY_TEAMMATES) != null)
-                                    team.addAll((List<String>) task.getResult().getDocuments().get(0).get(FirestoreUtils.KEY_TEAMMATES));
+                                if (teammates != null)
+                                    team.addAll(teammates);
 
                                 //  Verifica che l'utente non sia già teammate del progetto per evitare di inserirlo più di una volta
                                 if (!team.contains(sendResponseTo)) {
@@ -141,17 +142,15 @@ public class NotificationViewActivity extends AppCompatActivity {
             mSkillTitleTextView.setVisibility(View.INVISIBLE);
 
 
-            positiveButton.setText("OK");
+            positiveButton.setText(R.string.ok_text);
             //  Intent che apre ProjectActivity col progetto per il quale si è fatta la richiesta
             positiveButton.setOnClickListener(view -> onNotificationAcknowledged(notificationType, project));
         } else if (notificationType.equals(NotificationType.LEADER_REJECT)) {
             negativeButton.setVisibility(View.INVISIBLE);
             mSkillTitleTextView.setVisibility(View.INVISIBLE);
 
-            positiveButton.setText("OK");
-            positiveButton.setOnClickListener(view -> {
-                onNotificationAcknowledged(notificationType, project);
-            });
+            positiveButton.setText(R.string.ok_text);
+            positiveButton.setOnClickListener(view -> onNotificationAcknowledged(notificationType, project));
         }
     }
 
@@ -161,12 +160,14 @@ public class NotificationViewActivity extends AppCompatActivity {
                 .whereEqualTo(FirestoreUtils.KEY_NAME, getIntent().getStringExtra(NotificationUtils.RECIPIENT))
                 .get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                task.getResult().getDocuments().get(0).getReference().collection(FirestoreUtils.KEY_NOTIFICATIONS)
+                DocumentSnapshot snapshot = Objects.requireNonNull(task.getResult()).getDocuments().get(0);
+                snapshot.getReference().collection(FirestoreUtils.KEY_NOTIFICATIONS)
                         .whereEqualTo(NotificationUtils.PROJECT, getIntent().getStringExtra(NotificationUtils.PROJECT))
-                        .get().addOnCompleteListener(t -> {
-                    if (t.isSuccessful()) {
-                        t.getResult().getDocuments().get(0).getReference().delete().addOnCompleteListener(remove -> {
-                            if (remove.isSuccessful()) Log.d(TAG, "Notification received and removed from Firestore");
+                        .get().addOnCompleteListener(notificationTask -> {
+                    if (notificationTask.isSuccessful()) {
+                        DocumentSnapshot notificationSnapshot = Objects.requireNonNull(notificationTask.getResult()).getDocuments().get(0);
+                        notificationSnapshot.getReference().delete().addOnCompleteListener(removeTask -> {
+                            if (removeTask.isSuccessful()) Log.d(TAG, "Notification received and removed from Firestore");
                         });
                     }
                 });

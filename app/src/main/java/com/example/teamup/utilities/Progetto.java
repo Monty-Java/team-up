@@ -119,9 +119,7 @@ public class Progetto {
         return teammates;
     }
 
-    public Map<String, Boolean> getObiettivi() {
-        return obiettivi;
-    }
+    public Map<String, Boolean> getObiettivi() { return obiettivi; }
 
     // Metodo di supporto per poter calcolare la percentuale di completezza del progetto
     public double obiettiviCompleti() {

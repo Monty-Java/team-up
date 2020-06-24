@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Build;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
 import com.example.teamup.R;
@@ -23,7 +24,7 @@ public class NotificationUtils extends FirebaseMessagingService {
 
     //  Ottiene il messaggio associato alla notifica ricevuta
     @Override
-    public void onMessageReceived(RemoteMessage remoteMessage) {
+    public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
 
         //  Ottiene i dati memorizzati nel payload della notifica
@@ -87,7 +88,7 @@ public class NotificationUtils extends FirebaseMessagingService {
     }
 
     @Override
-    public void onNewToken(String s) {
+    public void onNewToken(@NonNull String s) {
         super.onNewToken(s);
     }
 }
