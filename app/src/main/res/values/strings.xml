@@ -16,20 +16,25 @@
 
     <string name="teammte_request_text">Would you like to send a request to become a teammate for this project?</string>
 
-    <string name="accept_text">Accept</string>
-    <string name="reject_text">Reject</string>
+    <string name="pay_description">You can use Google Pay to sponsor your project for $0,99. Sponsored projects will be displayed on top of the Discover screen, increasing the chances of potential Teammates to find it.</string>
 
     <!-- EditText hints -->
     <string name="hint_name">Name</string>
     <string name="hint_surname">Surname</string>
     <string name="hint_email">E-mail Address</string>
+    <string name="email_hint">Email</string>
     <string name="hint_pass">Password</string>
     <string name="hint_skills">Skills</string>
-
+    <string name="tag_hint">Tag</string>
+    <string name="tags_hint">Tags</string>
+    <string name="new_objective_hint">New Objective</string>
+    <string name="tag_dialog_hint">New Project Tag</string>
+    <string name="skill_dialog_hint">My New Skill</string>
+    <string name="project_description_hint">Project Description</string>
+    <string name="accept_text">Accept</string>
+    <string name="reject_text">Reject</string>
     <string name="default_notification_channel_id">CH_01</string>
     <string name="teamup_logo_description">TeamUp Logo</string>
-    <string name="email_hint">Email</string>
-    <string name="password_hint">Password</string>
     <string name="login_text">Login</string>
     <string name="new_account_prompt_text">No account yet? Create one</string>
     <string name="profile_pic_description">Profile Picture</string>
@@ -41,26 +46,20 @@
     <string name="login_prompt_text">Already a member? Login</string>
     <string name="pay_text">Pay</string>
     <string name="objective_dialog_title">Add A New Objective</string>
-    <string name="new_objective_hint">New Objective</string>
     <string name="ok_text">OK</string>
     <string name="cancel_text">Cancel</string>
     <string name="tag_dialog_title">Add A New Tag</string>
-    <string name="tag_dialog_hint">New Project Tag</string>
     <string name="skill_dialog_title">Add A New Skill</string>
-    <string name="skill_dialog_hint">My New Skill</string>
     <string name="default_project_title">My Project</string>
     <string name="default_tag_text">Project Tag</string>
     <string name="edit_project_description_dialog_title">Edit Project Description</string>
-    <string name="project_description_hint">Project Description</string>
     <string name="edit_tag_dialog_title">Edit or Remove Tag</string>
-    <string name="tag_hint">Tag</string>
     <string name="remove_text">Remove</string>
     <string name="display_name_text">Display Name</string>
     <string name="view_skills_text">View Skills</string>
     <string name="leader_text">Leader</string>
     <string name="teammate_text">Teammate</string>
     <string name="new_project_dialog_title">New Project</string>
-    <string name="tags_hint">Tags</string>
     <string name="confirm_text">Confirm</string>
     <string name="add_skill_prompt">Add Skill</string>
     <string name="details_dialog_title">Project Details</string>
@@ -70,4 +69,5 @@
     <string name="pay_menu_option">Increase Project Visibility</string>
     <string name="leave_project_menu_option">Leave Project</string>
     <string name="close_text">Close</string>
+
 </resources>

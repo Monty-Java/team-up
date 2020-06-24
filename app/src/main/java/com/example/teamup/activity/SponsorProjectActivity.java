@@ -34,6 +34,7 @@ public class SponsorProjectActivity extends AppCompatActivity implements Billing
         setContentView(R.layout.activity_sponsor_project);
 
         mProject = getIntent().getStringExtra("project");
+        setTitle("Sponsor " + mProject);
 
         mFirestore = new FirestoreUtils(FirebaseFirestore.getInstance());
 
