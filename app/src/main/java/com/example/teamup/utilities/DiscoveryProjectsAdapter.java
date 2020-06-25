@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -16,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.teamup.R;
 import com.example.teamup.activity.ProjectActivity;
+import com.google.android.material.textview.MaterialTextView;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -110,8 +110,8 @@ public class DiscoveryProjectsAdapter
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private final ConstraintLayout projectLayout;
-        private final TextView projectTitle;
-        private final TextView projectTags;
+        private final MaterialTextView projectTitle;
+        private final MaterialTextView projectTags;
 
         private Activity activity;
 

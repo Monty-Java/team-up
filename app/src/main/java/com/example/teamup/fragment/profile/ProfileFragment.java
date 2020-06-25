@@ -16,12 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.Switch;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -33,6 +29,10 @@ import com.example.teamup.R;
 import com.example.teamup.utilities.FirebaseAuthUtils;
 import com.example.teamup.utilities.FirestoreUtils;
 import com.example.teamup.utilities.Utente;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.switchmaterial.SwitchMaterial;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textview.MaterialTextView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
@@ -57,9 +57,9 @@ public class ProfileFragment extends Fragment {
 
     //  UI
     private ImageView mProfilePicImageView;
-    private TextView mDisplayNameTextView;
-    private TextView mEmailTextView;
-    private Button mViewSkillsButton;
+    private MaterialTextView mDisplayNameTextView;
+    private MaterialTextView mEmailTextView;
+    private MaterialButton mViewSkillsButton;
 
     Utente mUser;
 
@@ -164,8 +164,8 @@ public class ProfileFragment extends Fragment {
         Dialog skillsDialog = new Dialog(this.requireContext());
         skillsDialog.setContentView(R.layout.profile_skills_dialog);
         ListView skillsListView = skillsDialog.findViewById(R.id.skillsListView);
-        Button addSkillButton = skillsDialog.findViewById(R.id.addSkillButton);
-        Button closeButton = skillsDialog.findViewById(R.id.closeDialogButton);
+        MaterialButton addSkillButton = skillsDialog.findViewById(R.id.addSkillButton);
+        MaterialButton closeButton = skillsDialog.findViewById(R.id.closeDialogButton);
 
         ArrayAdapter<String> skillsAdapter = new ArrayAdapter<>(
                 this.requireContext(),
@@ -206,13 +206,13 @@ public class ProfileFragment extends Fragment {
     private void addSkill() {
         Dialog addSkillDialog = new Dialog(this.requireContext());
         addSkillDialog.setContentView(R.layout.add_skill_dialog);
-        Button positiveButton = addSkillDialog.findViewById(R.id.add_skill_positiveButton);
-        Button negativeButton = addSkillDialog.findViewById(R.id.add_skill_negativeButton);
+        MaterialButton positiveButton = addSkillDialog.findViewById(R.id.add_skill_positiveButton);
+        MaterialButton negativeButton = addSkillDialog.findViewById(R.id.add_skill_negativeButton);
 
         negativeButton.setOnClickListener(v -> addSkillDialog.dismiss());
         positiveButton.setOnClickListener(v -> {
-            EditText newSkillEditText = addSkillDialog.findViewById(R.id.add_skill_editText);
-            if (!newSkillEditText.getText().toString().equals("")) {
+            TextInputEditText newSkillEditText = addSkillDialog.findViewById(R.id.add_skill_editText);
+            if (!Objects.requireNonNull(newSkillEditText.getText()).toString().equals("")) {
                 mUser.getComptetenze().add(newSkillEditText.getText().toString());
                 firestoreUtils.updateUserData(mUser.getDisplayName(), FirestoreUtils.KEY_SKILLS, mUser.getComptetenze());
                 addSkillDialog.dismiss();
@@ -266,9 +266,9 @@ public class ProfileFragment extends Fragment {
         //  TODO: privacy
         Dialog privacyDialog = new Dialog(this.requireContext());
         privacyDialog.setContentView(R.layout.privacy_dialog);
-        Switch picSwitch = privacyDialog.findViewById(R.id.pic_switch);
-        Switch emailSwitch = privacyDialog.findViewById(R.id.email_switch);
-        Button okButton = privacyDialog.findViewById(R.id.privacy_button);
+        SwitchMaterial picSwitch = privacyDialog.findViewById(R.id.pic_switch);
+        SwitchMaterial emailSwitch = privacyDialog.findViewById(R.id.email_switch);
+        MaterialButton okButton = privacyDialog.findViewById(R.id.privacy_button);
         okButton.setOnClickListener(v -> privacyDialog.dismiss());
         privacyDialog.show();
     }

@@ -26,6 +26,9 @@ import com.example.teamup.utilities.FirestoreUtils;
 import com.example.teamup.utilities.NotificationType;
 import com.example.teamup.utilities.Progetto;
 import com.example.teamup.utilities.ProjectListsAdapter;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textview.MaterialTextView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -118,10 +121,10 @@ public class ProjectActivity extends AppCompatActivity {
 
         final Dialog detailsDialog = new Dialog(this);
         detailsDialog.setContentView(R.layout.project_details_dialog);
-        TextView projectId = detailsDialog.findViewById(R.id.projectId_textView);
+        MaterialTextView projectId = detailsDialog.findViewById(R.id.projectId_textView);
         ListView projectTags = detailsDialog.findViewById(R.id.tagsListView);
-        Button closeButton = detailsDialog.findViewById(R.id.closeDialogButton);
-        Button addTagButton = detailsDialog.findViewById(R.id.addTagButton);
+        MaterialButton closeButton = detailsDialog.findViewById(R.id.closeDialogButton);
+        MaterialButton addTagButton = detailsDialog.findViewById(R.id.addTagButton);
 
         String projectIdText = "Project ID: " + progetto.getId();
         projectId.setText(projectIdText);
@@ -161,13 +164,13 @@ public class ProjectActivity extends AppCompatActivity {
     private void addNewObjective() {
         Dialog addObjectiveDialog = new Dialog(this);
         addObjectiveDialog.setContentView(R.layout.add_project_objective_dialog);
-        EditText addObjectiveEditText = addObjectiveDialog.findViewById(R.id.add_objective_editText);
-        Button addObjectivePositiveButton = addObjectiveDialog.findViewById(R.id.add_objective_positiveButton);
-        Button addObjectiveNegativeButton = addObjectiveDialog.findViewById(R.id.add_objective_negativeButton);
+        TextInputEditText addObjectiveEditText = addObjectiveDialog.findViewById(R.id.add_objective_editText);
+        MaterialButton addObjectivePositiveButton = addObjectiveDialog.findViewById(R.id.add_objective_positiveButton);
+        MaterialButton addObjectiveNegativeButton = addObjectiveDialog.findViewById(R.id.add_objective_negativeButton);
         addObjectiveNegativeButton.setOnClickListener(v -> addObjectiveDialog.dismiss());
 
         addObjectivePositiveButton.setOnClickListener(v -> {
-            if (!addObjectiveEditText.getText().toString().equals("")) {
+            if (!Objects.requireNonNull(addObjectiveEditText.getText()).toString().equals("")) {
                 progetto.addObiettivoDaRaggiungere(addObjectiveEditText.getText().toString());
                 firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_OBJ, progetto.getObiettivi());
                 addObjectiveDialog.dismiss();
@@ -231,14 +234,14 @@ public class ProjectActivity extends AppCompatActivity {
         Dialog addTagDialog = new Dialog(this);
         addTagDialog.setContentView(R.layout.add_project_tag_dialog);
 
-        EditText addTagEditText = addTagDialog.findViewById(R.id.add_tag_editText);
-        Button addTagPositiveButton = addTagDialog.findViewById(R.id.add_tag_positiveButton);
-        Button addTagNegativeButton = addTagDialog.findViewById(R.id.add_tag_negativeButton);
+        TextInputEditText addTagEditText = addTagDialog.findViewById(R.id.add_tag_editText);
+        MaterialButton addTagPositiveButton = addTagDialog.findViewById(R.id.add_tag_positiveButton);
+        MaterialButton addTagNegativeButton = addTagDialog.findViewById(R.id.add_tag_negativeButton);
 
         addTagNegativeButton.setOnClickListener(v -> addTagDialog.dismiss());
 
         addTagPositiveButton.setOnClickListener(v -> {
-            if (!addTagEditText.getText().toString().equals("")) {
+            if (!Objects.requireNonNull(addTagEditText.getText()).toString().equals("")) {
                 progetto.addEtichetta(addTagEditText.getText().toString());
                 firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_TAGS, progetto.getEtichette());
                 addTagDialog.dismiss();
@@ -272,14 +275,14 @@ public class ProjectActivity extends AppCompatActivity {
         if (Objects.equals(firebaseAuthUtils.getCurrentUser().getDisplayName(), progetto.getLeader())) {
             Dialog changeTitleDialog = new Dialog(this);
             changeTitleDialog.setContentView(R.layout.change_project_title_dialog);
-            EditText changeTitleEditText = changeTitleDialog.findViewById(R.id.change_title_editText);
+            TextInputEditText changeTitleEditText = changeTitleDialog.findViewById(R.id.change_title_editText);
             changeTitleEditText.setHint(progetto.getTitolo());
-            Button changeTitlePositiveButton = changeTitleDialog.findViewById(R.id.change_title_positiveButton);
-            Button changeTitleNegativeButton = changeTitleDialog.findViewById(R.id.change_title_negativeButton);
+            MaterialButton changeTitlePositiveButton = changeTitleDialog.findViewById(R.id.change_title_positiveButton);
+            MaterialButton changeTitleNegativeButton = changeTitleDialog.findViewById(R.id.change_title_negativeButton);
             changeTitleNegativeButton.setOnClickListener(v -> changeTitleDialog.dismiss());
 
             changeTitlePositiveButton.setOnClickListener(v -> {
-                if (!changeTitleEditText.getText().toString().equals("") && !changeTitleEditText.getText().toString().equals(progetto.getTitolo())) {
+                if (!Objects.requireNonNull(changeTitleEditText.getText()).toString().equals("") && !changeTitleEditText.getText().toString().equals(progetto.getTitolo())) {
                     AlertDialog.Builder confirmTitleChangeBuilder = new AlertDialog.Builder(this);
                     confirmTitleChangeBuilder.setTitle("Confirm Title Change");
                     confirmTitleChangeBuilder.setMessage("Change title from " + progetto.getTitolo() + " to " + changeTitleEditText.getText().toString() + "?");
@@ -415,6 +418,10 @@ public class ProjectActivity extends AppCompatActivity {
         teammatesAdapter.notifyDataSetChanged();
 
         mDescriptionTextView.setText(project.getDescrizione());
+        mDescriptionTextView.setOnLongClickListener(v -> {
+            editProjectDescription();
+            return false;
+        });
     }
 
     public void updateProgress(Progetto project) {

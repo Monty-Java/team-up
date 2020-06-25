@@ -4,26 +4,28 @@
     android:layout_height="match_parent"
     android:padding="@dimen/activity_horizontal_margin">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/dialog_project"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:text="New Project"
+        android:text="@string/new_project_dialog_title"
+        android:paddingVertical="@dimen/activity_vertical_margin"
         android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
-    <EditText
+    <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/projectTitle_editText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/dialog_project"
         android:layout_centerHorizontal="true"
         android:ems="10"
-        android:hint="Project Title"
+        android:hint="@string/default_project_title"
         android:inputType="textPersonName"
-        android:singleLine="true" />
+        android:singleLine="true"
+        android:importantForAutofill="no" />
 
-    <EditText
+    <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/description_editText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -31,19 +33,21 @@
         android:layout_centerHorizontal="true"
         android:ems="10"
         android:gravity="start|top"
-        android:hint="Project Description"
-        android:inputType="textMultiLine" />
+        android:hint="@string/project_description_text"
+        android:inputType="textMultiLine"
+        android:importantForAutofill="no" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/leaderName_textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/description_editText"
         android:layout_centerHorizontal="true"
-        android:text="Leader: "
+        android:paddingVertical="@dimen/activity_vertical_margin"
+        android:text="@string/leader_text"
         android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
-    <EditText
+    <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/objectives_editText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -51,25 +55,37 @@
         android:layout_centerHorizontal="true"
         android:ems="10"
         android:gravity="start|top"
-        android:hint="Project Objectives"
-        android:inputType="textMultiLine" />
+        android:hint="@string/objectives_text"
+        android:inputType="textMultiLine"
+        android:importantForAutofill="no" />
 
-    <EditText
+    <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/projectTag_editText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/objectives_editText"
         android:layout_centerHorizontal="true"
         android:ems="10"
-        android:hint="Tags"
+        android:hint="@string/tags_hint"
         android:inputType="textPersonName"
-        android:singleLine="true" />
+        android:singleLine="true"
+        android:importantForAutofill="no"/>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/cancelNewProjectButton"
+        android:layout_toStartOf="@+id/button_confirmNewProject"
+        android:layout_below="@+id/projectTag_editText"
+        android:text="@string/cancel_text"
+        android:layout_margin="@dimen/button_margin" />
+
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/button_confirmNewProject"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/projectTag_editText"
-        android:layout_centerHorizontal="true"
-        android:text="Confirm" />
+        android:layout_alignParentEnd="true"
+        android:text="@string/confirm_text"
+        android:layout_margin="@dimen/button_margin"/>
 </RelativeLayout>

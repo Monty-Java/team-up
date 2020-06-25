@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -12,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.teamup.R;
 import com.example.teamup.utilities.FirebaseAuthUtils;
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -28,7 +28,7 @@ public class SignupActivity extends AppCompatActivity {
     private EditText _emailText;
     private EditText _passwordText;
     private EditText _skillsText;
-    private Button _signupButton;
+    private MaterialButton _signupButton;
 
     private FirebaseAuthUtils firebaseAuthUtils;
 

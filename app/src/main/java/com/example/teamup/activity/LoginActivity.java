@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -14,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.teamup.R;
 import com.example.teamup.utilities.FirebaseAuthUtils;
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -24,7 +24,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private EditText _emailText;
     private EditText _passwordText;
-    private Button _loginButton;
+    private MaterialButton _loginButton;
 
     private FirebaseAuthUtils firebaseAuthUtils;
 

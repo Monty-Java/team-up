@@ -4,7 +4,7 @@
     android:layout_centerInParent="true"
     android:padding="@dimen/activity_vertical_margin">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/change_title_textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -12,7 +12,7 @@
         android:text="@string/change_project_title_text"
         android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
-    <EditText
+    <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/change_title_editText"
         android:layout_below="@+id/change_title_textView"
         android:layout_width="200dp"
@@ -22,20 +22,22 @@
         android:importantForAutofill="no"
         android:inputType="textCapWords" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/change_title_positiveButton"
         android:layout_below="@+id/change_title_editText"
         android:layout_alignParentEnd="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/ok_text" />
+        android:text="@string/ok_text"
+        android:layout_margin="@dimen/button_margin"/>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/change_title_negativeButton"
         android:layout_below="@id/change_title_editText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toStartOf="@+id/change_title_positiveButton"
-        android:text="@string/cancel_text" />
+        android:text="@string/cancel_text"
+        android:layout_margin="@dimen/button_margin"/>
 
 </RelativeLayout>

@@ -3,7 +3,6 @@ package com.example.teamup.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -14,6 +13,7 @@ import com.anjlab.android.iab.v3.BillingProcessor;
 import com.anjlab.android.iab.v3.TransactionDetails;
 import com.example.teamup.R;
 import com.example.teamup.utilities.FirestoreUtils;
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -43,7 +43,7 @@ public class SponsorProjectActivity extends AppCompatActivity implements Billing
         if (mBillingProcessor.isPurchased("android.test.purchased"))
             mBillingProcessor.consumePurchase("android.test.purchased");    //  Permette di ripetere il pagamento
 
-        Button pay = findViewById(R.id.pay_button);
+        MaterialButton pay = findViewById(R.id.pay_button);
         pay.setOnClickListener(view -> mFirestore.getFirestoreInstance().collection(FirestoreUtils.KEY_PROJECTS)
                 .whereEqualTo(FirestoreUtils.KEY_TITLE, mProject)
                 .get().addOnCompleteListener(task -> {

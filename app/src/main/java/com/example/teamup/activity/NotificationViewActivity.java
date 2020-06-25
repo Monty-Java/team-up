@@ -5,10 +5,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,6 +17,8 @@ import com.example.teamup.utilities.FirestoreUtils;
 import com.example.teamup.utilities.NotificationType;
 import com.example.teamup.utilities.NotificationUtils;
 import com.example.teamup.utilities.Utente;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textview.MaterialTextView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -57,10 +57,10 @@ public class NotificationViewActivity extends AppCompatActivity {
         onNotificationOpened();
 
         //  UI
-        TextView mNotificationTextView = findViewById(R.id.notification_textView);
+        MaterialTextView mNotificationTextView = findViewById(R.id.notification_textView);
         ImageView mProfileImageView = findViewById(R.id.profile_imageView);
-        TextView mNameTextView = findViewById(R.id.nameTextView);
-        TextView mSkillTitleTextView = findViewById(R.id.skillsTitle);
+        MaterialTextView mNameTextView = findViewById(R.id.nameTextView);
+        MaterialTextView mSkillTitleTextView = findViewById(R.id.skillsTitle);
         mSkillsListView = findViewById(R.id.skills_ListView);
 
         NotificationType notificationType = NotificationType.valueOf(getIntent().getStringExtra(NotificationUtils.TYPE));
@@ -72,8 +72,8 @@ public class NotificationViewActivity extends AppCompatActivity {
 
         mNameTextView.setText(sendResponseTo);
 
-        Button positiveButton = findViewById(R.id.positiveButton);
-        Button negativeButton = findViewById(R.id.negativeButton);
+        MaterialButton positiveButton = findViewById(R.id.positiveButton);
+        MaterialButton negativeButton = findViewById(R.id.negativeButton);
 
         if (notificationType.equals(NotificationType.TEAMMATE_REQUEST)) {
 

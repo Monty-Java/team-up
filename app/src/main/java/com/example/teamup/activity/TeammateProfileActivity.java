@@ -7,7 +7,6 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,6 +14,7 @@ import com.example.teamup.R;
 import com.example.teamup.utilities.FirestoreUtils;
 import com.example.teamup.utilities.Utente;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textview.MaterialTextView;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -26,7 +26,7 @@ public class TeammateProfileActivity extends AppCompatActivity {
 
     //  UI
     ImageView mProfilePicImageView;
-    TextView mEmailTextView;
+    MaterialTextView mEmailTextView;
     ListView mSkillsListView;
     FloatingActionButton mFab;
 

@@ -3,44 +3,47 @@
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:padding="@dimen/activity_vertical_margin">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/editTag_DialogTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:text="Edit or Remove Tag"
+        android:text="@string/edit_tag_dialog_title"
         android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
-    <EditText
+    <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/editTagDialog_editText"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/editTag_DialogTitle"
-        android:hint="Tag" />
+        android:hint="@string/tag_hint" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/editTagDialog_cancelButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/editTagDialog_editText"
         android:layout_toStartOf="@+id/editTagDialog_removeButton"
-        android:text="Cancel" />
+        android:text="@string/cancel_text"
+        android:layout_margin="@dimen/button_margin"/>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/editTagDialog_removeButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toStartOf="@+id/editTagDialog_editButton"
         android:layout_below="@+id/editTagDialog_editText"
-        android:text="Remove" />
+        android:text="@string/remove_text"
+        android:layout_margin="@dimen/button_margin"/>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/editTagDialog_editButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_below="@+id/editTagDialog_editText"
-        android:text="OK" />
+        android:text="@string/ok_text"
+        android:layout_margin="@dimen/button_margin"/>
 
 </RelativeLayout>

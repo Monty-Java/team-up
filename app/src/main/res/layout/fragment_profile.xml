@@ -15,7 +15,7 @@
         android:scaleType="fitCenter"
         android:contentDescription="@string/profile_pic_description" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/email_textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -23,7 +23,7 @@
         android:text="@string/hint_email"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/displayName_textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -32,13 +32,13 @@
         android:text="@string/default_username_text"
         android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/viewSkills_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:layout_alignParentBottom="true"
         android:text="@string/view_skills_text"
-        android:textAppearance="@style/TextAppearance.AppCompat.Button" />
+        android:layout_margin="@dimen/button_margin" />
 
 </RelativeLayout>

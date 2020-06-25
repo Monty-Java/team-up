@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -23,7 +22,11 @@ import androidx.navigation.ui.NavigationUI;
 import com.example.teamup.R;
 import com.example.teamup.utilities.FirebaseAuthUtils;
 import com.example.teamup.utilities.FirestoreUtils;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textview.MaterialTextView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -33,6 +36,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = "MainActivity";
@@ -53,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        MaterialToolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -104,35 +108,38 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         final Dialog newProjectDialog = new Dialog(MainActivity.this);
         newProjectDialog.setContentView(R.layout.new_project_dialog);
-        TextView leader = newProjectDialog.findViewById(R.id.leaderName_textView);
+        MaterialTextView leader = newProjectDialog.findViewById(R.id.leaderName_textView);
 
         String leaderText = "Leader: " + userDisplayName.getText().toString();
         leader.setText(leaderText);
 
-        Button newProjectConfirmButton = newProjectDialog.findViewById(R.id.button_confirmNewProject);
-        newProjectConfirmButton.setOnClickListener(v -> {
-            EditText title = newProjectDialog.findViewById(R.id.projectTitle_editText);
-            EditText description = newProjectDialog.findViewById(R.id.description_editText);
-            EditText objectives = newProjectDialog.findViewById(R.id.objectives_editText);
-            EditText tags = newProjectDialog.findViewById(R.id.projectTag_editText);
+        MaterialButton newProjectCancelButton = newProjectDialog.findViewById(R.id.cancelNewProjectButton);
+        newProjectCancelButton.setOnClickListener(v -> newProjectDialog.dismiss());
 
-            String[] obj = objectives.getText().toString().split("\n");
+        MaterialButton newProjectConfirmButton = newProjectDialog.findViewById(R.id.button_confirmNewProject);
+        newProjectConfirmButton.setOnClickListener(v -> {
+            TextInputEditText title = newProjectDialog.findViewById(R.id.projectTitle_editText);
+            TextInputEditText description = newProjectDialog.findViewById(R.id.description_editText);
+            TextInputEditText objectives = newProjectDialog.findViewById(R.id.objectives_editText);
+            TextInputEditText tags = newProjectDialog.findViewById(R.id.projectTag_editText);
+
+            String[] obj = Objects.requireNonNull(objectives.getText()).toString().split("\n");
             Map<String, Boolean> objectiveMap = new HashMap<>();
             for (String o : obj) {
                 objectiveMap.put(o, false);
             }
 
-            String[] tg = tags.getText().toString().split("\\W+");
+            String[] tg = Objects.requireNonNull(tags.getText()).toString().split("\\W+");
             List<String> tagList = new ArrayList<>(Arrays.asList(tg));
 
             boolean checkEmptyFields = true;
 
-            if (title.getText().toString().equals("")) {
+            if (Objects.requireNonNull(title.getText()).toString().equals("")) {
                 checkEmptyFields = false;
                 title.setError("Empty field");
             }
 
-            if (description.getText().toString().equals("")) {
+            if (Objects.requireNonNull(description.getText()).toString().equals("")) {
                 checkEmptyFields = false;
                 description.setError("Empty field");
             }

@@ -16,7 +16,7 @@
         android:layout_weight="0.1"
         android:gravity="center_horizontal"
         android:paddingVertical="@dimen/activity_vertical_margin"
-        android:text="Project description"
+        android:text="@string/project_description_text"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -46,7 +46,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:gravity="center_horizontal"
-                android:text="Objectives"
+                android:text="@string/objectives_text"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -69,7 +69,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
                 android:gravity="center_horizontal"
-                android:text="Team"
+                android:text="@string/team_text"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/objectives_listView" />
@@ -115,6 +115,7 @@
         android:padding="@dimen/activity_vertical_margin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_add" />
+        app:srcCompat="@android:drawable/ic_menu_add"
+        android:focusable="true" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,7 +3,7 @@
     android:layout_width="wrap_content" android:layout_height="wrap_content"
     android:padding="@dimen/activity_vertical_margin">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/privacy_textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -12,7 +12,7 @@
         android:text="@string/privacy_dialog_title"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/privacy_description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -20,10 +20,10 @@
         android:layout_centerInParent="true"
         android:paddingVertical="@dimen/activity_vertical_margin"
         android:paddingHorizontal="@dimen/activity_horizontal_margin"
-        android:text="If set to private, your profile picture and e-mail address won't be visible to other users. They will only see your display name and list of skills when viewing your profile."
+        android:text="@string/privacy_description_text"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
-    <Switch
+    <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/pic_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -32,7 +32,7 @@
         android:paddingVertical="@dimen/activity_vertical_margin"
         android:text="@string/private_profile_picture_switch_text" />
 
-    <Switch
+    <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/email_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -41,13 +41,14 @@
         android:paddingVertical="@dimen/activity_vertical_margin"
         android:text="@string/private_e_mail_address_switch_text" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/privacy_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/email_switch"
         android:layout_centerInParent="true"
-        android:text="@string/ok_text" />
+        android:text="@string/ok_text"
+        android:layout_margin="@dimen/button_margin"/>
 
 
 </RelativeLayout>

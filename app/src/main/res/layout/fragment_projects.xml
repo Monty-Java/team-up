@@ -7,7 +7,7 @@
     android:padding="@dimen/activity_horizontal_margin"
     tools:context=".fragment.projects.ProjectsFragment">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/leader_textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -21,7 +21,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/teammate_textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
