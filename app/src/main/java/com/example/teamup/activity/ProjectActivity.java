@@ -1,6 +1,5 @@
 package com.example.teamup.activity;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -142,6 +142,13 @@ public class ProjectActivity extends AppCompatActivity {
                         tagsAdapter.notifyDataSetChanged();
             });
 
+            projectTags.setOnItemLongClickListener((parent, view, position, id) -> {
+                String tag = projectTags.getItemAtPosition(position).toString();
+                removeTag(tag);
+                tagsAdapter.notifyDataSetChanged();
+                return false;
+            });
+
             addTagButton.setOnClickListener(v -> addNewTag());
         } else {
             addTagButton.setEnabled(false);
@@ -205,17 +212,9 @@ public class ProjectActivity extends AppCompatActivity {
         EditText editTagEditText = editTagsDialog.findViewById(R.id.editTagDialog_editText);
         editTagEditText.setHint(tagToEdit);
 
-        Button editTagRemoveButton = editTagsDialog.findViewById(R.id.editTagDialog_removeButton);
         Button editTagEditButton = editTagsDialog.findViewById(R.id.editTagDialog_editButton);
         Button editTagCancelButton = editTagsDialog.findViewById(R.id.editTagDialog_cancelButton);
         editTagCancelButton.setOnClickListener(v -> editTagsDialog.dismiss());
-
-        //  Rimuove l'etichetta selezionata dal progetto corrente
-        editTagRemoveButton.setOnClickListener(v -> {
-            progetto.removeEtichetta(tagToEdit);
-            firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_TAGS, progetto.getEtichette());
-            editTagsDialog.dismiss();
-        });
 
         //  Sostituisce l'etichetta nuova con quella attuale e aggiorna Firestore
         editTagEditButton.setOnClickListener(v -> {
@@ -228,6 +227,18 @@ public class ProjectActivity extends AppCompatActivity {
         });
 
         editTagsDialog.show();
+    }
+
+    private void removeTag(String tagToRemove) {
+        AlertDialog.Builder removeTagBuilder = new AlertDialog.Builder(this);
+        removeTagBuilder.setTitle("Remove Tag");
+        removeTagBuilder.setMessage("Remove " + tagToRemove + " from project tag list?");
+        removeTagBuilder.setPositiveButton(R.string.ok_text, (dialog, which) -> {
+            progetto.removeEtichetta(tagToRemove);
+            firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_TAGS, progetto.getEtichette());
+            dialog.dismiss();
+        });
+        removeTagBuilder.setNegativeButton(R.string.cancel_text, (dialog, which) -> dialog.dismiss());
     }
 
     private void addNewTag() {

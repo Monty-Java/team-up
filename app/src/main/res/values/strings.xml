@@ -53,7 +53,7 @@
     <string name="default_project_title">My Project</string>
     <string name="default_tag_text">Project Tag</string>
     <string name="edit_project_description_dialog_title">Edit Project Description</string>
-    <string name="edit_tag_dialog_title">Edit or Remove Tag</string>
+    <string name="edit_tag_dialog_title">Edit Tag</string>
     <string name="remove_text">Remove</string>
     <string name="display_name_text">Display Name</string>
     <string name="leader_text">Leader</string>
