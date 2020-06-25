@@ -2,7 +2,6 @@ package com.example.teamup.activity;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,12 +17,15 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.teamup.R;
 import com.example.teamup.utilities.FirebaseAuthUtils;
 import com.example.teamup.utilities.FirestoreUtils;
 import com.example.teamup.utilities.NotificationType;
 import com.example.teamup.utilities.Progetto;
+import com.example.teamup.utilities.ProjectListsAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -45,10 +47,13 @@ public class ProjectActivity extends AppCompatActivity {
     private Progetto progetto;
 
     //  UI
-    private ListView mObjectivesList;
-    private ListView mTeammatesList;
+    private RecyclerView mObjectivesList;
+    private RecyclerView mTeammatesList;
     private TextView mDescriptionTextView;
     private TextView mProgressTextView;
+
+    private ProjectListsAdapter objectivesAdapter;
+    private ProjectListsAdapter teammatesAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -366,52 +371,50 @@ public class ProjectActivity extends AppCompatActivity {
             if (entries.next().getValue()) entries.remove();
         }
 
-        //  Imposta le ListView per visualizzare gli obiettivi e i teammates
-        List<String> objectivesList = new ArrayList<>(project.getObiettivi().keySet());
-        ArrayAdapter<String> mObjectivesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
-                objectivesList);
+        //  Imposta la ListView per visualizzare gli obiettivi
 
-        List<String> team = new ArrayList<>();
-        team.add(project.getLeader());
-        if (project.hasTeammates())
-            team.addAll(project.getTeammates());
+        LinearLayoutManager objectivesLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
+        mObjectivesList.setLayoutManager(objectivesLayoutManager);
 
-        ArrayAdapter<String> mTeammatesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
-                team);
-        mObjectivesList.setAdapter(mObjectivesAdapter);
-        mTeammatesList.setAdapter(mTeammatesAdapter);
-        mDescriptionTextView.setText(project.getDescrizione());
+        List<String> objectives = new ArrayList<>(progetto.getObiettivi().keySet());
 
-        mObjectivesAdapter.notifyDataSetChanged();
-        mTeammatesAdapter.notifyDataSetChanged();
+        //  Permette al leader di modificare il valore degli objectives
+        //  Possono assumere false o true, true indica che sono completi.
+        View.OnClickListener onObjectiveClick = v -> {
+            if (progetto.getLeader().equals(firebaseAuthUtils.getCurrentUser().getDisplayName())) {
+                String objective = ((TextView)v).getText().toString();
 
-        if (firebaseAuthUtils.getCurrentUser() != null) {
-            //  Un long click permette di modificare la descrizione del progetto corrente
-            mDescriptionTextView.setOnLongClickListener(view -> {
-                editProjectDescription();
-                return false;
-            });
+                if (!Objects.requireNonNull(progetto.getObiettivi().get(objective))) {
+                    progetto.setObiettivoRaggiunto(objective);
+                    firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_OBJ, progetto.getObiettivi());
 
-            //  Permette all'utente di modificare il valore degli objectives
-            //  Possono assumere false o true, true indica che sono completi.
-            mObjectivesList.setOnItemClickListener((parent, view, position, id) -> {
-                if (progetto.getLeader().equals(firebaseAuthUtils.getCurrentUser().getDisplayName())) {
-                    String objective = mObjectivesList.getItemAtPosition(position).toString();
-
-                    if (!Objects.requireNonNull(progetto.getObiettivi().get(objective))) {
-                        progetto.setObiettivoRaggiunto(objective);
-                        firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_OBJ, progetto.getObiettivi());
-                    }
+                    objectivesAdapter.notifyDataSetChanged();
                 }
-            });
-            mObjectivesAdapter.notifyDataSetChanged();
+            } else {
+                Toast.makeText(this, "Per cambiare lo stato dell'obiettivo devi essere il leader del progetto.", Toast.LENGTH_SHORT).show();
+            }
+        };
 
-            mTeammatesList.setOnItemClickListener(((parent, view, position, id) -> {
-                String teammate = mTeammatesList.getItemAtPosition(position).toString();
-                viewTeammateProfile(teammate);
-            }));
-            mTeammatesAdapter.notifyDataSetChanged();
-        }
+        objectivesAdapter = new ProjectListsAdapter(objectives, onObjectiveClick);
+        mObjectivesList.setAdapter(objectivesAdapter);
+        objectivesAdapter.notifyDataSetChanged();
+
+        //  Imposta la ListView per visualizzare i teammates
+        LinearLayoutManager teammatesLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
+        mTeammatesList.setLayoutManager(teammatesLayoutManager);
+
+        //  Permette al leader di modificare il valore degli objectives
+        //  Possono assumere false o true, true indica che sono completi.
+        View.OnClickListener onTeammateClick = v -> {
+            String teammate = ((TextView)v).getText().toString();
+            viewTeammateProfile(teammate);
+        };
+
+        teammatesAdapter = new ProjectListsAdapter(progetto.getTeammates(), onTeammateClick);
+        mTeammatesList.setAdapter(teammatesAdapter);
+        teammatesAdapter.notifyDataSetChanged();
+
+        mDescriptionTextView.setText(project.getDescrizione());
     }
 
     public void updateProgress(Progetto project) {
