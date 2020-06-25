@@ -56,7 +56,6 @@
     <string name="edit_tag_dialog_title">Edit or Remove Tag</string>
     <string name="remove_text">Remove</string>
     <string name="display_name_text">Display Name</string>
-    <string name="view_skills_text">View Skills</string>
     <string name="leader_text">Leader</string>
     <string name="teammate_text">Teammate</string>
     <string name="new_project_dialog_title">New Project</string>
@@ -69,5 +68,14 @@
     <string name="pay_menu_option">Increase Project Visibility</string>
     <string name="leave_project_menu_option">Leave Project</string>
     <string name="close_text">Close</string>
+    <string name="change_project_title_menu">Change Project Title</string>
+    <string name="change_project_title_text">Change Project Title</string>
+    <string name="default_notification_text">Notification Details</string>
+    <string name="default_username_text">User Name</string>
+    <string name="view_skills_text">View Skills</string>
+    <string name="privacy_menu">Privacy</string>
+    <string name="privacy_dialog_title">Privacy Settings</string>
+    <string name="private_profile_picture_switch_text">Private Profile Picture</string>
+    <string name="private_e_mail_address_switch_text">Private E-mail Address</string>
 
 </resources>

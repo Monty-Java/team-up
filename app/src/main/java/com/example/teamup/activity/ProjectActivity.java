@@ -2,6 +2,7 @@ package com.example.teamup.activity;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -82,6 +83,9 @@ public class ProjectActivity extends AppCompatActivity {
             case R.id.action_home:
                 Intent homeIntent = new Intent(this, MainActivity.class);
                 startActivity(homeIntent);
+                break;
+            case R.id.action_change_title:
+                changeProjectTitle();
                 break;
             case R.id.action_details:
                 onDetailsClick();
@@ -171,10 +175,9 @@ public class ProjectActivity extends AppCompatActivity {
     private void sendTeammateRequest() {
         AlertDialog.Builder teammateRequestDialogBuilder = new AlertDialog.Builder(this);
         teammateRequestDialogBuilder.setTitle("Become a Teammate!");
-        TextView requestTextView = new TextView(this);
-        requestTextView.setText(R.string.teammte_request_text);
-        teammateRequestDialogBuilder.setView(requestTextView);
+        teammateRequestDialogBuilder.setMessage(R.string.teammte_request_text);
 
+        //  Invia una notifica al Leader del progetto corrente
         teammateRequestDialogBuilder.setPositiveButton(R.string.ok_text, (dialog, which) ->
                 firestoreUtils.storeNotification(progetto.getTitolo(),
                         progetto.getLeader(),
@@ -201,7 +204,7 @@ public class ProjectActivity extends AppCompatActivity {
 
         //  Rimuove l'etichetta selezionata dal progetto corrente
         editTagRemoveButton.setOnClickListener(v -> {
-            progetto.getEtichette().remove(tagToEdit);
+            progetto.removeEtichetta(tagToEdit);
             firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_TAGS, progetto.getEtichette());
             editTagsDialog.dismiss();
         });
@@ -231,7 +234,7 @@ public class ProjectActivity extends AppCompatActivity {
 
         addTagPositiveButton.setOnClickListener(v -> {
             if (!addTagEditText.getText().toString().equals("")) {
-                progetto.getEtichette().add(addTagEditText.getText().toString());
+                progetto.addEtichetta(addTagEditText.getText().toString());
                 firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_TAGS, progetto.getEtichette());
                 addTagDialog.dismiss();
             } else
@@ -258,6 +261,36 @@ public class ProjectActivity extends AppCompatActivity {
                 editDescriptionEditText.setError("Project needs a description");
         });
         editDescriptionDialog.show();
+    }
+
+    private void changeProjectTitle() {
+        if (Objects.equals(firebaseAuthUtils.getCurrentUser().getDisplayName(), progetto.getLeader())) {
+            Dialog changeTitleDialog = new Dialog(this);
+            changeTitleDialog.setContentView(R.layout.change_project_title_dialog);
+            EditText changeTitleEditText = changeTitleDialog.findViewById(R.id.change_title_editText);
+            changeTitleEditText.setHint(progetto.getTitolo());
+            Button changeTitlePositiveButton = changeTitleDialog.findViewById(R.id.change_title_positiveButton);
+            Button changeTitleNegativeButton = changeTitleDialog.findViewById(R.id.change_title_negativeButton);
+            changeTitleNegativeButton.setOnClickListener(v -> changeTitleDialog.dismiss());
+
+            changeTitlePositiveButton.setOnClickListener(v -> {
+                if (!changeTitleEditText.getText().toString().equals("") && !changeTitleEditText.getText().toString().equals(progetto.getTitolo())) {
+                    AlertDialog.Builder confirmTitleChangeBuilder = new AlertDialog.Builder(this);
+                    confirmTitleChangeBuilder.setTitle("Confirm Title Change");
+                    confirmTitleChangeBuilder.setMessage("Change title from " + progetto.getTitolo() + " to " + changeTitleEditText.getText().toString() + "?");
+                    confirmTitleChangeBuilder.setPositiveButton(R.string.ok_text, (dialog, which) -> {
+                        progetto.setTitolo(changeTitleEditText.getText().toString());
+                        firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_TITLE, progetto.getTitolo());
+                        dialog.dismiss();
+                        changeTitleDialog.dismiss();
+                    });
+                    confirmTitleChangeBuilder.setNegativeButton(R.string.cancel_text, (dialog, which) -> dialog.dismiss());
+                    AlertDialog confirmTitleChangeDialog = confirmTitleChangeBuilder.create();
+                    confirmTitleChangeDialog.show();
+                } else changeTitleEditText.setError("Title field is empty or equal to previous project title");
+            });
+            changeTitleDialog.show();
+        } else Toast.makeText(this, "Only the leader can change the project title", Toast.LENGTH_LONG).show();
     }
 
     private void viewTeammateProfile(String teammate) {

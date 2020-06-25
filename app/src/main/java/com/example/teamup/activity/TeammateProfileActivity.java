@@ -56,8 +56,9 @@ public class TeammateProfileActivity extends AppCompatActivity {
 
                         @SuppressWarnings(value = "unchecked")
                         List<String> skills = (List<String>) snapshot.getData().get(FirestoreUtils.KEY_SKILLS);
+                        String uid = (String) snapshot.getData().get(FirestoreUtils.KEY_UID);
+                        firestoreUtils.getProfilePic(uid, mProfilePicImageView);
 
-                        //  TODO: ottenere la foto dell'utente dallo storage
                         mTeammate = new Utente(
                                 null,
                                 teammate,

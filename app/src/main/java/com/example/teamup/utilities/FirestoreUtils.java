@@ -27,6 +27,7 @@ public class FirestoreUtils {
     public static final String KEY_NAME = "display_name";
     public static final String KEY_SKILLS = "skills";
     public static final String KEY_NOTIFICATIONS = "notifications";
+    public static final String KEY_UID = "uid";
 
     public static final String KEY_PROJECTS = "projects";
     public static final String KEY_TITLE = "title";

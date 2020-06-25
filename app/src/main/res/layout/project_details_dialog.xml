@@ -20,7 +20,8 @@
         android:padding="@dimen/activity_vertical_margin"
         android:layout_below="@+id/details_dialog_title"
         android:layout_centerHorizontal="true"
-        android:text="@string/default_project_id_text" />
+        android:text="@string/default_project_id_text"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
 
     <TextView
         android:id="@+id/tags_title"

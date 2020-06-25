@@ -57,6 +57,7 @@ public class NotificationViewActivity extends AppCompatActivity {
         onNotificationOpened();
 
         //  UI
+        TextView mNotificationTextView = findViewById(R.id.notification_textView);
         ImageView mProfileImageView = findViewById(R.id.profile_imageView);
         TextView mNameTextView = findViewById(R.id.nameTextView);
         TextView mSkillTitleTextView = findViewById(R.id.skillsTitle);
@@ -75,6 +76,10 @@ public class NotificationViewActivity extends AppCompatActivity {
         Button negativeButton = findViewById(R.id.negativeButton);
 
         if (notificationType.equals(NotificationType.TEAMMATE_REQUEST)) {
+
+            String requestMessage = sendResponseTo + " has requested to join the team on your project " + project;
+            mNotificationTextView.setText(requestMessage);
+
             //  Visualizza un'anteprima del profilo dell'utente che ha fatto la richiesta,
             //  due pulsanti per accettare o rifiutare
             //  Inviare la notifica appropriata
@@ -141,6 +146,8 @@ public class NotificationViewActivity extends AppCompatActivity {
             negativeButton.setVisibility(View.INVISIBLE);
             mSkillTitleTextView.setVisibility(View.INVISIBLE);
 
+            String acceptMessage = sendResponseTo + " has accepted your request to join the team on " + project;
+            mNotificationTextView.setText(acceptMessage);
 
             positiveButton.setText(R.string.ok_text);
             //  Intent che apre ProjectActivity col progetto per il quale si è fatta la richiesta
@@ -148,6 +155,9 @@ public class NotificationViewActivity extends AppCompatActivity {
         } else if (notificationType.equals(NotificationType.LEADER_REJECT)) {
             negativeButton.setVisibility(View.INVISIBLE);
             mSkillTitleTextView.setVisibility(View.INVISIBLE);
+
+            String rejectMessage = "We're sorry, " + sendResponseTo + " has rejected your request to join the team on " + project;
+            mNotificationTextView.setText(rejectMessage);
 
             positiveButton.setText(R.string.ok_text);
             positiveButton.setOnClickListener(view -> onNotificationAcknowledged(notificationType, project));

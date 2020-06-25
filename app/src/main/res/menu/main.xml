@@ -14,14 +14,20 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/action_details"
+        android:id="@+id/action_change_title"
         android:orderInCategory="300"
+        android:title="@string/change_project_title_menu"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_details"
+        android:orderInCategory="400"
         android:title="@string/details_dialog_title"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_leave"
-        android:orderInCategory="400"
+        android:orderInCategory="500"
         android:title="@string/leave_project_menu_option"
         app:showAsAction="never" />
 

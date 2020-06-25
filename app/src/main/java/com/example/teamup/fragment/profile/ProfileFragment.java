@@ -9,6 +9,9 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -17,6 +20,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,10 +47,7 @@ import java.util.Objects;
 
 import static android.app.Activity.RESULT_OK;
 
-//  TODO: funzionalità per rendere l'e-mail e la foto profilo private
-
 public class ProfileFragment extends Fragment {
-
     public static final String TAG = ProfileFragment.class.getSimpleName();
 
     private static final int TAKE_IMAGE_CODE = 10001;
@@ -66,23 +67,38 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
+        setHasOptionsMenu(true);
+
         View root = inflater.inflate(R.layout.fragment_profile, container, false);
-        View layout = root.findViewById(R.id.layout_profile);
 
         firestoreUtils = new FirestoreUtils(FirebaseFirestore.getInstance());
         firebaseAuthUtils = new FirebaseAuthUtils(FirebaseAuth.getInstance(), firestoreUtils.getFirestoreInstance(), this.getActivity());
 
-        mProfilePicImageView = layout.findViewById(R.id.profilePic_imageView);
+        mProfilePicImageView = root.findViewById(R.id.profilePic_imageView);
         mProfilePicImageView.setOnClickListener(this::onProfileImageClick);     //  Listener per creare una nuova foto profilo
 
-        mDisplayNameTextView = layout.findViewById(R.id.displayName_textView);
-        mEmailTextView = layout.findViewById(R.id.email_textView);
-        mViewSkillsButton = layout.findViewById(R.id.viewSkills_button);
+        mDisplayNameTextView = root.findViewById(R.id.displayName_textView);
+        mEmailTextView = root.findViewById(R.id.email_textView);
+        mViewSkillsButton = root.findViewById(R.id.viewSkills_button);
 
         FirebaseUser firebaseUser = firebaseAuthUtils.getCurrentUser();
         getUserData(firebaseUser);
 
         return root;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.profile, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.action_privacy) {
+            privacySettings();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void onProfileImageClick(View view) {
@@ -200,7 +216,7 @@ public class ProfileFragment extends Fragment {
                 mUser.getComptetenze().add(newSkillEditText.getText().toString());
                 firestoreUtils.updateUserData(mUser.getDisplayName(), FirestoreUtils.KEY_SKILLS, mUser.getComptetenze());
                 addSkillDialog.dismiss();
-            } else Toast.makeText(this.getContext(), "No skill specified", Toast.LENGTH_LONG).show();
+            } else newSkillEditText.setError("No skill specified");
         });
 
         addSkillDialog.show();
@@ -244,6 +260,17 @@ public class ProfileFragment extends Fragment {
                     .addOnSuccessListener(aVoid -> Toast.makeText(requireActivity(), "Updated successfully", Toast.LENGTH_SHORT).show())
                     .addOnFailureListener(e -> Toast.makeText(requireActivity(), "Profile image failed...", Toast.LENGTH_SHORT).show());
         } else Toast.makeText(this.requireContext(), "Error. Unable to obtain user data", Toast.LENGTH_LONG).show();
+    }
+
+    private void privacySettings() {
+        //  TODO: privacy
+        Dialog privacyDialog = new Dialog(this.requireContext());
+        privacyDialog.setContentView(R.layout.privacy_dialog);
+        Switch picSwitch = privacyDialog.findViewById(R.id.pic_switch);
+        Switch emailSwitch = privacyDialog.findViewById(R.id.email_switch);
+        Button okButton = privacyDialog.findViewById(R.id.privacy_button);
+        okButton.setOnClickListener(v -> privacyDialog.dismiss());
+        privacyDialog.show();
     }
 
     @Override
