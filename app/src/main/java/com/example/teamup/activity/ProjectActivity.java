@@ -279,6 +279,7 @@ public class ProjectActivity extends AppCompatActivity {
         editDescriptionPositiveButton.setOnClickListener(v -> {
             if (!editDescriptionEditText.getText().toString().equals("")) {
                 progetto.setDescrizione(editDescriptionEditText.getText().toString());
+                mDescriptionTextView.setText(progetto.getDescrizione());
                 firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_DESC, progetto.getDescrizione());
                 editDescriptionDialog.dismiss();
             } else
@@ -304,6 +305,7 @@ public class ProjectActivity extends AppCompatActivity {
                     confirmTitleChangeBuilder.setMessage("Change title from " + progetto.getTitolo() + " to " + changeTitleEditText.getText().toString() + "?");
                     confirmTitleChangeBuilder.setPositiveButton(R.string.ok_text, (dialog, which) -> {
                         progetto.setTitolo(changeTitleEditText.getText().toString());
+                        setTitle(progetto.getTitolo());
                         firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_TITLE, progetto.getTitolo());
                         dialog.dismiss();
                         changeTitleDialog.dismiss();
@@ -391,28 +393,25 @@ public class ProjectActivity extends AppCompatActivity {
         updateProgress(project);
 
         //  Rimuove gli obiettivi completi dall'istanza di Progetto (gli obiettivi rimangono memorizzati in Firestore)
-        for (Iterator<Map.Entry<String, Boolean>> entries = project.getObiettivi().entrySet().iterator(); entries.hasNext();) {
-            if (entries.next().getValue()) entries.remove();
-        }
+        removeCompleteObjectives(project);
 
         //  Imposta la ListView per visualizzare gli obiettivi
 
         LinearLayoutManager objectivesLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         mObjectivesList.setLayoutManager(objectivesLayoutManager);
 
-        List<String> objectives = new ArrayList<>(progetto.getObiettivi().keySet());
+        List<String> objectives = new ArrayList<>(project.getObiettivi().keySet());
 
         //  Permette al leader di modificare il valore degli objectives
         //  Possono assumere false o true, true indica che sono completi.
         View.OnClickListener onObjectiveClick = v -> {
-            if (progetto.getLeader().equals(firebaseAuthUtils.getCurrentUser().getDisplayName())) {
+            if (project.getLeader().equals(firebaseAuthUtils.getCurrentUser().getDisplayName())) {
                 String objective = ((TextView)v).getText().toString();
 
-                if (!Objects.requireNonNull(progetto.getObiettivi().get(objective))) {
-                    progetto.setObiettivoRaggiunto(objective);
-                    firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_OBJ, progetto.getObiettivi());
-
-                    objectivesAdapter.notifyDataSetChanged();
+                if (!Objects.requireNonNull(project.getObiettivi().get(objective))) {
+                    project.setObiettivoRaggiunto(objective);
+                    firestoreUtils.updateProjectData(project.getId(), FirestoreUtils.KEY_OBJ, project.getObiettivi());
+                    objectivesAdapter.notifyDataSetChanged();   //  TODO: non funziona
                 }
             } else {
                 Toast.makeText(this, "Per cambiare lo stato dell'obiettivo devi essere il leader del progetto.", Toast.LENGTH_SHORT).show();
@@ -421,7 +420,7 @@ public class ProjectActivity extends AppCompatActivity {
 
         objectivesAdapter = new ProjectListsAdapter(objectives, onObjectiveClick);
         mObjectivesList.setAdapter(objectivesAdapter);
-        objectivesAdapter.notifyDataSetChanged();
+        objectivesAdapter.notifyDataSetChanged();   //  TODO: non funziona
 
         //  Imposta la ListView per visualizzare i teammates
         LinearLayoutManager teammatesLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
@@ -461,6 +460,12 @@ public class ProjectActivity extends AppCompatActivity {
         completeObjectivesListView.setAdapter(adapter);
 
         viewCompleteObjectivesDialog.show();
+    }
+
+    private void removeCompleteObjectives(Progetto project) {
+        for (Iterator<Map.Entry<String, Boolean>> entries = project.getObiettivi().entrySet().iterator(); entries.hasNext();) {
+            if (entries.next().getValue()) entries.remove();
+        }
     }
 
     public void updateProgress(Progetto project) {

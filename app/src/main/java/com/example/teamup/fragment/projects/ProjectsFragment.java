@@ -88,7 +88,7 @@ public class ProjectsFragment extends Fragment {
                         android.R.layout.simple_list_item_1,
                         leaderProjectsList
                 );
-                listViewLeader.setAdapter(listAdapter);
+                listViewLeader.setAdapter(listAdapter); //  TODO: aggiornare listView
             }
         });
 

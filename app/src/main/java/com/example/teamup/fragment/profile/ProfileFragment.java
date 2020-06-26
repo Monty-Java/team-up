@@ -8,9 +8,6 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -21,8 +18,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.example.teamup.R;
@@ -30,7 +27,6 @@ import com.example.teamup.utilities.FirebaseAuthUtils;
 import com.example.teamup.utilities.FirestoreUtils;
 import com.example.teamup.utilities.Utente;
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textview.MaterialTextView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -85,20 +81,6 @@ public class ProfileFragment extends Fragment {
         getUserData(firebaseUser);
 
         return root;
-    }
-
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.profile, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.action_privacy) {
-            privacySettings();
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     private void onProfileImageClick(View view) {
@@ -187,14 +169,14 @@ public class ProfileFragment extends Fragment {
     private void removeSkill(AdapterView<?> parent, ArrayAdapter<String> adapter, int position) {
         String skill = parent.getItemAtPosition(position).toString();
 
-        AlertDialog.Builder removeSkillDialogBuilder = new AlertDialog.Builder(this.getContext());
+        AlertDialog.Builder removeSkillDialogBuilder = new AlertDialog.Builder(this.requireContext());
         removeSkillDialogBuilder.setTitle("Remove Skill");
         removeSkillDialogBuilder.setMessage("Are you sure you want to remove " + skill + " from your list of skills?");
 
         removeSkillDialogBuilder.setPositiveButton("OK", ((dialog, which) -> {
             mUser.removeSkill(skill);
             firestoreUtils.updateUserData(mUser.getDisplayName(), FirestoreUtils.KEY_SKILLS, mUser.getComptetenze());
-            adapter.notifyDataSetChanged();
+            adapter.notifyDataSetChanged(); //  TODO: qui funziona
             dialog.dismiss();
         }));
         removeSkillDialogBuilder.setNegativeButton("Cancel", ((dialog, which) -> dialog.dismiss()));
@@ -260,17 +242,6 @@ public class ProfileFragment extends Fragment {
                     .addOnSuccessListener(aVoid -> Toast.makeText(requireActivity(), "Updated successfully", Toast.LENGTH_SHORT).show())
                     .addOnFailureListener(e -> Toast.makeText(requireActivity(), "Profile image failed...", Toast.LENGTH_SHORT).show());
         } else Toast.makeText(this.requireContext(), "Error. Unable to obtain user data", Toast.LENGTH_LONG).show();
-    }
-
-    private void privacySettings() {
-        //  TODO: privacy
-        Dialog privacyDialog = new Dialog(this.requireContext());
-        privacyDialog.setContentView(R.layout.privacy_dialog);
-        SwitchMaterial picSwitch = privacyDialog.findViewById(R.id.pic_switch);
-        SwitchMaterial emailSwitch = privacyDialog.findViewById(R.id.email_switch);
-        MaterialButton okButton = privacyDialog.findViewById(R.id.privacy_button);
-        okButton.setOnClickListener(v -> privacyDialog.dismiss());
-        privacyDialog.show();
     }
 
     @Override
