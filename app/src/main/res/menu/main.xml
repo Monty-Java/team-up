@@ -31,4 +31,10 @@
         android:title="@string/leave_project_menu_option"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/action_delete"
+        android:orderInCategory="600"
+        android:title="@string/delete_project_menu"
+        app:showAsAction="never" />
+
 </menu>

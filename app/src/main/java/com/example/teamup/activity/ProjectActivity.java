@@ -112,6 +112,9 @@ public class ProjectActivity extends AppCompatActivity {
             case R.id.action_leave:
                 leaveProject();
                 break;
+            case R.id.action_delete:
+                deleteProject();
+                break;
             default:
                 Log.w(TAG, "onOptionsItemSelected: item non riconosciuto");
         }
@@ -152,7 +155,10 @@ public class ProjectActivity extends AppCompatActivity {
                         tagsAdapter.notifyDataSetChanged();
             });
 
-            addTagButton.setOnClickListener(v -> addNewTag());
+            addTagButton.setOnClickListener(v -> {
+                addNewTag();
+                tagsAdapter.notifyDataSetChanged();
+            });
         } else {
             addTagButton.setEnabled(false);
         }
@@ -183,6 +189,10 @@ public class ProjectActivity extends AppCompatActivity {
             if (!Objects.requireNonNull(addObjectiveEditText.getText()).toString().equals("")) {
                 progetto.addObiettivoDaRaggiungere(addObjectiveEditText.getText().toString());
                 firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_OBJ, progetto.getObiettivi());
+                readProjectData(progetto.getTitolo());
+
+                Log.d(TAG, progetto.getObiettivi().toString());
+
                 addObjectiveDialog.dismiss();
             } else addObjectiveEditText.setError("Objective field cannot be empty");
         });
@@ -358,6 +368,8 @@ public class ProjectActivity extends AppCompatActivity {
                 @SuppressWarnings(value = "unchecked")
                 Map<String, Boolean> objective = new HashMap<>((Map<String, Boolean>) Objects.requireNonNull(data.get(FirestoreUtils.KEY_OBJ)));
 
+                Log.d(TAG, objective.toString());
+
                 mCompleteObjectivesButton.setOnClickListener(v -> displayCompleteObjectives(objective));
 
                 progetto = new Progetto(
@@ -371,6 +383,8 @@ public class ProjectActivity extends AppCompatActivity {
                         (boolean) data.get(FirestoreUtils.KEY_SPONSORED));
 
                 displayProject(progetto);
+
+                //  TODO: ListViewListeners here?
             } else
                 Log.e(TAG, "Error reading data");
         });
@@ -411,7 +425,9 @@ public class ProjectActivity extends AppCompatActivity {
                 if (!Objects.requireNonNull(project.getObiettivi().get(objective))) {
                     project.setObiettivoRaggiunto(objective);
                     firestoreUtils.updateProjectData(project.getId(), FirestoreUtils.KEY_OBJ, project.getObiettivi());
-                    objectivesAdapter.notifyDataSetChanged();   //  TODO: non funziona
+
+                    readProjectData(project.getTitolo());
+                    objectivesAdapter.notifyDataSetChanged();
                 }
             } else {
                 Toast.makeText(this, "Per cambiare lo stato dell'obiettivo devi essere il leader del progetto.", Toast.LENGTH_SHORT).show();
@@ -420,7 +436,7 @@ public class ProjectActivity extends AppCompatActivity {
 
         objectivesAdapter = new ProjectListsAdapter(objectives, onObjectiveClick);
         mObjectivesList.setAdapter(objectivesAdapter);
-        objectivesAdapter.notifyDataSetChanged();   //  TODO: non funziona
+        objectivesAdapter.notifyDataSetChanged();
 
         //  Imposta la ListView per visualizzare i teammates
         LinearLayoutManager teammatesLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
@@ -458,6 +474,7 @@ public class ProjectActivity extends AppCompatActivity {
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, entries);
         completeObjectivesListView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
 
         viewCompleteObjectivesDialog.show();
     }
@@ -496,5 +513,34 @@ public class ProjectActivity extends AppCompatActivity {
             AlertDialog leaveTeamDialog = leaveProjectDialogBuilder.create();
             leaveTeamDialog.show();
         }
+    }
+
+    private void deleteProject() {
+        if (Objects.equals(firebaseAuthUtils.getCurrentUser().getDisplayName(), progetto.getLeader())) {
+            AlertDialog.Builder deleteProjectDialogBuilder = new AlertDialog.Builder(this);
+            deleteProjectDialogBuilder.setTitle("Delete Project");
+            deleteProjectDialogBuilder.setMessage("Are you sure you want to delete " + progetto.getTitolo() + "? This action cannot be undone");
+            deleteProjectDialogBuilder.setPositiveButton(R.string.ok_text,
+                    (dialog, which) -> firestoreUtils.getFirestoreInstance().collection(FirestoreUtils.KEY_PROJECTS)
+                    .whereEqualTo(FirestoreUtils.KEY_TITLE, progetto.getTitolo())
+                    .get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    Objects.requireNonNull(task.getResult()).getDocuments().get(0).getReference().delete().addOnCompleteListener(
+                            deleteTask -> {
+                                if (deleteTask.isSuccessful()) {
+                                    Intent homeIntent = new Intent(this, MainActivity.class);
+                                    startActivity(homeIntent);
+                                    this.finish();
+                                } else
+                                    Toast.makeText(this, "Error deleting project...", Toast.LENGTH_LONG).show();
+                            }
+                    );
+                }
+            }));
+            deleteProjectDialogBuilder.setNegativeButton(R.string.cancel_text, (dialog, which) -> dialog.dismiss());
+            AlertDialog deleteProjectDialog = deleteProjectDialogBuilder.create();
+            deleteProjectDialog.show();
+        } else
+            Toast.makeText(this, "Only the leader can delete the project", Toast.LENGTH_LONG).show();
     }
 }
