@@ -51,6 +51,7 @@ public class ProjectActivity extends AppCompatActivity {
 
     //  UI
     private RecyclerView mObjectivesList;
+    private MaterialButton mCompleteObjectivesButton;
     private RecyclerView mTeammatesList;
     private TextView mDescriptionTextView;
     private TextView mProgressTextView;
@@ -64,6 +65,7 @@ public class ProjectActivity extends AppCompatActivity {
         setContentView(R.layout.activity_project);
 
         mObjectivesList = findViewById(R.id.objectives_listView);
+        mCompleteObjectivesButton = findViewById(R.id.complete_objectives_button);
         mTeammatesList = findViewById(R.id.team_listView);
         mDescriptionTextView = findViewById(R.id.description_textView);
         mProgressTextView = findViewById(R.id.progress_textView);
@@ -133,20 +135,21 @@ public class ProjectActivity extends AppCompatActivity {
                 android.R.layout.simple_list_item_1,
                 progetto.getEtichette());
         projectTags.setAdapter(tagsAdapter);
-
+        projectTags.setLongClickable(true);
 
         if (Objects.equals(firebaseAuthUtils.getCurrentUser().getDisplayName(), progetto.getLeader())) {
-            projectTags.setOnItemClickListener((parent, view, position, id) -> {
-                        String tag = projectTags.getItemAtPosition(position).toString();
-                        editProjectTags(tag);
-                        tagsAdapter.notifyDataSetChanged();
-            });
-
+            //  Il onItemLongClickListener dev'essere posto prima del onItemClickListener per poter registrare il Long Click
             projectTags.setOnItemLongClickListener((parent, view, position, id) -> {
                 String tag = projectTags.getItemAtPosition(position).toString();
                 removeTag(tag);
                 tagsAdapter.notifyDataSetChanged();
-                return false;
+                return true; // Returning true after performing onItemLongClick prevents firing your onItemClick event after onItemLongClick
+            });
+
+            projectTags.setOnItemClickListener((parent, view, position, id) -> {
+                        String tag = projectTags.getItemAtPosition(position).toString();
+                        editProjectTags(tag);
+                        tagsAdapter.notifyDataSetChanged();
             });
 
             addTagButton.setOnClickListener(v -> addNewTag());
@@ -239,6 +242,8 @@ public class ProjectActivity extends AppCompatActivity {
             dialog.dismiss();
         });
         removeTagBuilder.setNegativeButton(R.string.cancel_text, (dialog, which) -> dialog.dismiss());
+        AlertDialog removeTagDialog = removeTagBuilder.create();
+        removeTagDialog.show();
     }
 
     private void addNewTag() {
@@ -351,6 +356,8 @@ public class ProjectActivity extends AppCompatActivity {
                 @SuppressWarnings(value = "unchecked")
                 Map<String, Boolean> objective = new HashMap<>((Map<String, Boolean>) Objects.requireNonNull(data.get(FirestoreUtils.KEY_OBJ)));
 
+                mCompleteObjectivesButton.setOnClickListener(v -> displayCompleteObjectives(objective));
+
                 progetto = new Progetto(
                         (String) data.get(KEY_ID),
                         (String) data.get(FirestoreUtils.KEY_LEADER),
@@ -433,6 +440,24 @@ public class ProjectActivity extends AppCompatActivity {
             editProjectDescription();
             return false;
         });
+    }
+
+    private void displayCompleteObjectives(Map<String, Boolean> objectives) {
+        Dialog viewCompleteObjectivesDialog = new Dialog(this);
+        viewCompleteObjectivesDialog.setContentView(R.layout.complete_objectives_dialog);
+        ListView completeObjectivesListView = viewCompleteObjectivesDialog.findViewById(R.id.complete_objectives_listView);
+        MaterialButton completeObjectivesButton = viewCompleteObjectivesDialog.findViewById(R.id.complete_objectives_dialog_button);
+        completeObjectivesButton.setOnClickListener(v -> viewCompleteObjectivesDialog.dismiss());
+
+        List<String> entries = new ArrayList<>();
+        for (Map.Entry<String, Boolean> e : objectives.entrySet()) {
+            if (e.getValue()) entries.add(e.getKey());
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, entries);
+        completeObjectivesListView.setAdapter(adapter);
+
+        viewCompleteObjectivesDialog.show();
     }
 
     public void updateProgress(Progetto project) {

@@ -78,5 +78,7 @@
     <string name="private_profile_picture_switch_text">Private Profile Picture</string>
     <string name="private_e_mail_address_switch_text">Private E-mail Address</string>
     <string name="privacy_description_text">If set to private, your profile picture and e-mail address won\'t be visible to other users. They will only see your display name and list of skills when viewing your profile.</string>
+    <string name="completed_text">Completed</string>
+    <string name="completed_objectives_title">Completed Objectives</string>
 
 </resources>

@@ -40,7 +40,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/objectives_textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -50,6 +50,15 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/complete_objectives_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/button_margin"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:text="@string/completed_text"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/objectives_listView"
@@ -62,7 +71,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/objectives_textView" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/teamTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -90,7 +99,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/progress_textView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
