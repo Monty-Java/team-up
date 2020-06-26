@@ -382,6 +382,9 @@ public class ProjectActivity extends AppCompatActivity {
     private void displayProject(Progetto project) {
         Log.d(TAG, "displayProject");
 
+        if (!Objects.equals(firebaseAuthUtils.getCurrentUser().getDisplayName(), project.getLeader()) &&
+        !project.getTeammates().contains(firebaseAuthUtils.getCurrentUser().getDisplayName())) mCompleteObjectivesButton.setEnabled(false);
+
         this.setTitle(project.getTitolo());
 
         //  Calcola il progresso totale del progetto prima di rimuovere la lista di obiettivi completi
