@@ -83,9 +83,9 @@ public class ProjectsFragment extends Fragment {
         Query queryLeader = firebaseFirestore.collection(FirestoreUtils.KEY_PROJECTS).whereEqualTo(FirestoreUtils.KEY_LEADER, firebaseUser.getDisplayName());
         queryLeader.addSnapshotListener((queryDocumentSnapshots, e) -> {
             if (queryDocumentSnapshots != null) {
-
                 for (DocumentChange documentChange : queryDocumentSnapshots.getDocumentChanges()) {
-                    leaderListAdapter.add((String) documentChange.getDocument().getData().get(FirestoreUtils.KEY_TITLE));
+                    if (documentChange.getType() == DocumentChange.Type.ADDED)
+                        leaderListAdapter.add((String) documentChange.getDocument().getData().get(FirestoreUtils.KEY_TITLE));
                 }
 
                 listViewLeader.setAdapter(leaderListAdapter);

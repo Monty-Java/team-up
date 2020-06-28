@@ -134,8 +134,10 @@ public class ProfileFragment extends Fragment {
                             .into(mProfilePicImageView);
                 }
 
-                mDisplayNameTextView.setText(mUser.getDisplayName());
-                mEmailTextView.setText(mUser.getEmail());
+                String displayNameText = "Username: " + mUser.getDisplayName();
+                String emailText = "E-mail Address: " + mUser.getEmail();
+                mDisplayNameTextView.setText(displayNameText);
+                mEmailTextView.setText(emailText);
 
                 mViewSkillsButton.setOnClickListener(view -> viewUserSkills());
             }
