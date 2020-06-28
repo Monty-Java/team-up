@@ -27,7 +27,7 @@ import com.example.teamup.utilities.NotificationType;
 import com.example.teamup.utilities.Progetto;
 import com.example.teamup.utilities.ProjectListsAdapter;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
@@ -37,6 +37,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 public class ProjectActivity extends AppCompatActivity {
     private static final String TAG = ProjectActivity.class.getSimpleName();
@@ -53,7 +54,6 @@ public class ProjectActivity extends AppCompatActivity {
     private TextView mProgressTextView;
 
     private ProjectListsAdapter objectivesAdapter;
-    private ProjectListsAdapter teammatesAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -177,9 +177,6 @@ public class ProjectActivity extends AppCompatActivity {
             if (!addObjectiveEditText.getText().toString().equals("")) {
                 progetto.addObiettivoDaRaggiungere(addObjectiveEditText.getText().toString());
                 firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_OBJ, progetto.getObiettivi());
-
-                displayProject(progetto);   //  Hack per aggiornare la lista degli obiettivi in tempo reale
-
                 addObjectiveDialog.dismiss();
             } else addObjectiveEditText.setError("Objective field cannot be empty");
         });
@@ -310,18 +307,15 @@ public class ProjectActivity extends AppCompatActivity {
      */
     public void readProjectData(String title) {
         Map<String, Object> data = new HashMap<>();
+
         Query query = firestoreUtils.getFirestoreInstance()
                 .collection(FirestoreUtils.KEY_PROJECTS)
                 .whereEqualTo(FirestoreUtils.KEY_TITLE, title);
-
-        query.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                //  Ottiene i dati da Firestore, assicurando che non siano null
-                List<DocumentSnapshot> documents = Objects.requireNonNull(task.getResult()).getDocuments();
-                Map<String, Object> firestoreData = Objects.requireNonNull(documents.get(0).getData());
-
-                data.putAll(firestoreData);
-                data.put(KEY_ID, documents.get(0).getId());
+        query.addSnapshotListener((queryDocumentSnapshots, e) -> {
+            if (queryDocumentSnapshots != null) {
+                List<DocumentChange> documentChanges = queryDocumentSnapshots.getDocumentChanges();
+                data.putAll(documentChanges.get(0).getDocument().getData());
+                data.put(KEY_ID, documentChanges.get(0).getDocument().getId());
                 data.putIfAbsent(FirestoreUtils.KEY_SPONSORED, false);
                 data.putIfAbsent(FirestoreUtils.KEY_TEAMMATES, new ArrayList<String>());
 
@@ -344,8 +338,7 @@ public class ProjectActivity extends AppCompatActivity {
                         (boolean) data.get(FirestoreUtils.KEY_SPONSORED));
 
                 displayProject(progetto);
-            } else
-                Log.e(TAG, "Error reading data");
+            }
         });
     }
 
@@ -363,7 +356,8 @@ public class ProjectActivity extends AppCompatActivity {
         updateProgress(project);
 
         //  Rimuove gli obiettivi completi dall'istanza di Progetto (gli obiettivi rimangono memorizzati in Firestore)
-        for (Iterator<Map.Entry<String, Boolean>> entries = project.getObiettivi().entrySet().iterator(); entries.hasNext();) {
+        Set<Map.Entry<String, Boolean>> incompleteObjectives = project.getObiettivi().entrySet();
+        for (Iterator<Map.Entry<String, Boolean>> entries = incompleteObjectives.iterator(); entries.hasNext();) {
             if (entries.next().getValue()) entries.remove();
         }
 
@@ -380,12 +374,12 @@ public class ProjectActivity extends AppCompatActivity {
             if (project.getLeader().equals(firebaseAuthUtils.getCurrentUser().getDisplayName())) {
                 String objective = ((TextView)v).getText().toString();
 
+                Log.d(TAG, project.getObiettivi().toString());
+
                 if (!Objects.requireNonNull(project.getObiettivi().get(objective))) {
                     project.setObiettivoRaggiunto(objective);
                     firestoreUtils.updateProjectData(project.getId(), FirestoreUtils.KEY_OBJ, project.getObiettivi());
                     mObjectivesList.setAdapter(objectivesAdapter);
-
-                    displayProject(project);    //  Hack per aggiornare la lista degli obiettivi in tempo reale
                 }
             } else {
                 Toast.makeText(this, "Per cambiare lo stato dell'obiettivo devi essere il leader del progetto.", Toast.LENGTH_SHORT).show();
@@ -407,7 +401,7 @@ public class ProjectActivity extends AppCompatActivity {
             viewTeammateProfile(teammate);
         };
 
-        teammatesAdapter = new ProjectListsAdapter(project.getTeammates(), onTeammateClick);
+        ProjectListsAdapter teammatesAdapter = new ProjectListsAdapter(project.getTeammates(), onTeammateClick);
         mTeammatesList.setAdapter(teammatesAdapter);
         teammatesAdapter.notifyDataSetChanged();
 
@@ -449,17 +443,15 @@ public class ProjectActivity extends AppCompatActivity {
             AlertDialog.Builder deleteProjectDialogBuilder = new AlertDialog.Builder(this);
             deleteProjectDialogBuilder.setTitle("Delete " + progetto.getTitolo());
             deleteProjectDialogBuilder.setMessage("Are you sure you want to delete this project? This action cannot be undone.");
-            deleteProjectDialogBuilder.setPositiveButton("OK", (dialog, which) -> {
-                firestoreUtils.getFirestoreInstance().collection(FirestoreUtils.KEY_PROJECTS)
-                        .document(progetto.getId()).delete()
-                        .addOnCompleteListener(task -> {
-                            if (task.isSuccessful()) {
-                                Intent homeIntent = new Intent(this, MainActivity.class);
-                                startActivity(homeIntent);
-                                finish();
-                            } else Toast.makeText(this, "Error deleting project", Toast.LENGTH_LONG).show();
-                        });
-            });
+            deleteProjectDialogBuilder.setPositiveButton("OK", (dialog, which) -> firestoreUtils.getFirestoreInstance().collection(FirestoreUtils.KEY_PROJECTS)
+                    .document(progetto.getId()).delete()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Intent homeIntent = new Intent(this, MainActivity.class);
+                            startActivity(homeIntent);
+                            finish();
+                        } else Toast.makeText(this, "Error deleting project", Toast.LENGTH_LONG).show();
+                    }));
             deleteProjectDialogBuilder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
 
             AlertDialog deleteProjectDialog = deleteProjectDialogBuilder.create();
