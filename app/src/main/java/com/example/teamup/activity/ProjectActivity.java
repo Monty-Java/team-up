@@ -278,7 +278,7 @@ public class ProjectActivity extends AppCompatActivity {
                     confirmTitleChangeBuilder.setPositiveButton(R.string.ok_text, (dialog, which) -> {
                         progetto.setTitolo(changeTitleEditText.getText().toString());
                         firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_TITLE, progetto.getTitolo());
-                        setTitle(progetto.getTitolo());
+                        setTitle(changeTitleEditText.getText().toString());
                         dialog.dismiss();
                         changeTitleDialog.dismiss();
                     });
