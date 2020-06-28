@@ -75,4 +75,6 @@ public class ProjectListsAdapter extends RecyclerView.Adapter<ProjectListsAdapte
             objectiveTitle.setOnClickListener(onObjectiveClick);
         }
     }
+
+
 }

@@ -9,9 +9,6 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -20,7 +17,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -85,20 +81,6 @@ public class ProfileFragment extends Fragment {
         getUserData(firebaseUser);
 
         return root;
-    }
-
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.profile, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.action_privacy) {
-            privacySettings();
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     private void onProfileImageClick(View view) {
@@ -178,7 +160,10 @@ public class ProfileFragment extends Fragment {
         skillsListView.setOnItemClickListener((parent, listview, position, id) -> removeSkill(parent, skillsAdapter, position));
 
         //  Crea un Dialog che permette di aggiungere una nuova competenza
-        addSkillButton.setOnClickListener(l -> addSkill());
+        addSkillButton.setOnClickListener(l -> {
+            addSkill(skillsAdapter);
+            //skillsAdapter.notifyDataSetChanged();
+        });
 
         closeButton.setOnClickListener(v -> skillsDialog.hide());
         skillsDialog.show();
@@ -203,7 +188,7 @@ public class ProfileFragment extends Fragment {
         removeSkillDialog.show();
     }
 
-    private void addSkill() {
+    private void addSkill(ArrayAdapter<String> adapter) {
         Dialog addSkillDialog = new Dialog(this.requireContext());
         addSkillDialog.setContentView(R.layout.add_skill_dialog);
         Button positiveButton = addSkillDialog.findViewById(R.id.add_skill_positiveButton);
@@ -215,6 +200,7 @@ public class ProfileFragment extends Fragment {
             if (!newSkillEditText.getText().toString().equals("")) {
                 mUser.getComptetenze().add(newSkillEditText.getText().toString());
                 firestoreUtils.updateUserData(mUser.getDisplayName(), FirestoreUtils.KEY_SKILLS, mUser.getComptetenze());
+                adapter.notifyDataSetChanged();
                 addSkillDialog.dismiss();
             } else newSkillEditText.setError("No skill specified");
         });
@@ -260,21 +246,5 @@ public class ProfileFragment extends Fragment {
                     .addOnSuccessListener(aVoid -> Toast.makeText(requireActivity(), "Updated successfully", Toast.LENGTH_SHORT).show())
                     .addOnFailureListener(e -> Toast.makeText(requireActivity(), "Profile image failed...", Toast.LENGTH_SHORT).show());
         } else Toast.makeText(this.requireContext(), "Error. Unable to obtain user data", Toast.LENGTH_LONG).show();
-    }
-
-    private void privacySettings() {
-        //  TODO: privacy
-        Dialog privacyDialog = new Dialog(this.requireContext());
-        privacyDialog.setContentView(R.layout.privacy_dialog);
-        Switch picSwitch = privacyDialog.findViewById(R.id.pic_switch);
-        Switch emailSwitch = privacyDialog.findViewById(R.id.email_switch);
-        Button okButton = privacyDialog.findViewById(R.id.privacy_button);
-        okButton.setOnClickListener(v -> privacyDialog.dismiss());
-        privacyDialog.show();
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
     }
 }
