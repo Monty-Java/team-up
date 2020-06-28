@@ -109,6 +109,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         String leaderText = "Leader: " + userDisplayName.getText().toString();
         leader.setText(leaderText);
 
+        Button cancelButton = newProjectDialog.findViewById(R.id.cancelNewProject_button);
+        cancelButton.setOnClickListener(v -> newProjectDialog.dismiss());
+
         Button newProjectConfirmButton = newProjectDialog.findViewById(R.id.button_confirmNewProject);
         newProjectConfirmButton.setOnClickListener(v -> {
             EditText title = newProjectDialog.findViewById(R.id.projectTitle_editText);

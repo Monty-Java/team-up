@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/displayName_textView"
         android:text="@string/hint_email"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1" />
 
     <TextView
         android:id="@+id/displayName_textView"
@@ -30,7 +30,7 @@
         android:layout_below="@+id/profilePic_imageView"
         android:paddingVertical="@dimen/activity_vertical_margin"
         android:text="@string/default_username_text"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5" />
 
     <Button
         android:id="@+id/viewSkills_button"
@@ -39,6 +39,7 @@
         android:layout_centerInParent="true"
         android:layout_alignParentBottom="true"
         android:text="@string/view_skills_text"
-        android:textAppearance="@style/TextAppearance.AppCompat.Button" />
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
+        android:layout_margin="@dimen/button_margin" />
 
 </RelativeLayout>

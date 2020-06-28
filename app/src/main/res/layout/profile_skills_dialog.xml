@@ -27,7 +27,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/skillsListView"
         android:layout_toStartOf="@+id/addSkillButton"
-        android:text="@string/close_text" />
+        android:text="@string/close_text"
+        android:layout_margin="@dimen/button_margin"/>
 
     <Button
         android:id="@+id/addSkillButton"
@@ -35,6 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_below="@id/skillsListView"
-        android:text="@string/add_skill_prompt" />
+        android:text="@string/add_skill_prompt"
+        android:layout_margin="@dimen/button_margin"/>
 
 </RelativeLayout>

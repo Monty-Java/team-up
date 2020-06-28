@@ -11,7 +11,7 @@
         android:layout_centerHorizontal="true"
         android:padding="@dimen/activity_vertical_margin"
         android:text="@string/details_dialog_title"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
 
     <TextView
         android:id="@+id/projectId_textView"
@@ -21,7 +21,7 @@
         android:layout_below="@+id/details_dialog_title"
         android:layout_centerHorizontal="true"
         android:text="@string/default_project_id_text"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"/>
 
     <TextView
         android:id="@+id/tags_title"
@@ -30,7 +30,7 @@
         android:layout_below="@+id/projectId_textView"
         android:layout_centerHorizontal="true"
         android:text="@string/tags_hint"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5" />
 
     <ListView
         android:id="@+id/tagsListView"
@@ -46,7 +46,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/tagsListView"
         android:layout_toStartOf="@+id/addTagButton"
-        android:text="@string/close_text" />
+        android:text="@string/close_text"
+        android:layout_margin="@dimen/button_margin"/>
 
     <Button
         android:id="@+id/addTagButton"
@@ -54,6 +55,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/tagsListView"
         android:layout_alignParentEnd="true"
-        android:text="@string/add_tag_prompt"/>
+        android:text="@string/add_tag_prompt"
+        android:layout_margin="@dimen/button_margin"/>
 
 </RelativeLayout>

@@ -15,7 +15,7 @@
     <EditText
         android:id="@+id/add_objective_editText"
         android:layout_below="@+id/add_objective_textView"
-        android:layout_width="wrap_content"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:hint="@string/new_objective_hint"
@@ -25,17 +25,19 @@
     <Button
         android:id="@+id/add_objective_positiveButton"
         android:layout_below="@+id/add_objective_editText"
-        android:layout_toEndOf="@+id/add_objective_negativeButton"
+        android:layout_alignParentEnd="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/ok_text" />
+        android:text="@string/ok_text"
+        android:layout_margin="@dimen/button_margin"/>
 
     <Button
         android:id="@+id/add_objective_negativeButton"
         android:layout_below="@id/add_objective_editText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/cancel_text" />
-
+        android:layout_toStartOf="@+id/add_objective_positiveButton"
+        android:text="@string/cancel_text"
+        android:layout_margin="@dimen/button_margin" />
 
 </RelativeLayout>

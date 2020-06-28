@@ -1,6 +1,5 @@
 package com.example.teamup.fragment.profile;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -20,6 +19,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -172,7 +172,7 @@ public class ProfileFragment extends Fragment {
     private void removeSkill(AdapterView<?> parent, ArrayAdapter<String> adapter, int position) {
         String skill = parent.getItemAtPosition(position).toString();
 
-        AlertDialog.Builder removeSkillDialogBuilder = new AlertDialog.Builder(this.getContext());
+        AlertDialog.Builder removeSkillDialogBuilder = new AlertDialog.Builder(this.requireContext());
         removeSkillDialogBuilder.setTitle("Remove Skill");
         removeSkillDialogBuilder.setMessage("Are you sure you want to remove " + skill + " from your list of skills?");
 

@@ -24,7 +24,7 @@
         android:layout_centerInParent="true"
         android:paddingVertical="@dimen/activity_vertical_margin"
         android:text="@string/nav_header_subtitle"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5" />
 
     <TextView
         android:id="@+id/skillsTextView"
@@ -33,7 +33,7 @@
         android:layout_below="@+id/emailTextView"
         android:layout_centerInParent="true"
         android:text="@string/skills_text"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
 
     <ListView
         android:id="@+id/skillsListView2"
@@ -53,7 +53,8 @@
         android:clickable="true"
         android:focusable="true"
         android:onClick="onTeammateFabClick"
-        android:src="@android:drawable/ic_dialog_email" />
+        android:src="@android:drawable/ic_dialog_email"
+        android:layout_margin="@dimen/fab_margin"/>
 
 
 </RelativeLayout>

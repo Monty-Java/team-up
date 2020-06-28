@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:text="New Project"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5" />
 
     <EditText
         android:id="@+id/projectTitle_editText"
@@ -41,7 +41,8 @@
         android:layout_below="@id/description_editText"
         android:layout_centerHorizontal="true"
         android:text="Leader: "
-        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+        android:textSize="15sp"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
 
     <EditText
         android:id="@+id/objectives_editText"
@@ -61,15 +62,25 @@
         android:layout_below="@id/objectives_editText"
         android:layout_centerHorizontal="true"
         android:ems="10"
-        android:hint="Tags"
+        android:hint="@string/tags_hint"
         android:inputType="textPersonName"
         android:singleLine="true" />
+
+    <Button
+        android:id="@+id/cancelNewProject_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toStartOf="@+id/button_confirmNewProject"
+        android:layout_below="@id/projectTag_editText"
+        android:layout_margin="@dimen/button_margin"
+        android:text="@string/cancel_text" />
 
     <Button
         android:id="@+id/button_confirmNewProject"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/projectTag_editText"
-        android:layout_centerHorizontal="true"
-        android:text="Confirm" />
+        android:layout_alignParentEnd="true"
+        android:text="@string/confirm_text"
+        android:layout_margin="@dimen/button_margin" />
 </RelativeLayout>

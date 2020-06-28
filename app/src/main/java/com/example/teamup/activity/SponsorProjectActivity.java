@@ -26,8 +26,6 @@ public class SponsorProjectActivity extends AppCompatActivity implements Billing
     String mProject;
     FirestoreUtils mFirestore;
 
-    //  TODO: BUG - se un pagamento è stato effettuato e si ritorna a questa Activity per un altro progetto, il pagamento avviene in automatico senza mostrare i prompt
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

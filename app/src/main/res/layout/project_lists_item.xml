@@ -18,6 +18,7 @@
         android:text="@string/default_project_title"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

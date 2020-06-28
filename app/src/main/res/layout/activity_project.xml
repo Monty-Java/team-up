@@ -17,7 +17,7 @@
         android:gravity="center_horizontal"
         android:paddingVertical="@dimen/activity_vertical_margin"
         android:text="Project description"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -47,9 +47,18 @@
                 android:layout_marginStart="20dp"
                 android:gravity="center_horizontal"
                 android:text="Objectives"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/complete_objectives_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:text="Completed"
+                android:layout_margin="@dimen/button_margin" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/objectives_listView"
@@ -70,7 +79,7 @@
                 android:layout_marginTop="20dp"
                 android:gravity="center_horizontal"
                 android:text="Team"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/objectives_listView" />
 
@@ -97,7 +106,8 @@
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:layout_weight="0.1"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:text="Progress"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
         app:layout_constraintBottom_toBottomOf="@+id/floatingActionButton"
         app:layout_constraintEnd_toStartOf="@+id/floatingActionButton"
         app:layout_constraintStart_toStartOf="parent"
@@ -115,6 +125,8 @@
         android:padding="@dimen/activity_vertical_margin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_add" />
+        app:srcCompat="@android:drawable/ic_menu_add"
+        android:focusable="true"
+        android:layout_margin="@dimen/fab_margin" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

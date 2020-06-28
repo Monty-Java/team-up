@@ -39,6 +39,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+//  TODO: view complete objectives
+
 public class ProjectActivity extends AppCompatActivity {
     private static final String TAG = ProjectActivity.class.getSimpleName();
     private static final String KEY_ID = "id";

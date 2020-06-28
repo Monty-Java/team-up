@@ -14,7 +14,7 @@
         android:layout_weight=".5"
         android:layout_gravity="center"
         android:text="@string/default_notification_text"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"/>
 
     <ImageView
         android:id="@+id/profile_imageView"
@@ -31,7 +31,7 @@
         android:layout_weight=".5"
         android:layout_gravity="center"
         android:text="@string/default_username_text"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"/>
 
     <TextView
         android:id="@+id/skillsTitle"
@@ -40,7 +40,7 @@
         android:layout_gravity="center"
         android:layout_weight=".5"
         android:text="@string/skills_text"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
 
     <ListView
         android:id="@+id/skills_ListView"
@@ -55,7 +55,8 @@
         android:layout_height="wrap_content"
         android:layout_weight=".01"
         android:layout_gravity="center"
-        android:drawablePadding="@dimen/activity_horizontal_margin" />
+        android:drawablePadding="@dimen/activity_horizontal_margin"
+        android:layout_margin="@dimen/button_margin"/>
 
     <Button
         android:id="@+id/negativeButton"
@@ -63,5 +64,6 @@
         android:layout_height="wrap_content"
         android:layout_weight=".01"
         android:layout_gravity="center"
-        android:drawablePadding="@dimen/activity_vertical_margin" />
+        android:drawablePadding="@dimen/activity_vertical_margin"
+        android:layout_margin="@dimen/button_margin"/>
 </LinearLayout>
