@@ -1,6 +1,5 @@
 package com.example.teamup.activity;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -74,6 +74,11 @@ public class ProjectActivity extends AppCompatActivity {
         super.onStart();
         Intent intent = getIntent();
         readProjectData(intent.getStringExtra(FirestoreUtils.KEY_TITLE));
+
+        mDescriptionTextView.setOnLongClickListener(v -> {
+            editProjectDescription();
+            return false;
+        });
     }
 
     @Override
@@ -107,6 +112,9 @@ public class ProjectActivity extends AppCompatActivity {
             case R.id.action_leave:
                 leaveProject();
                 break;
+            case R.id.action_delete:
+                deleteProject();
+                break;
             default:
                 Log.w(TAG, "onOptionsItemSelected: item non riconosciuto");
         }
@@ -125,21 +133,20 @@ public class ProjectActivity extends AppCompatActivity {
 
         String projectIdText = "Project ID: " + progetto.getId();
         projectId.setText(projectIdText);
+
         ArrayAdapter<String> tagsAdapter = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_list_item_1,
                 progetto.getEtichette());
         projectTags.setAdapter(tagsAdapter);
 
-
         if (Objects.equals(firebaseAuthUtils.getCurrentUser().getDisplayName(), progetto.getLeader())) {
             projectTags.setOnItemClickListener((parent, view, position, id) -> {
                         String tag = projectTags.getItemAtPosition(position).toString();
-                        editProjectTags(tag);
-                        tagsAdapter.notifyDataSetChanged();
+                        removeTag(tag, tagsAdapter);
             });
 
-            addTagButton.setOnClickListener(v -> addNewTag());
+            addTagButton.setOnClickListener(v -> addNewTag(tagsAdapter));
         } else {
             addTagButton.setEnabled(false);
         }
@@ -170,6 +177,9 @@ public class ProjectActivity extends AppCompatActivity {
             if (!addObjectiveEditText.getText().toString().equals("")) {
                 progetto.addObiettivoDaRaggiungere(addObjectiveEditText.getText().toString());
                 firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_OBJ, progetto.getObiettivi());
+
+                displayProject(progetto);   //  Hack per aggiornare la lista degli obiettivi in tempo reale
+
                 addObjectiveDialog.dismiss();
             } else addObjectiveEditText.setError("Objective field cannot be empty");
         });
@@ -195,39 +205,22 @@ public class ProjectActivity extends AppCompatActivity {
         teammateRequestDialog.show();
     }
 
-    private void editProjectTags(String tagToEdit) {
-        Dialog editTagsDialog = new Dialog(this);
-        editTagsDialog.setContentView(R.layout.edit_project_tag_dialog);
-
-        EditText editTagEditText = editTagsDialog.findViewById(R.id.editTagDialog_editText);
-        editTagEditText.setHint(tagToEdit);
-
-        Button editTagRemoveButton = editTagsDialog.findViewById(R.id.editTagDialog_removeButton);
-        Button editTagEditButton = editTagsDialog.findViewById(R.id.editTagDialog_editButton);
-        Button editTagCancelButton = editTagsDialog.findViewById(R.id.editTagDialog_cancelButton);
-        editTagCancelButton.setOnClickListener(v -> editTagsDialog.dismiss());
-
-        //  Rimuove l'etichetta selezionata dal progetto corrente
-        editTagRemoveButton.setOnClickListener(v -> {
-            progetto.removeEtichetta(tagToEdit);
+    private void removeTag(String tagToRemove, ArrayAdapter<String> adapter) {
+        AlertDialog.Builder removeTagDialogBuilder = new AlertDialog.Builder(this);
+        removeTagDialogBuilder.setTitle("Remove Tag");
+        removeTagDialogBuilder.setMessage("Are you sure you want to remove this tag?");
+        removeTagDialogBuilder.setPositiveButton("OK", (dialog, which) -> {
+            progetto.removeEtichetta(tagToRemove);
             firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_TAGS, progetto.getEtichette());
-            editTagsDialog.dismiss();
+            adapter.remove(tagToRemove);
+            dialog.dismiss();
         });
-
-        //  Sostituisce l'etichetta nuova con quella attuale e aggiorna Firestore
-        editTagEditButton.setOnClickListener(v -> {
-            if (!editTagEditText.getText().toString().equals(tagToEdit)) {
-                progetto.getEtichette().remove(tagToEdit);
-                progetto.getEtichette().add(editTagEditText.getText().toString());
-                firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_TAGS, progetto.getEtichette());
-                editTagsDialog.dismiss();
-            }
-        });
-
-        editTagsDialog.show();
+        removeTagDialogBuilder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+        AlertDialog removeTagDialog = removeTagDialogBuilder.create();
+        removeTagDialog.show();
     }
 
-    private void addNewTag() {
+    private void addNewTag(ArrayAdapter<String> adapter) {
         Dialog addTagDialog = new Dialog(this);
         addTagDialog.setContentView(R.layout.add_project_tag_dialog);
 
@@ -241,6 +234,7 @@ public class ProjectActivity extends AppCompatActivity {
             if (!addTagEditText.getText().toString().equals("")) {
                 progetto.addEtichetta(addTagEditText.getText().toString());
                 firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_TAGS, progetto.getEtichette());
+                adapter.notifyDataSetChanged();
                 addTagDialog.dismiss();
             } else
                 addTagEditText.setError("Tag field cannot be empty");
@@ -261,6 +255,7 @@ public class ProjectActivity extends AppCompatActivity {
             if (!editDescriptionEditText.getText().toString().equals("")) {
                 progetto.setDescrizione(editDescriptionEditText.getText().toString());
                 firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_DESC, progetto.getDescrizione());
+                mDescriptionTextView.setText(progetto.getDescrizione());
                 editDescriptionDialog.dismiss();
             } else
                 editDescriptionEditText.setError("Project needs a description");
@@ -286,6 +281,7 @@ public class ProjectActivity extends AppCompatActivity {
                     confirmTitleChangeBuilder.setPositiveButton(R.string.ok_text, (dialog, which) -> {
                         progetto.setTitolo(changeTitleEditText.getText().toString());
                         firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_TITLE, progetto.getTitolo());
+                        setTitle(progetto.getTitolo());
                         dialog.dismiss();
                         changeTitleDialog.dismiss();
                     });
@@ -376,19 +372,20 @@ public class ProjectActivity extends AppCompatActivity {
         LinearLayoutManager objectivesLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         mObjectivesList.setLayoutManager(objectivesLayoutManager);
 
-        List<String> objectives = new ArrayList<>(progetto.getObiettivi().keySet());
+        List<String> objectives = new ArrayList<>(project.getObiettivi().keySet());
 
         //  Permette al leader di modificare il valore degli objectives
         //  Possono assumere false o true, true indica che sono completi.
         View.OnClickListener onObjectiveClick = v -> {
-            if (progetto.getLeader().equals(firebaseAuthUtils.getCurrentUser().getDisplayName())) {
+            if (project.getLeader().equals(firebaseAuthUtils.getCurrentUser().getDisplayName())) {
                 String objective = ((TextView)v).getText().toString();
 
-                if (!Objects.requireNonNull(progetto.getObiettivi().get(objective))) {
-                    progetto.setObiettivoRaggiunto(objective);
-                    firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_OBJ, progetto.getObiettivi());
+                if (!Objects.requireNonNull(project.getObiettivi().get(objective))) {
+                    project.setObiettivoRaggiunto(objective);
+                    firestoreUtils.updateProjectData(project.getId(), FirestoreUtils.KEY_OBJ, project.getObiettivi());
+                    mObjectivesList.setAdapter(objectivesAdapter);
 
-                    objectivesAdapter.notifyDataSetChanged();
+                    displayProject(project);    //  Hack per aggiornare la lista degli obiettivi in tempo reale
                 }
             } else {
                 Toast.makeText(this, "Per cambiare lo stato dell'obiettivo devi essere il leader del progetto.", Toast.LENGTH_SHORT).show();
@@ -410,7 +407,7 @@ public class ProjectActivity extends AppCompatActivity {
             viewTeammateProfile(teammate);
         };
 
-        teammatesAdapter = new ProjectListsAdapter(progetto.getTeammates(), onTeammateClick);
+        teammatesAdapter = new ProjectListsAdapter(project.getTeammates(), onTeammateClick);
         mTeammatesList.setAdapter(teammatesAdapter);
         teammatesAdapter.notifyDataSetChanged();
 
@@ -445,5 +442,28 @@ public class ProjectActivity extends AppCompatActivity {
             AlertDialog leaveTeamDialog = leaveProjectDialogBuilder.create();
             leaveTeamDialog.show();
         }
+    }
+
+    private void deleteProject() {
+        if (Objects.equals(firebaseAuthUtils.getCurrentUser().getDisplayName(), progetto.getLeader())) {
+            AlertDialog.Builder deleteProjectDialogBuilder = new AlertDialog.Builder(this);
+            deleteProjectDialogBuilder.setTitle("Delete " + progetto.getTitolo());
+            deleteProjectDialogBuilder.setMessage("Are you sure you want to delete this project? This action cannot be undone.");
+            deleteProjectDialogBuilder.setPositiveButton("OK", (dialog, which) -> {
+                firestoreUtils.getFirestoreInstance().collection(FirestoreUtils.KEY_PROJECTS)
+                        .document(progetto.getId()).delete()
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                Intent homeIntent = new Intent(this, MainActivity.class);
+                                startActivity(homeIntent);
+                                finish();
+                            } else Toast.makeText(this, "Error deleting project", Toast.LENGTH_LONG).show();
+                        });
+            });
+            deleteProjectDialogBuilder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+
+            AlertDialog deleteProjectDialog = deleteProjectDialogBuilder.create();
+            deleteProjectDialog.show();
+        } else Toast.makeText(this, "Only the project leader can delete the project", Toast.LENGTH_LONG).show();
     }
 }

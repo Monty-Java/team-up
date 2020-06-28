@@ -12,15 +12,15 @@ import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.example.teamup.R;
 import com.example.teamup.activity.MainActivity;
 import com.example.teamup.activity.ProjectActivity;
-import com.example.teamup.R;
 import com.example.teamup.utilities.FirestoreUtils;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,6 @@ import java.util.Objects;
 public class ProjectsFragment extends Fragment {
 
     //  UI
-    private List<String> leaderProjectsList;
     private List<String> teammateProjectsList;
 
     FirestoreUtils firestoreUtils;
@@ -74,21 +73,23 @@ public class ProjectsFragment extends Fragment {
                                   FirebaseFirestore firebaseFirestore,
                                   ListView listViewLeader, ListView listViewTeammate) {
 
+        ArrayAdapter<String> leaderListAdapter = new ArrayAdapter<>(
+                activity,
+                android.R.layout.simple_list_item_1,
+                new ArrayList<>()
+        );
+
         //  Query per i progetti di cui l'utente corrente è Leader
         Query queryLeader = firebaseFirestore.collection(FirestoreUtils.KEY_PROJECTS).whereEqualTo(FirestoreUtils.KEY_LEADER, firebaseUser.getDisplayName());
-        queryLeader.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                leaderProjectsList = new ArrayList<>();
+        queryLeader.addSnapshotListener((queryDocumentSnapshots, e) -> {
+            if (queryDocumentSnapshots != null) {
 
-                for (QueryDocumentSnapshot snapshot : Objects.requireNonNull(task.getResult()))
-                    leaderProjectsList.add((String) snapshot.getData().get(FirestoreUtils.KEY_TITLE));
+                for (DocumentChange documentChange : queryDocumentSnapshots.getDocumentChanges()) {
+                    leaderListAdapter.add((String) documentChange.getDocument().getData().get(FirestoreUtils.KEY_TITLE));
+                }
 
-                ArrayAdapter<String> listAdapter = new ArrayAdapter<>(
-                        activity,
-                        android.R.layout.simple_list_item_1,
-                        leaderProjectsList
-                );
-                listViewLeader.setAdapter(listAdapter);
+                listViewLeader.setAdapter(leaderListAdapter);
+                leaderListAdapter.notifyDataSetChanged();
             }
         });
 
@@ -118,6 +119,7 @@ public class ProjectsFragment extends Fragment {
                                 teammateProjectsList
                         );
                         listViewTeammate.setAdapter(listAdapter);
+                        listAdapter.notifyDataSetChanged();
                     }
                 }
             }

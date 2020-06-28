@@ -77,5 +77,6 @@
     <string name="privacy_dialog_title">Privacy Settings</string>
     <string name="private_profile_picture_switch_text">Private Profile Picture</string>
     <string name="private_e_mail_address_switch_text">Private E-mail Address</string>
+    <string name="delete_project_menu">Delete Project</string>
 
 </resources>
