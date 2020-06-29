@@ -164,7 +164,7 @@ public class FirestoreUtils {
             File localProfilePic = File.createTempFile("profile_pic", "jpeg");
             gsReference.getFile(localProfilePic).addOnSuccessListener(taskSnapshot -> imageView.setImageURI(Uri.fromFile(localProfilePic)));
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, "getProfilePic: error: ", e);
         }
     }
 }
