@@ -14,13 +14,20 @@
         android:paddingLeft="24dp"
         android:paddingRight="24dp">
 
-        <ImageView
+        <androidx.cardview.widget.CardView
             android:layout_width="180dp"
             android:layout_height="130dp"
-            android:layout_gravity="center_horizontal"
             android:layout_marginBottom="24dp"
-            android:src="@drawable/team_up_logo"
-            android:contentDescription="@string/teamup_logo_description" />
+            android:layout_gravity="center_horizontal"
+            android:elevation="1dp">
+            <ImageView
+                android:layout_width="180dp"
+                android:layout_height="130dp"
+                android:layout_marginBottom="24dp"
+                android:padding="@dimen/button_margin"
+                android:src="@drawable/team_up_logo"
+                android:contentDescription="@string/profile_pic_description" />
+        </androidx.cardview.widget.CardView>
 
         <!--  Name Label -->
         <com.google.android.material.textfield.TextInputLayout

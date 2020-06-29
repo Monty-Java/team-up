@@ -3,46 +3,68 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingVertical="@dimen/activity_vertical_margin"
-    android:paddingHorizontal="@dimen/activity_horizontal_margin"
+
     tools:context=".activity.TeammateProfileActivity">
 
-    <ImageView
-        android:id="@+id/profilePicImageView"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:contentDescription="@string/profile_pic_description"
-        android:padding="@dimen/activity_vertical_margin"
-        android:layout_alignParentTop="true"
-        android:layout_centerInParent="true"/>
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:elevation="1dp">
 
-    <TextView
-        android:id="@+id/emailTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/profilePicImageView"
-        android:layout_centerInParent="true"
-        android:paddingVertical="@dimen/activity_vertical_margin"
-        android:text="@string/nav_header_subtitle"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/activity_vertical_margin">
 
-    <TextView
-        android:id="@+id/skillsTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/emailTextView"
-        android:layout_centerInParent="true"
-        android:text="@string/skills_text"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/profilPicCardView"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_alignParentTop="true"
+                android:layout_centerInParent="true"
+                android:elevation="1dp">
 
-    <ListView
-        android:id="@+id/skillsListView2"
-        android:layout_below="@+id/skillsTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:padding="@dimen/activity_horizontal_margin"
-        android:textAlignment="center" />
+                <ImageView
+                    android:id="@+id/profilePicImageView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitCenter"
+                    android:contentDescription="@string/profile_pic_description"
+                    android:padding="@dimen/activity_vertical_margin" />
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:id="@+id/emailTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/profilPicCardView"
+                android:layout_centerInParent="true"
+                android:paddingVertical="@dimen/activity_vertical_margin"
+                android:text="@string/nav_header_subtitle"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5" />
+
+            <TextView
+                android:id="@+id/skillsTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/emailTextView"
+                android:layout_centerHorizontal="true"
+                android:text="@string/skills_text"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
+
+            <ListView
+                android:id="@+id/skillsListView2"
+                android:layout_below="@+id/skillsTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:padding="@dimen/activity_horizontal_margin"
+                android:textAlignment="center" />
+
+        </RelativeLayout>
+
+    </com.google.android.material.card.MaterialCardView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/floatingActionButton2"
