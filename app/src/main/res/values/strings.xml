@@ -24,7 +24,7 @@
     <string name="hint_email">E-mail Address</string>
     <string name="email_hint">Email</string>
     <string name="hint_pass">Password</string>
-    <string name="hint_skills">Skills</string>
+    <string name="hint_skills">Skills (eg. Programming, Writing, Graphics, etc.)</string>
     <string name="tag_hint">Tag</string>
     <string name="tags_hint">Tags</string>
     <string name="new_objective_hint">New Objective</string>
@@ -79,5 +79,8 @@
     <string name="private_e_mail_address_switch_text">Private E-mail Address</string>
     <string name="delete_project_menu">Delete Project</string>
     <string name="complete_objectives_dialog_title">Complete Objectives</string>
+    <string name="new_project_description_hint">This is a description of my project.\nIt states what the project is about.</string>
+    <string name="new_project_objectives_hint">Objective I want to achieve\nAnother objective\nImportant goal</string>
+    <string name="tags_hints">eg. Music, Art, etc.</string>
 
 </resources>

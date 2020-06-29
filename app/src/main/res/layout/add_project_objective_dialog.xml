@@ -12,19 +12,32 @@
         android:text="@string/objective_dialog_title"
         android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
-    <EditText
-        android:id="@+id/add_objective_editText"
-        android:layout_below="@+id/add_objective_textView"
-        android:layout_width="200dp"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/new_objective_textInputLayout"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
         android:layout_centerHorizontal="true"
-        android:hint="@string/new_objective_hint"
-        android:inputType="textCapSentences"
-        android:importantForAutofill="no" />
+        android:layout_below="@+id/add_objective_textView"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+        <EditText
+            android:id="@+id/add_objective_editText"
+            android:layout_below="@+id/add_objective_textView"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:hint="@string/new_objective_hint"
+            android:inputType="textCapSentences"
+            android:importantForAutofill="no" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
 
     <Button
         android:id="@+id/add_objective_positiveButton"
-        android:layout_below="@+id/add_objective_editText"
+        android:layout_below="@+id/new_objective_textInputLayout"
         android:layout_alignParentEnd="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -33,7 +46,7 @@
 
     <Button
         android:id="@+id/add_objective_negativeButton"
-        android:layout_below="@id/add_objective_editText"
+        android:layout_below="@id/new_objective_textInputLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toStartOf="@+id/add_objective_positiveButton"

@@ -65,12 +65,12 @@ public class ProjectsFragment extends Fragment {
 
         LinearLayoutManager leaderProjectsLayoutManager = new LinearLayoutManager(requireActivity(), RecyclerView.VERTICAL, false);
         leaderProjectsListView.setLayoutManager(leaderProjectsLayoutManager);
+        List<String> leaderProjects = new ArrayList<>();
 
         //  Query per i progetti di cui l'utente corrente è Leader
         Query queryLeader = firebaseFirestore.collection(FirestoreUtils.KEY_PROJECTS).whereEqualTo(FirestoreUtils.KEY_LEADER, firebaseUser.getDisplayName());
         queryLeader.addSnapshotListener((queryDocumentSnapshots, e) -> {
             if (queryDocumentSnapshots != null) {
-                List<String> leaderProjects = new ArrayList<>();
                 for (DocumentChange documentChange : queryDocumentSnapshots.getDocumentChanges()) {
                     if (documentChange.getType() == DocumentChange.Type.ADDED) {
                         leaderProjects.add((String) documentChange.getDocument().getData().get(FirestoreUtils.KEY_TITLE));

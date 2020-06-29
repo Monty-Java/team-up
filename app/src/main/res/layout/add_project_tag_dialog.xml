@@ -12,19 +12,32 @@
         android:text="@string/tag_dialog_title"
         android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
-    <EditText
-        android:id="@+id/add_tag_editText"
-        android:layout_below="@+id/add_tag_textView"
-        android:layout_width="200dp"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/addTagTextInputLayout"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_below="@+id/add_tag_textView"
         android:layout_centerHorizontal="true"
-        android:hint="@string/tag_dialog_hint"
-        android:inputType="textCapWords"
-        android:importantForAutofill="no"/>
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+        <EditText
+            android:id="@+id/add_tag_editText"
+            android:layout_below="@+id/add_tag_textView"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/tag_dialog_hint"
+            android:inputType="textCapWords"
+            android:importantForAutofill="no"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
 
     <Button
         android:id="@+id/add_tag_positiveButton"
-        android:layout_below="@+id/add_tag_editText"
+        android:layout_below="@+id/addTagTextInputLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
@@ -33,7 +46,7 @@
 
     <Button
         android:id="@+id/add_tag_negativeButton"
-        android:layout_below="@id/add_tag_editText"
+        android:layout_below="@id/addTagTextInputLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toStartOf="@+id/add_tag_positiveButton"

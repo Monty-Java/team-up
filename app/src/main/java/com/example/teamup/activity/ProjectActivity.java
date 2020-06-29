@@ -26,6 +26,7 @@ import com.example.teamup.utilities.FirestoreUtils;
 import com.example.teamup.utilities.NotificationType;
 import com.example.teamup.utilities.Progetto;
 import com.example.teamup.utilities.ProjectListsAdapter;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -267,7 +268,8 @@ public class ProjectActivity extends AppCompatActivity {
             Dialog changeTitleDialog = new Dialog(this);
             changeTitleDialog.setContentView(R.layout.change_project_title_dialog);
             EditText changeTitleEditText = changeTitleDialog.findViewById(R.id.change_title_editText);
-            changeTitleEditText.setHint(progetto.getTitolo());
+            TextInputLayout changeTitleInputLayout = changeTitleDialog.findViewById(R.id.changeTitleTextInputLayout);
+            changeTitleInputLayout.setHint(progetto.getTitolo());
             Button changeTitlePositiveButton = changeTitleDialog.findViewById(R.id.change_title_positiveButton);
             Button changeTitleNegativeButton = changeTitleDialog.findViewById(R.id.change_title_negativeButton);
             changeTitleNegativeButton.setOnClickListener(v -> changeTitleDialog.dismiss());

@@ -12,19 +12,30 @@
         android:text="@string/change_project_title_text"
         android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
-    <EditText
-        android:id="@+id/change_title_editText"
-        android:layout_below="@+id/change_title_textView"
-        android:layout_width="200dp"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/changeTitleTextInputLayout"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_below="@id/change_title_textView"
         android:layout_centerHorizontal="true"
-        android:hint="@string/default_project_title"
-        android:importantForAutofill="no"
-        android:inputType="textCapWords" />
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+        <EditText
+            android:id="@+id/change_title_editText"
+            android:layout_below="@+id/change_title_textView"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/default_project_title"
+            android:importantForAutofill="no"
+            android:inputType="textCapWords" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/change_title_positiveButton"
-        android:layout_below="@+id/change_title_editText"
+        android:layout_below="@+id/changeTitleTextInputLayout"
         android:layout_alignParentEnd="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -33,7 +44,7 @@
 
     <Button
         android:id="@+id/change_title_negativeButton"
-        android:layout_below="@id/change_title_editText"
+        android:layout_below="@id/changeTitleTextInputLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toStartOf="@+id/change_title_positiveButton"
