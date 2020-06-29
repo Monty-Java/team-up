@@ -1,21 +1,22 @@
 package com.example.teamup.fragment.projects;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.teamup.R;
 import com.example.teamup.activity.MainActivity;
 import com.example.teamup.activity.ProjectActivity;
 import com.example.teamup.utilities.FirestoreUtils;
+import com.example.teamup.utilities.UserProjectsAdapter;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -29,7 +30,12 @@ import java.util.Objects;
 public class ProjectsFragment extends Fragment {
 
     //  UI
+    private RecyclerView leaderProjectsListView;
+    private RecyclerView teammateProjectsListView;
     private List<String> teammateProjectsList;
+
+    private UserProjectsAdapter leaderProjectsAdapter;
+    private UserProjectsAdapter teammateProjectsAdapter;
 
     FirestoreUtils firestoreUtils;
 
@@ -41,55 +47,47 @@ public class ProjectsFragment extends Fragment {
 
         View root = inflater.inflate(R.layout.fragment_projects, container, false);
 
-        ListView leaderProjectsListView = root.findViewById(R.id.leaderProjects_listView);
-        ListView teammateProjectsListView = root.findViewById(R.id.teammateProjects_listView);
 
-        findUserProjects(activity,
+        leaderProjectsListView = root.findViewById(R.id.leaderProjects_listView);
+        teammateProjectsListView = root.findViewById(R.id.teammateProjects_listView);
+
+        populateProjectsListViews(
                 activity.firebaseAuthUtils.getCurrentUser(),
-                firestoreUtils.getFirestoreInstance(),
-                leaderProjectsListView,
-                teammateProjectsListView);
-
-        setProjectClickListener(leaderProjectsListView);
-        setProjectClickListener(teammateProjectsListView);
+                firestoreUtils.getFirestoreInstance());
 
         return root;
     }
 
-    //  Registra un OnItemClickListener sulla ListView che dichiara un Intent
-    //  per avviare ProjectActivity quando l'utente clicca sul titolo di un progetto
-    private void setProjectClickListener(ListView listView) {
-        listView.setOnItemClickListener((parent, view, position, id) -> {
-            String title = listView.getItemAtPosition(position).toString();
-            Intent projectIntent = new Intent(getContext(), ProjectActivity.class);
-            projectIntent.putExtra(FirestoreUtils.KEY_TITLE, title);
-            startActivity(projectIntent);
-        });
-    }
-
     //  Ottiene i titoli dei progetti in cui l'utente è coinvolto, separando quelli
     //  di cui è Leader e quelli in cui è Teammate in liste distinte
-    private void findUserProjects(Activity activity, FirebaseUser firebaseUser,
-                                  FirebaseFirestore firebaseFirestore,
-                                  ListView listViewLeader, ListView listViewTeammate) {
+    private void populateProjectsListViews(FirebaseUser firebaseUser,
+                                           FirebaseFirestore firebaseFirestore) {
 
-        ArrayAdapter<String> leaderListAdapter = new ArrayAdapter<>(
-                activity,
-                android.R.layout.simple_list_item_1,
-                new ArrayList<>()
-        );
+        LinearLayoutManager leaderProjectsLayoutManager = new LinearLayoutManager(requireActivity(), RecyclerView.VERTICAL, false);
+        leaderProjectsListView.setLayoutManager(leaderProjectsLayoutManager);
 
         //  Query per i progetti di cui l'utente corrente è Leader
         Query queryLeader = firebaseFirestore.collection(FirestoreUtils.KEY_PROJECTS).whereEqualTo(FirestoreUtils.KEY_LEADER, firebaseUser.getDisplayName());
         queryLeader.addSnapshotListener((queryDocumentSnapshots, e) -> {
             if (queryDocumentSnapshots != null) {
+                List<String> leaderProjects = new ArrayList<>();
                 for (DocumentChange documentChange : queryDocumentSnapshots.getDocumentChanges()) {
-                    if (documentChange.getType() == DocumentChange.Type.ADDED)
-                        leaderListAdapter.add((String) documentChange.getDocument().getData().get(FirestoreUtils.KEY_TITLE));
+                    if (documentChange.getType() == DocumentChange.Type.ADDED) {
+                        leaderProjects.add((String) documentChange.getDocument().getData().get(FirestoreUtils.KEY_TITLE));
+                    }
                 }
 
-                listViewLeader.setAdapter(leaderListAdapter);
-                leaderListAdapter.notifyDataSetChanged();
+                View.OnClickListener onLeaderProjectClick = v -> {
+                    String title = ((TextView)v).getText().toString();
+                    Intent projectIntent = new Intent(getContext(), ProjectActivity.class);
+                    projectIntent.putExtra(FirestoreUtils.KEY_TITLE, title);
+                    startActivity(projectIntent);
+                };
+
+                leaderProjectsAdapter = new UserProjectsAdapter(leaderProjects, onLeaderProjectClick);
+
+                leaderProjectsListView.setAdapter(leaderProjectsAdapter);
+                leaderProjectsAdapter.notifyDataSetChanged();
             }
         });
 
@@ -112,14 +110,19 @@ public class ProjectsFragment extends Fragment {
                             }
                         }
 
+                        LinearLayoutManager teammateProjectsLayoutManager = new LinearLayoutManager(requireActivity(), RecyclerView.VERTICAL, false);
+                        teammateProjectsListView.setLayoutManager(teammateProjectsLayoutManager);
 
-                        ArrayAdapter<String> listAdapter = new ArrayAdapter<>(
-                                activity,
-                                android.R.layout.simple_list_item_1,
-                                teammateProjectsList
-                        );
-                        listViewTeammate.setAdapter(listAdapter);
-                        listAdapter.notifyDataSetChanged();
+                        View.OnClickListener onTeammateProjectClick = v -> {
+                            String title = ((TextView)v).getText().toString();
+                            Intent projectIntent = new Intent(getContext(), ProjectActivity.class);
+                            projectIntent.putExtra(FirestoreUtils.KEY_TITLE, title);
+                            startActivity(projectIntent);
+                        };
+
+                        teammateProjectsAdapter = new UserProjectsAdapter(teammateProjectsList, onTeammateProjectClick);
+                        teammateProjectsListView.setAdapter(teammateProjectsAdapter);
+                        teammateProjectsAdapter.notifyDataSetChanged();
                     }
                 }
             }
