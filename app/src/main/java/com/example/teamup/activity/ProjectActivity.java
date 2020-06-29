@@ -39,8 +39,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-//  TODO: view complete objectives
-
 public class ProjectActivity extends AppCompatActivity {
     private static final String TAG = ProjectActivity.class.getSimpleName();
     private static final String KEY_ID = "id";
@@ -54,6 +52,7 @@ public class ProjectActivity extends AppCompatActivity {
     private RecyclerView mTeammatesList;
     private TextView mDescriptionTextView;
     private TextView mProgressTextView;
+    private Button mCompletedObjectivesButton;
 
     private ProjectListsAdapter objectivesAdapter;
 
@@ -66,6 +65,7 @@ public class ProjectActivity extends AppCompatActivity {
         mTeammatesList = findViewById(R.id.team_listView);
         mDescriptionTextView = findViewById(R.id.description_textView);
         mProgressTextView = findViewById(R.id.progress_textView);
+        mCompletedObjectivesButton = findViewById(R.id.complete_objectives_button);
 
         firestoreUtils = new FirestoreUtils(FirebaseFirestore.getInstance());
         firebaseAuthUtils = new FirebaseAuthUtils(FirebaseAuth.getInstance(), firestoreUtils.getFirestoreInstance(), this);
@@ -329,6 +329,8 @@ public class ProjectActivity extends AppCompatActivity {
                 @SuppressWarnings(value = "unchecked")
                 Map<String, Boolean> objective = new HashMap<>((Map<String, Boolean>) Objects.requireNonNull(data.get(FirestoreUtils.KEY_OBJ)));
 
+                mCompletedObjectivesButton.setOnClickListener(v -> viewCompleteObjectives(objective.entrySet()));
+
                 progetto = new Progetto(
                         (String) data.get(KEY_ID),
                         (String) data.get(FirestoreUtils.KEY_LEADER),
@@ -338,6 +340,7 @@ public class ProjectActivity extends AppCompatActivity {
                         team,
                         objective,
                         (boolean) data.get(FirestoreUtils.KEY_SPONSORED));
+
 
                 displayProject(progetto);
             }
@@ -358,13 +361,15 @@ public class ProjectActivity extends AppCompatActivity {
         updateProgress(project);
 
         //  Rimuove gli obiettivi completi dall'istanza di Progetto (gli obiettivi rimangono memorizzati in Firestore)
-        Set<Map.Entry<String, Boolean>> incompleteObjectives = project.getObiettivi().entrySet();
-        for (Iterator<Map.Entry<String, Boolean>> entries = incompleteObjectives.iterator(); entries.hasNext();) {
-            if (entries.next().getValue()) entries.remove();
+        Set<Map.Entry<String, Boolean>> allObjectives = project.getObiettivi().entrySet();
+
+        for (Iterator<Map.Entry<String, Boolean>> entries = allObjectives.iterator(); entries.hasNext();) {
+            if (entries.next().getValue()) {
+                entries.remove();
+            }
         }
 
         //  Imposta la ListView per visualizzare gli obiettivi
-
         LinearLayoutManager objectivesLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         mObjectivesList.setLayoutManager(objectivesLayoutManager);
 
@@ -413,6 +418,41 @@ public class ProjectActivity extends AppCompatActivity {
     public void updateProgress(Progetto project) {
         String progressText = "Progress: " + (int) ((project.obiettiviCompleti() / project.numeroObiettivi()) * 100) + '%';
         mProgressTextView.setText(progressText);
+    }
+
+    private void viewCompleteObjectives(Set<Map.Entry<String, Boolean>> objectives) {
+        Dialog completeObjectivesDialog = new Dialog(this);
+        completeObjectivesDialog.setContentView(R.layout.complete_objectives_dialog);
+        ListView completeObjectivesListView = completeObjectivesDialog.findViewById(R.id.complete_objectives_listView);
+        Button closeButton = completeObjectivesDialog.findViewById(R.id.complete_objectives_button);
+
+        //  Ispeziona tutti gli obiettivi relativi al
+        //  progetto corrente, aggiungendo quelli
+        //  completi alla lista completeObjectives
+        List<String> completeObjectives = new ArrayList<>();
+        for (Map.Entry<String, Boolean> entry : objectives) {
+            if (entry.getValue()) completeObjectives.add(entry.getKey());
+        }
+
+        ArrayAdapter<String> objectivesAdapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_list_item_checked,
+                completeObjectives
+        );
+        completeObjectivesListView.setAdapter(objectivesAdapter);
+
+        if (Objects.equals(firebaseAuthUtils.getCurrentUser().getDisplayName(), progetto.getLeader())) {
+            //  Un click su un obiettivo completo lo segnala come incompleto, aggiornando le due liste
+            completeObjectivesListView.setOnItemClickListener((parent, view, position, id) -> {
+                progetto.addObiettivoDaRaggiungere(parent.getItemAtPosition(position).toString());
+                firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_OBJ, progetto.getObiettivi());
+                objectivesAdapter.remove(parent.getItemAtPosition(position).toString());
+                objectivesAdapter.notifyDataSetChanged();
+            });
+        }
+
+        closeButton.setOnClickListener(v -> completeObjectivesDialog.dismiss());
+        completeObjectivesDialog.show();
     }
 
     private void leaveProject() {

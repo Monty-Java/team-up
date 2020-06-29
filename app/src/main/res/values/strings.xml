@@ -78,5 +78,6 @@
     <string name="private_profile_picture_switch_text">Private Profile Picture</string>
     <string name="private_e_mail_address_switch_text">Private E-mail Address</string>
     <string name="delete_project_menu">Delete Project</string>
+    <string name="complete_objectives_dialog_title">Complete Objectives</string>
 
 </resources>

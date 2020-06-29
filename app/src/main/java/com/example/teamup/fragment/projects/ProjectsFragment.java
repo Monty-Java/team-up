@@ -112,7 +112,6 @@ public class ProjectsFragment extends Fragment {
                             }
                         }
 
-
                         ArrayAdapter<String> listAdapter = new ArrayAdapter<>(
                                 activity,
                                 android.R.layout.simple_list_item_1,
