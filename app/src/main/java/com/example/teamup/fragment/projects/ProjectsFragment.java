@@ -63,7 +63,11 @@ public class ProjectsFragment extends Fragment {
     //  di cui è Leader e quelli in cui è Teammate in liste distinte
     private void populateProjectsListViews(FirebaseUser firebaseUser,
                                            FirebaseFirestore firebaseFirestore) {
+        getLeaderProjects(firebaseUser, firebaseFirestore);
+        getTeammateProjects(firebaseUser, firebaseFirestore);
+    }
 
+    private void getLeaderProjects(FirebaseUser firebaseUser, FirebaseFirestore firebaseFirestore) {
         LinearLayoutManager leaderProjectsLayoutManager = new LinearLayoutManager(requireActivity(), RecyclerView.VERTICAL, false);
         leaderProjectsListView.setLayoutManager(leaderProjectsLayoutManager);
         List<String> leaderProjects = new ArrayList<>();
@@ -91,7 +95,9 @@ public class ProjectsFragment extends Fragment {
                 leaderProjectsAdapter.notifyDataSetChanged();
             }
         });
+    }
 
+    private void getTeammateProjects(FirebaseUser firebaseUser, FirebaseFirestore firebaseFirestore) {
         //  Ottiene i riferimenti a tutti i progetti
         firebaseFirestore.collection(FirestoreUtils.KEY_PROJECTS).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {

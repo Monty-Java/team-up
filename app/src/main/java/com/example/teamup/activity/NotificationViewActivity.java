@@ -86,66 +86,26 @@ public class NotificationViewActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        viewNotification();
+    }
 
+    private void viewNotification() {
         if (mNotificationType.equals(NotificationType.TEAMMATE_REQUEST)) {
+            //  Visualizza un'anteprima del profilo dell'utente che ha fatto la richiesta,
+            //  due pulsanti per accettare o rifiutare
+            //  Inviare la notifica appropriata
+            getRequestingUserData();
 
             String requestMessage = mSendResponseTo + " has requested to join the team on your project " + mProjectTitle;
             mNotificationTextView.setText(requestMessage);
 
-            //  Visualizza un'anteprima del profilo dell'utente che ha fatto la richiesta,
-            //  due pulsanti per accettare o rifiutare
-            //  Inviare la notifica appropriata
-            mFirestoreUtils.getFirestoreInstance().collection(FirestoreUtils.KEY_USERS)
-                    .whereEqualTo(FirestoreUtils.KEY_NAME, mSendResponseTo)
-                    .get().addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-
-                    List<DocumentSnapshot> documents = Objects.requireNonNull(task.getResult()).getDocuments();
-                    @SuppressWarnings(value = "unchecked")
-                    List<String> skills = (List<String>) Objects.requireNonNull(documents.get(0).getData()).get(FirestoreUtils.KEY_SKILLS);
-
-                    mSender = new Utente(null,
-                            mSendResponseTo,
-                            documents.get(0).getReference().getId(),
-                            skills);
-
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                            this.getApplicationContext(),
-                            android.R.layout.simple_list_item_1,
-                            mSender.getComptetenze()
-                    );
-
-                    mSkillsListView.setAdapter(adapter);
-                }
-            });
-
             mNegativeButton.setVisibility(View.VISIBLE);
             mSkillsTitleTextView.setVisibility(View.VISIBLE);
-
             mPositiveButton.setText(R.string.accept_text);
             mNegativeButton.setText(R.string.reject_text);
 
             mPositiveButton.setOnClickListener(view -> {
-                mFirestoreUtils.getFirestoreInstance().collection(FirestoreUtils.KEY_PROJECTS).whereEqualTo(FirestoreUtils.KEY_TITLE, mProjectTitle)
-                        .get().addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot snapshot = Objects.requireNonNull(task.getResult()).getDocuments().get(0);
-                        String id = snapshot.getId();
-                        @SuppressWarnings(value = "unchecked") List<String> teammates = (List<String>) snapshot.get(FirestoreUtils.KEY_TEAMMATES);
-
-                        List<String> team = new ArrayList<>();
-                        if (teammates != null)
-                            team.addAll(teammates);
-
-                        //  Verifica che l'utente non sia già teammate del progetto per evitare di inserirlo più di una volta
-                        if (!team.contains(mSendResponseTo)) {
-                            team.add(mSendResponseTo);
-                            mFirestoreUtils.updateProjectData(id, FirestoreUtils.KEY_TEAMMATES, team);
-                            mFirestoreUtils.storeNotification(mProjectTitle, mSendResponseTo, mFirebaseAuthUtils.getCurrentUser().getDisplayName(), mFirebaseAuthUtils.getCurrentUser().getUid(), NotificationType.LEADER_ACCEPT);
-                        } else Toast.makeText(this, mSendResponseTo + " is already a teammate on this project.", Toast.LENGTH_LONG).show();
-                    } else Log.d(TAG, "Error responding or updating project");
-                });
-
+                addTeammate();
                 onNotificationAcknowledged(mNotificationType, mProjectTitle);
             });
 
@@ -162,6 +122,7 @@ public class NotificationViewActivity extends AppCompatActivity {
             mNotificationTextView.setText(acceptMessage);
 
             mPositiveButton.setText(R.string.ok_text);
+            
             //  Intent che apre ProjectActivity col progetto per il quale si è fatta la richiesta
             mPositiveButton.setOnClickListener(view -> onNotificationAcknowledged(mNotificationType, mProjectTitle));
         } else if (mNotificationType.equals(NotificationType.LEADER_REJECT)) {
@@ -210,5 +171,53 @@ public class NotificationViewActivity extends AppCompatActivity {
             startActivity(viewProjectIntent);
         }
         finish();
+    }
+
+    private void getRequestingUserData() {
+        mFirestoreUtils.getFirestoreInstance().collection(FirestoreUtils.KEY_USERS)
+                .whereEqualTo(FirestoreUtils.KEY_NAME, mSendResponseTo)
+                .get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+
+                List<DocumentSnapshot> documents = Objects.requireNonNull(task.getResult()).getDocuments();
+                @SuppressWarnings(value = "unchecked")
+                List<String> skills = (List<String>) Objects.requireNonNull(documents.get(0).getData()).get(FirestoreUtils.KEY_SKILLS);
+
+                mSender = new Utente(null,
+                        mSendResponseTo,
+                        documents.get(0).getReference().getId(),
+                        skills);
+
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                        this.getApplicationContext(),
+                        android.R.layout.simple_list_item_1,
+                        mSender.getComptetenze()
+                );
+
+                mSkillsListView.setAdapter(adapter);
+            }
+        });
+    }
+
+    private void addTeammate() {
+        mFirestoreUtils.getFirestoreInstance().collection(FirestoreUtils.KEY_PROJECTS).whereEqualTo(FirestoreUtils.KEY_TITLE, mProjectTitle)
+                .get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot snapshot = Objects.requireNonNull(task.getResult()).getDocuments().get(0);
+                String id = snapshot.getId();
+                @SuppressWarnings(value = "unchecked") List<String> teammates = (List<String>) snapshot.get(FirestoreUtils.KEY_TEAMMATES);
+
+                List<String> team = new ArrayList<>();
+                if (teammates != null)
+                    team.addAll(teammates);
+
+                //  Verifica che l'utente non sia già teammate del progetto per evitare di inserirlo più di una volta
+                if (!team.contains(mSendResponseTo)) {
+                    team.add(mSendResponseTo);
+                    mFirestoreUtils.updateProjectData(id, FirestoreUtils.KEY_TEAMMATES, team);
+                    mFirestoreUtils.storeNotification(mProjectTitle, mSendResponseTo, mFirebaseAuthUtils.getCurrentUser().getDisplayName(), mFirebaseAuthUtils.getCurrentUser().getUid(), NotificationType.LEADER_ACCEPT);
+                } else Toast.makeText(this, mSendResponseTo + " is already a teammate on this project.", Toast.LENGTH_LONG).show();
+            } else Log.d(TAG, "Error responding or updating project");
+        });
     }
 }

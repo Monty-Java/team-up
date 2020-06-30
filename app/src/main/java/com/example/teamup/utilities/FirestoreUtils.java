@@ -22,6 +22,9 @@ import java.util.Objects;
 
 public class FirestoreUtils {
     private static final String TAG = FirestoreUtils.class.getSimpleName();
+    private static final String UPDATE_ERR = "Error updating document";
+    private static final String UPDATE_MSG = "Document updated";
+
     //  Costanti usate come chiavi per leggere e scrivere dati Firestore
     public static final String KEY_USERS = "users";
     public static final String KEY_NAME = "display_name";
@@ -75,9 +78,9 @@ public class FirestoreUtils {
                 snapshot.getReference()
                         .set(newData, SetOptions.merge()).addOnCompleteListener(t -> {
                     if (t.isSuccessful()) {
-                        Log.d(TAG, "Document updated");
+                        Log.d(TAG, UPDATE_MSG);
                     } else
-                        Log.e(TAG, "Error updating document");
+                        Log.e(TAG, UPDATE_ERR);
                 });
             }
         });
@@ -102,9 +105,9 @@ public class FirestoreUtils {
                         .document()
                         .set(notif, SetOptions.merge()).addOnCompleteListener(t -> {
                     if (t.isSuccessful()) {
-                        Log.d(TAG, "Document updated");
+                        Log.d(TAG, UPDATE_MSG);
                     } else
-                        Log.e(TAG, "Error updating document");
+                        Log.e(TAG, UPDATE_ERR);
                 });
             }
         });
@@ -136,9 +139,9 @@ public class FirestoreUtils {
 
                         reference.set(newData, SetOptions.merge()).addOnCompleteListener(t -> {
                             if (t.isSuccessful()) {
-                                Log.d(TAG, "Document updated");
+                                Log.d(TAG, UPDATE_MSG);
                             } else {
-                                Log.e(TAG, "Error updating document");
+                                Log.e(TAG, UPDATE_ERR);
                             }
                         });
                     }
@@ -151,7 +154,7 @@ public class FirestoreUtils {
             assert snapshot != null;
             snapshot.getReference().set(data);
         } else {
-            Log.e(TAG, "Error updating document");
+            Log.e(TAG, UPDATE_ERR);
         }
     }
 

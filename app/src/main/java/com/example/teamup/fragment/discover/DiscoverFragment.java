@@ -97,6 +97,10 @@ public class DiscoverFragment extends Fragment {
                     @SuppressWarnings(value = "unchecked") List<String> tags = (List<String>) snapshot.getData().get(FirestoreUtils.KEY_TAGS);
                     @SuppressWarnings(value = "unchecked") List<String> teammates = (List<String>) snapshot.getData().get(FirestoreUtils.KEY_TEAMMATES);
                     @SuppressWarnings(value = "unchecked") Map<String, Boolean> objectives = (Map<String, Boolean>) snapshot.getData().get(FirestoreUtils.KEY_OBJ);
+                    boolean sponsored;
+                    if (!snapshot.getData().containsKey(FirestoreUtils.KEY_SPONSORED)) {
+                        sponsored = false;
+                    } else sponsored = (boolean) snapshot.getData().putIfAbsent(FirestoreUtils.KEY_SPONSORED, false);
 
                     //   Crea una lista di Progetti corrispondenti alla ListView dei titoli di progetto
                     mProjects.add(new Progetto(snapshot.getId(),
@@ -106,7 +110,7 @@ public class DiscoverFragment extends Fragment {
                             tags,
                             teammates,
                             objectives,
-                            (Boolean) snapshot.getData().putIfAbsent(FirestoreUtils.KEY_SPONSORED, false)));
+                            sponsored));
 
                     putSponsoredFirst();
                 }

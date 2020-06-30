@@ -121,14 +121,14 @@ public class LoginActivity extends AppCompatActivity {
         String password = mPasswordEditText.getText().toString();
 
         if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            mEmailEditText.setError("enter a valid email address");
+            mEmailEditText.setError("Enter a valid email address");
             valid = false;
         } else {
             mEmailEditText.setError(null);
         }
 
         if (password.isEmpty() || password.length() < 6 || password.length() > 10) {
-            mPasswordEditText.setError("between 6 and 10 alphanumeric characters");
+            mPasswordEditText.setError("Between 6 and 10 alphanumeric characters");
             valid = false;
         } else {
             mPasswordEditText.setError(null);

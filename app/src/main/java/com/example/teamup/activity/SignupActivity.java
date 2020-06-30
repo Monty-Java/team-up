@@ -105,7 +105,6 @@ public class SignupActivity extends AppCompatActivity {
 
     public void onSignupFailed() {
         Toast.makeText(getBaseContext(), "Signup failed", Toast.LENGTH_LONG).show();
-
         mSignupButton.setEnabled(true);
     }
 
@@ -139,7 +138,7 @@ public class SignupActivity extends AppCompatActivity {
             mEmailEditText.setError(null);
         }
 
-        if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
+        if (password.isEmpty() || password.length() < 6 || password.length() > 10) {
             mPasswordEditText.setError("At least 6 alphanumeric characters");
             valid = false;
         } else {
