@@ -15,7 +15,6 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,8 +22,6 @@ import java.util.Objects;
 
 public class FirestoreUtils {
     private static final String TAG = FirestoreUtils.class.getSimpleName();
-    private static final String UPDATE_MSG = "Document updated";
-    private static final String UPDATE_ERR_MSG = "Error updating document";
     //  Costanti usate come chiavi per leggere e scrivere dati Firestore
     public static final String KEY_USERS = "users";
     public static final String KEY_NAME = "display_name";
@@ -78,9 +75,9 @@ public class FirestoreUtils {
                 snapshot.getReference()
                         .set(newData, SetOptions.merge()).addOnCompleteListener(t -> {
                     if (t.isSuccessful()) {
-                        Log.d(TAG, UPDATE_MSG);
+                        Log.d(TAG, "Document updated");
                     } else
-                        Log.e(TAG, UPDATE_ERR_MSG);
+                        Log.e(TAG, "Error updating document");
                 });
             }
         });
@@ -105,9 +102,9 @@ public class FirestoreUtils {
                         .document()
                         .set(notif, SetOptions.merge()).addOnCompleteListener(t -> {
                     if (t.isSuccessful()) {
-                        Log.d(TAG, UPDATE_MSG);
+                        Log.d(TAG, "Document updated");
                     } else
-                        Log.e(TAG, UPDATE_ERR_MSG);
+                        Log.e(TAG, "Error updating document");
                 });
             }
         });
@@ -121,7 +118,6 @@ public class FirestoreUtils {
         projectData.put(KEY_DESC, desc);
         projectData.put(KEY_OBJ, objectives);
         projectData.put(KEY_TAGS, tags);
-        projectData.put(KEY_SPONSORED, false);
 
         DocumentReference document = firestore.collection(KEY_PROJECTS).document();
         document.get().addOnCompleteListener(task -> writeToDocument(task, projectData));
@@ -140,9 +136,9 @@ public class FirestoreUtils {
 
                         reference.set(newData, SetOptions.merge()).addOnCompleteListener(t -> {
                             if (t.isSuccessful()) {
-                                Log.d(TAG, UPDATE_MSG);
+                                Log.d(TAG, "Document updated");
                             } else {
-                                Log.e(TAG, UPDATE_ERR_MSG);
+                                Log.e(TAG, "Error updating document");
                             }
                         });
                     }
@@ -155,7 +151,7 @@ public class FirestoreUtils {
             assert snapshot != null;
             snapshot.getReference().set(data);
         } else {
-            Log.e(TAG, UPDATE_ERR_MSG);
+            Log.e(TAG, "Error updating document");
         }
     }
 
@@ -168,8 +164,7 @@ public class FirestoreUtils {
             File localProfilePic = File.createTempFile("profile_pic", "jpeg");
             gsReference.getFile(localProfilePic).addOnSuccessListener(taskSnapshot -> imageView.setImageURI(Uri.fromFile(localProfilePic)));
         } catch (IOException e) {
-            Log.e(TAG, Objects.requireNonNull(e.getMessage()));
-            Log.e(TAG, Arrays.toString(e.getStackTrace()));
+            Log.e(TAG, "getProfilePic: error: ", e);
         }
     }
 }
