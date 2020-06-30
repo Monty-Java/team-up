@@ -81,6 +81,6 @@
     <string name="complete_objectives_dialog_title">Complete Objectives</string>
     <string name="new_project_description_hint">This is a description of my project.\nIt states what the project is about.</string>
     <string name="new_project_objectives_hint">Objective I want to achieve\nAnother objective\nImportant goal</string>
-    <string name="tags_hints">eg. Music, Art, etc.</string>
+    <string name="tags_hints">Tags (eg. Music, Art, etc.)</string>
 
 </resources>
