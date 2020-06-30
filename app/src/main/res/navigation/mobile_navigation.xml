@@ -30,7 +30,6 @@
         tools:layout="@layout/fragment_discover">
     </fragment>
 
-    <!-- Questo fragment ha a che fare con IUI-3 -->
     <fragment
         android:id="@+id/nav_home_second"
         android:label="@string/home_second">
