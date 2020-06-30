@@ -9,7 +9,7 @@
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:elevation="1dp">
+        android:elevation="@dimen/cardview_default_elevation">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -22,7 +22,7 @@
                 android:layout_height="200dp"
                 android:layout_alignParentTop="true"
                 android:layout_centerInParent="true"
-                android:elevation="1dp">
+                android:elevation="@dimen/cardview_default_elevation">
 
                 <ImageView
                     android:id="@+id/profilePicImageView"

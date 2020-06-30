@@ -3,11 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragment.profile.ProfileFragment">
+    tools:context=".fragment.profile.ProfileFragment"
+    android:paddingVertical="@dimen/activity_vertical_margin">
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:elevation="@dimen/cardview_default_elevation">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -21,7 +23,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_centerInParent="true"
                 android:layout_margin="@dimen/activity_vertical_margin"
-                android:elevation="1dp">
+                android:elevation="@dimen/cardview_default_elevation">
 
                 <ImageView
                     android:id="@+id/profilePic_imageView"

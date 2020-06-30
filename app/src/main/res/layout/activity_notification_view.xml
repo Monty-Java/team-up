@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/notification_textView"
         android:layout_centerHorizontal="true"
-        android:elevation="1dp"
+        android:elevation="@dimen/cardview_default_elevation"
         android:paddingVertical="@dimen/activity_vertical_margin">
 
         <RelativeLayout
@@ -35,7 +35,7 @@
                 android:layout_width="200dp"
                 android:layout_height="200dp"
                 android:layout_centerHorizontal="true"
-                android:elevation="1dp"
+                android:elevation="@dimen/cardview_default_elevation"
                 android:layout_margin="@dimen/button_margin">
 
                 <ImageView

@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/projectId_textView"
         android:layout_centerHorizontal="true"
-        android:text="@string/tags_hint"
+        android:text="@string/tags_title"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5" />
 
     <ListView

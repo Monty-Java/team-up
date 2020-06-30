@@ -19,6 +19,7 @@ import com.example.teamup.activity.ProjectActivity;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 public class DiscoveryProjectsAdapter
@@ -128,7 +129,12 @@ public class DiscoveryProjectsAdapter
 
             projectTitle.setText(project.getTitolo());
 
-            String tagsText = "Tags: " + project.getEtichette().toString();
+            String tagsText = "";// = "Tags: " + project.getEtichette().toString();
+            for (Iterator<String> it = project.getEtichette().iterator(); it.hasNext(); ) {
+                String s = it.next();
+                if (it.hasNext()) tagsText = tagsText.concat(s + ", ");
+                else tagsText = tagsText.concat(s);
+            }
             projectTags.setText(tagsText);
 
 

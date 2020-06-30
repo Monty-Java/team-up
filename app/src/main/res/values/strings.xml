@@ -4,18 +4,25 @@
     <string name="nav_header_title">Android Studio</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
+    <string name="home_second">Home Second</string>
 
+    <string name="default_notification_channel_id">CH_01</string>
+    <string name="teamup_logo_description">TeamUp Logo</string>
+
+    <!-- Menu Text -->
     <string name="menu_projects">My Projects</string>
     <string name="menu_profile">My Profile</string>
     <string name="menu_discover">Discover</string>
     <string name="menu_logout">Log Out</string>
+    <string name="home_menu_option">Home</string>
+    <string name="pay_menu_option">Increase Project Visibility</string>
+    <string name="delete_project_menu">Delete Project</string>
+    <string name="change_project_title_menu">Change Project Title</string>
+    <string name="leave_project_menu_option">Leave Project</string>
 
-    <string name="home_second">Home Second</string>
     <string name="verify_account_title">Verify Account</string>
     <string name="verify_account_message">Please check your e-mail for the verification link to activate your account.</string>
-
     <string name="teammte_request_text">Would you like to send a request to become a teammate for this project?</string>
-
     <string name="pay_description">You can use Google Pay to sponsor your project for $0,99. Sponsored projects will be displayed on top of the Discover screen, increasing the chances of potential Teammates to find it.</string>
 
     <!-- EditText hints -->
@@ -26,61 +33,49 @@
     <string name="hint_pass">Password</string>
     <string name="hint_skills">Skills (eg. Programming, Writing, Graphics, etc.)</string>
     <string name="tag_hint">Tag</string>
-    <string name="tags_hint">Tags</string>
     <string name="new_objective_hint">New Objective</string>
-    <string name="tag_dialog_hint">New Project Tag</string>
     <string name="skill_dialog_hint">My New Skill</string>
     <string name="project_description_hint">Project Description</string>
+    <string name="tags_hints">Tags (eg. Music, Art, etc.)</string>
+
+    <!-- Button Text -->
     <string name="accept_text">Accept</string>
     <string name="reject_text">Reject</string>
-    <string name="default_notification_channel_id">CH_01</string>
-    <string name="teamup_logo_description">TeamUp Logo</string>
-    <string name="login_text">Login</string>
+    <string name="ok_text">OK</string>
+    <string name="cancel_text">Cancel</string>
+    <string name="confirm_text">Confirm</string>
+    <string name="pay_text">Pay</string>
+    <string name="login_prompt_text">Already a member? Login</string>
     <string name="new_account_prompt_text">No account yet? Create one</string>
+    <string name="add_tag_prompt">Add Tag</string>
+    <string name="close_text">Close</string>
+    <string name="add_skill_prompt">Add Skill</string>
+
+    <!-- Dialog Text -->
+    <string name="login_text">Login</string>
+    <string name="tags_title">Tags</string>
     <string name="profile_pic_description">Profile Picture</string>
     <string name="skills_text">Skills</string>
     <string name="objectives_text">Objectives</string>
     <string name="team_text">Team</string>
     <string name="project_description_text">Project description</string>
     <string name="create_account_text">Create Account</string>
-    <string name="login_prompt_text">Already a member? Login</string>
-    <string name="pay_text">Pay</string>
     <string name="objective_dialog_title">Add A New Objective</string>
-    <string name="ok_text">OK</string>
-    <string name="cancel_text">Cancel</string>
     <string name="tag_dialog_title">Add A New Tag</string>
     <string name="skill_dialog_title">Add A New Skill</string>
     <string name="default_project_title">My Project</string>
-    <string name="default_tag_text">Project Tag</string>
+    <string name="default_tag_text">Tag</string>
     <string name="edit_project_description_dialog_title">Edit Project Description</string>
-    <string name="edit_tag_dialog_title">Edit or Remove Tag</string>
-    <string name="remove_text">Remove</string>
     <string name="display_name_text">Display Name</string>
     <string name="leader_text">Leader</string>
     <string name="teammate_text">Teammate</string>
     <string name="new_project_dialog_title">New Project</string>
-    <string name="confirm_text">Confirm</string>
-    <string name="add_skill_prompt">Add Skill</string>
     <string name="details_dialog_title">Project Details</string>
     <string name="default_project_id_text">Project ID</string>
-    <string name="add_tag_prompt">Add Tag</string>
-    <string name="home_menu_option">Home</string>
-    <string name="pay_menu_option">Increase Project Visibility</string>
-    <string name="leave_project_menu_option">Leave Project</string>
-    <string name="close_text">Close</string>
-    <string name="change_project_title_menu">Change Project Title</string>
     <string name="change_project_title_text">Change Project Title</string>
     <string name="default_notification_text">Notification Details</string>
     <string name="default_username_text">User Name</string>
     <string name="view_skills_text">View Skills</string>
-    <string name="privacy_menu">Privacy</string>
-    <string name="privacy_dialog_title">Privacy Settings</string>
-    <string name="private_profile_picture_switch_text">Private Profile Picture</string>
-    <string name="private_e_mail_address_switch_text">Private E-mail Address</string>
-    <string name="delete_project_menu">Delete Project</string>
     <string name="complete_objectives_dialog_title">Complete Objectives</string>
-    <string name="new_project_description_hint">This is a description of my project.\nIt states what the project is about.</string>
-    <string name="new_project_objectives_hint">Objective I want to achieve\nAnother objective\nImportant goal</string>
-    <string name="tags_hints">Tags (eg. Music, Art, etc.)</string>
 
 </resources>
