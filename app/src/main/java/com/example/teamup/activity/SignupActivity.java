@@ -20,17 +20,16 @@ import java.util.Arrays;
 import java.util.List;
 
 public class SignupActivity extends AppCompatActivity {
-
     private static final String TAG = SignupActivity.class.getSimpleName();
 
-    private EditText _nameText;
-    private EditText _surnameText;
-    private EditText _emailText;
-    private EditText _passwordText;
-    private EditText _skillsText;
-    private Button _signupButton;
+    private EditText mNameEditText;
+    private EditText mSurnameEditText;
+    private EditText mEmailEditText;
+    private EditText mPasswordEditText;
+    private EditText mSkillsEditText;
+    private Button mSignupButton;
 
-    private FirebaseAuthUtils firebaseAuthUtils;
+    private FirebaseAuthUtils mFirebaseAuthUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,15 +38,15 @@ public class SignupActivity extends AppCompatActivity {
 
         Log.d(TAG, "onCreate");
 
-        _nameText = findViewById(R.id.input_name);
-        _surnameText = findViewById(R.id.input_surname);
-        _emailText = findViewById(R.id.input_email);
-        _passwordText = findViewById(R.id.input_password);
-        _skillsText = findViewById(R.id.input_skills);
-        _signupButton = findViewById(R.id.btn_signup);
+        mNameEditText = findViewById(R.id.input_name);
+        mSurnameEditText = findViewById(R.id.input_surname);
+        mEmailEditText = findViewById(R.id.input_email);
+        mPasswordEditText = findViewById(R.id.input_password);
+        mSkillsEditText = findViewById(R.id.input_skills);
+        mSignupButton = findViewById(R.id.btn_signup);
 
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-        firebaseAuthUtils = new FirebaseAuthUtils(FirebaseAuth.getInstance(), firestore, this);
+        mFirebaseAuthUtils = new FirebaseAuthUtils(FirebaseAuth.getInstance(), firestore, this);
     }
 
     public void onSignupClick(View view) {
@@ -71,7 +70,7 @@ public class SignupActivity extends AppCompatActivity {
             return;
         }
 
-        _signupButton.setEnabled(false);
+        mSignupButton.setEnabled(false);
 
         final ProgressDialog progressDialog = new ProgressDialog(SignupActivity.this,
                 R.style.AppTheme_Dark_Dialog);
@@ -79,17 +78,17 @@ public class SignupActivity extends AppCompatActivity {
         progressDialog.setMessage("Creating Account...");
         progressDialog.show();
 
-        String name = _nameText.getText().toString();
-        String surname = _surnameText.getText().toString();
-        String email = _emailText.getText().toString();
-        String password = _passwordText.getText().toString();
-        String skills = _skillsText.getText().toString();
+        String name = mNameEditText.getText().toString();
+        String surname = mSurnameEditText.getText().toString();
+        String email = mEmailEditText.getText().toString();
+        String password = mPasswordEditText.getText().toString();
+        String skills = mSkillsEditText.getText().toString();
 
         String displayName = name + ' ' + surname;
         String[] skillsArray = skills.split("\\W+");
         List<String> skillList = new ArrayList<>(Arrays.asList(skillsArray));
 
-        firebaseAuthUtils.createAccount(displayName, email, password, skillList, () -> {
+        mFirebaseAuthUtils.createAccount(displayName, email, password, skillList, () -> {
             onSignupSuccess();
             progressDialog.dismiss();
         }, () -> {
@@ -99,7 +98,7 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     public void onSignupSuccess() {
-        _signupButton.setEnabled(true);
+        mSignupButton.setEnabled(true);
         setResult(RESULT_OK, null);
         finish();
     }
@@ -107,51 +106,51 @@ public class SignupActivity extends AppCompatActivity {
     public void onSignupFailed() {
         Toast.makeText(getBaseContext(), "Signup failed", Toast.LENGTH_LONG).show();
 
-        _signupButton.setEnabled(true);
+        mSignupButton.setEnabled(true);
     }
 
     public boolean validate() {
         boolean valid = true;
 
-        String name = _nameText.getText().toString();
-        String surname = _surnameText.getText().toString();
-        String email = _emailText.getText().toString();
-        String password = _passwordText.getText().toString();
-        String skills = _skillsText.getText().toString();
+        String name = mNameEditText.getText().toString();
+        String surname = mSurnameEditText.getText().toString();
+        String email = mEmailEditText.getText().toString();
+        String password = mPasswordEditText.getText().toString();
+        String skills = mSkillsEditText.getText().toString();
 
         if (name.isEmpty() || name.length() < 3) {
-            _nameText.setError("At least 3 characters");
+            mNameEditText.setError("At least 3 characters");
             valid = false;
         } else {
-            _nameText.setError(null);
+            mNameEditText.setError(null);
         }
 
         if (surname.isEmpty() || surname.length() < 3) {
-            _surnameText.setError("At least 3 characters");
+            mSurnameEditText.setError("At least 3 characters");
             valid = false;
         } else {
-            _surnameText.setError(null);
+            mSurnameEditText.setError(null);
         }
 
         if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            _emailText.setError("Enter a valid email address");
+            mEmailEditText.setError("Enter a valid email address");
             valid = false;
         } else {
-            _emailText.setError(null);
+            mEmailEditText.setError(null);
         }
 
         if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
-            _passwordText.setError("At least 6 alphanumeric characters");
+            mPasswordEditText.setError("At least 6 alphanumeric characters");
             valid = false;
         } else {
-            _passwordText.setError(null);
+            mPasswordEditText.setError(null);
         }
 
         if (skills.isEmpty()) {
-            _skillsText.setError("At least 1 skill");
+            mSkillsEditText.setError("At least 1 skill");
             valid = false;
         } else {
-            _skillsText.setError(null);
+            mSkillsEditText.setError(null);
         }
 
         return valid;

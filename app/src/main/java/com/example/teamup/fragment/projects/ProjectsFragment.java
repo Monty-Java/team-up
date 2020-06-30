@@ -39,11 +39,12 @@ public class ProjectsFragment extends Fragment {
 
     FirestoreUtils firestoreUtils;
 
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
         final MainActivity activity = (MainActivity) requireActivity();
-        firestoreUtils = new FirestoreUtils(activity.firestoreUtils.getFirestoreInstance());
+        firestoreUtils = new FirestoreUtils(activity.getFirebaseAuthUtils().getFirestoreUtils().getFirestoreInstance());
 
         View root = inflater.inflate(R.layout.fragment_projects, container, false);
 
@@ -52,7 +53,7 @@ public class ProjectsFragment extends Fragment {
         teammateProjectsListView = root.findViewById(R.id.teammateProjects_listView);
 
         populateProjectsListViews(
-                activity.firebaseAuthUtils.getCurrentUser(),
+                activity.getFirebaseAuthUtils().getCurrentUser(),
                 firestoreUtils.getFirestoreInstance());
 
         return root;

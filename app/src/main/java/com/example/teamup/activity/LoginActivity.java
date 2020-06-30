@@ -22,9 +22,9 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TAG = LoginActivity.class.getSimpleName();
     private static final int REQUEST_SIGNUP = 0;
 
-    private EditText _emailText;
-    private EditText _passwordText;
-    private Button _loginButton;
+    private EditText mEmailEditText;
+    private EditText mPasswordEditText;
+    private Button mLoginButton;
 
     private FirebaseAuthUtils firebaseAuthUtils;
 
@@ -35,9 +35,9 @@ public class LoginActivity extends AppCompatActivity {
 
         Log.d(TAG, "onCreate");
 
-        _emailText = findViewById(R.id.input_email);
-        _passwordText = findViewById(R.id.input_password);
-        _loginButton = findViewById(R.id.btn_login);
+        mEmailEditText = findViewById(R.id.input_email);
+        mPasswordEditText = findViewById(R.id.input_password);
+        mLoginButton = findViewById(R.id.btn_login);
 
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
         firebaseAuthUtils = new FirebaseAuthUtils(FirebaseAuth.getInstance(), firestore, this);
@@ -60,7 +60,7 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        _loginButton.setEnabled(false);
+        mLoginButton.setEnabled(false);
 
         final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this,
                 R.style.AppTheme_Dark_Dialog);
@@ -68,8 +68,8 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog.setMessage("Authenticating...");
         progressDialog.show();
 
-        String email = _emailText.getText().toString();
-        String password = _passwordText.getText().toString();
+        String email = mEmailEditText.getText().toString();
+        String password = mPasswordEditText.getText().toString();
 
         firebaseAuthUtils.signIn(email, password, () -> {
             progressDialog.dismiss();
@@ -88,12 +88,9 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_SIGNUP) {
-            if (resultCode == RESULT_OK) {
-
+        if (requestCode == REQUEST_SIGNUP && resultCode == RESULT_OK) {
                 Log.d(TAG, "onActivityResult: Signup successfull");
                 firebaseAuthUtils.verifyUser(this::onLoginSuccess);
-            }
         }
     }
 
@@ -104,7 +101,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void onLoginSuccess() {
-        _loginButton.setEnabled(true);
+        mLoginButton.setEnabled(true);
 
         Intent teamUpIntent = new Intent(this, MainActivity.class);
         startActivity(teamUpIntent);
@@ -114,27 +111,27 @@ public class LoginActivity extends AppCompatActivity {
     public void onLoginFailed() {
         Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
 
-        _loginButton.setEnabled(true);
+        mLoginButton.setEnabled(true);
     }
 
     public boolean validate() {
         boolean valid = true;
 
-        String email = _emailText.getText().toString();
-        String password = _passwordText.getText().toString();
+        String email = mEmailEditText.getText().toString();
+        String password = mPasswordEditText.getText().toString();
 
         if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            _emailText.setError("enter a valid email address");
+            mEmailEditText.setError("enter a valid email address");
             valid = false;
         } else {
-            _emailText.setError(null);
+            mEmailEditText.setError(null);
         }
 
         if (password.isEmpty() || password.length() < 6 || password.length() > 10) {
-            _passwordText.setError("between 6 and 10 alphanumeric characters");
+            mPasswordEditText.setError("between 6 and 10 alphanumeric characters");
             valid = false;
         } else {
-            _passwordText.setError(null);
+            mPasswordEditText.setError(null);
         }
 
         return valid;

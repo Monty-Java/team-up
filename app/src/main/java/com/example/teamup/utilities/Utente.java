@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Utente {
-    private static final String TAG = Utente.class.getSimpleName();
-
     private Uri profileImageUri;
     private String displayName;
     private String email;

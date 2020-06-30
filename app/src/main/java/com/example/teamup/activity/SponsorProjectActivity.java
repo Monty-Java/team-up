@@ -22,6 +22,8 @@ import java.util.Objects;
 public class SponsorProjectActivity extends AppCompatActivity implements BillingProcessor.IBillingHandler {
     public static final String TAG = SponsorProjectActivity.class.getSimpleName();
 
+    private static final String PURCHASE = "android.test.purchased";
+
     BillingProcessor mBillingProcessor;
     String mProject;
     FirestoreUtils mFirestore;
@@ -38,8 +40,8 @@ public class SponsorProjectActivity extends AppCompatActivity implements Billing
 
         mBillingProcessor = new BillingProcessor(this, "test_key", this);
         mBillingProcessor.initialize();
-        if (mBillingProcessor.isPurchased("android.test.purchased"))
-            mBillingProcessor.consumePurchase("android.test.purchased");    //  Permette di ripetere il pagamento
+        if (mBillingProcessor.isPurchased(PURCHASE))
+            mBillingProcessor.consumePurchase(PURCHASE);    //  Permette di ripetere il pagamento
 
         Button pay = findViewById(R.id.pay_button);
         pay.setOnClickListener(view -> mFirestore.getFirestoreInstance().collection(FirestoreUtils.KEY_PROJECTS)
@@ -50,7 +52,7 @@ public class SponsorProjectActivity extends AppCompatActivity implements Billing
                 if (!snapshot.contains(FirestoreUtils.KEY_SPONSORED)) {
                     if (mBillingProcessor.isInitialized()) {
                         Log.d(TAG, "Process Payment");
-                        mBillingProcessor.purchase(this, "android.test.purchased");
+                        mBillingProcessor.purchase(this, PURCHASE);
                     }
                 } else {
                     Toast.makeText(this, "The project has already been sponsored", Toast.LENGTH_LONG).show();

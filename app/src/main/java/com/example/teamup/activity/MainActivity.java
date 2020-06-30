@@ -36,17 +36,18 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = "MainActivity";
+    private static final String ERROR_MSG = "Empty field";
 
-    public FirebaseAuthUtils firebaseAuthUtils;
-    public FirestoreUtils firestoreUtils;
+    private FirebaseAuthUtils mFirebaseAuthUtils;
+    private FirestoreUtils mFirestoreUtils;
 
     private AppBarConfiguration mAppBarConfiguration;
 
     //  UI
-    ImageView userProfilePicture;
-    TextView userDisplayName;
-    TextView userEmail;
-    private NavController navController;
+    ImageView mUserProfilePicture;
+    TextView mUserDisplayName;
+    TextView mUserEmail;
+    private NavController mNavController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,9 +62,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //  Ottiene i riferimenti agli elementi dell'UI
         View headerView = navigationView.getHeaderView(0);
 
-        userProfilePicture = headerView.findViewById(R.id.imageView_profilePic);
-        userDisplayName = headerView.findViewById(R.id.display_name);
-        userEmail = headerView.findViewById(R.id.email);
+        mUserProfilePicture = headerView.findViewById(R.id.imageView_profilePic);
+        mUserDisplayName = headerView.findViewById(R.id.display_name);
+        mUserEmail = headerView.findViewById(R.id.email);
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -73,29 +74,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .build();
         NavHostFragment hostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
         assert hostFragment != null;
-        navController = hostFragment.getNavController();
-        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
-        NavigationUI.setupWithNavController(navigationView, navController);
+        mNavController = hostFragment.getNavController();
+        NavigationUI.setupActionBarWithNavController(this, mNavController, mAppBarConfiguration);
+        NavigationUI.setupWithNavController(navigationView, mNavController);
 
         //  Registra un listener per permettere di effettuare un logout
         //  quando l'utente clicca sull'opzione appropriata.
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        firebaseAuthUtils = new FirebaseAuthUtils(FirebaseAuth.getInstance(), FirebaseFirestore.getInstance(), this);
-        firestoreUtils = firebaseAuthUtils.getFirestoreUtils();
+        mFirebaseAuthUtils = new FirebaseAuthUtils(FirebaseAuth.getInstance(), FirebaseFirestore.getInstance(), this);
+        mFirestoreUtils = mFirebaseAuthUtils.getFirestoreUtils();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
 
-        FirebaseUser firebaseUser = firebaseAuthUtils.getCurrentUser();
+        FirebaseUser firebaseUser = mFirebaseAuthUtils.getCurrentUser();
         if (firebaseUser != null) {
             //  Aggiorna l'UI con i dati dell'utente
-            firestoreUtils.getProfilePic(firebaseUser.getUid(), userProfilePicture);
-            userDisplayName.setText(firebaseUser.getDisplayName());
-            userEmail.setText(firebaseUser.getEmail());
+            mFirestoreUtils.getProfilePic(firebaseUser.getUid(), mUserProfilePicture);
+            mUserDisplayName.setText(firebaseUser.getDisplayName());
+            mUserEmail.setText(firebaseUser.getEmail());
         }
     }
 
@@ -106,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         newProjectDialog.setContentView(R.layout.new_project_dialog);
         TextView leader = newProjectDialog.findViewById(R.id.leaderName_textView);
 
-        String leaderText = "Leader: " + userDisplayName.getText().toString();
+        String leaderText = "Leader: " + mUserDisplayName.getText().toString();
         leader.setText(leaderText);
 
         Button cancelButton = newProjectDialog.findViewById(R.id.cancelNewProject_button);
@@ -132,29 +133,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             if (title.getText().toString().equals("")) {
                 checkEmptyFields = false;
-                title.setError("Empty field");
+                title.setError(ERROR_MSG);
             }
 
             if (description.getText().toString().equals("")) {
                 checkEmptyFields = false;
-                description.setError("Empty field");
+                description.setError(ERROR_MSG);
             }
 
             if (objectiveMap.isEmpty()) {
                 checkEmptyFields = false;
-                objectives.setError("Empty field");
+                objectives.setError(ERROR_MSG);
             }
 
             if (tags.getText().toString().equals("")) {
                 checkEmptyFields = false;
-                tags.setError("Empty field");
+                tags.setError(ERROR_MSG);
             }
 
             if (checkEmptyFields) {
-                firestoreUtils.storeNewProjectData(
+                mFirestoreUtils.storeNewProjectData(
                         title.getText().toString(),
                         description.getText().toString(),
-                        userDisplayName.getText().toString(),
+                        mUserDisplayName.getText().toString(),
                         objectiveMap, tagList);
                 newProjectDialog.hide();
             }
@@ -165,8 +166,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onSupportNavigateUp() {
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        return NavigationUI.navigateUp(navController, mAppBarConfiguration)
+        mNavController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        return NavigationUI.navigateUp(mNavController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
 
@@ -179,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (menuItemId) {
             case R.id.nav_projects:
                 Log.d(TAG, "onNavigationItemSelected: My Projects");
-                navController.navigate(menuItemId);
+                mNavController.navigate(menuItemId);
                 if (mAppBarConfiguration.getDrawerLayout() != null) {
                     mAppBarConfiguration.getDrawerLayout().closeDrawers();
                 }
@@ -187,7 +188,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             case R.id.nav_profile:
                 Log.d(TAG, "onNavigationItemSelected: My Profile");
-                navController.navigate(menuItemId);
+                mNavController.navigate(menuItemId);
                 if (mAppBarConfiguration.getDrawerLayout() != null) {
                     mAppBarConfiguration.getDrawerLayout().closeDrawers();
                 }
@@ -195,14 +196,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             case R.id.nav_discover:
                 Log.d(TAG, "onNavigationItemSelected: Discover");
-                navController.navigate(menuItemId);
+                mNavController.navigate(menuItemId);
                 if (mAppBarConfiguration.getDrawerLayout() != null) {
                     mAppBarConfiguration.getDrawerLayout().closeDrawers();
                 }
                 break;
 
             case R.id.nav_logout:
-                firebaseAuthUtils.logout();
+                mFirebaseAuthUtils.logout();
                 break;
 
             default:
@@ -211,4 +212,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         return true;
     }
+
+    public FirebaseAuthUtils getFirebaseAuthUtils() { return mFirebaseAuthUtils; }
 }

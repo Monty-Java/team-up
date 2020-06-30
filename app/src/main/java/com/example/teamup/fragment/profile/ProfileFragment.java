@@ -94,13 +94,12 @@ public class ProfileFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == TAKE_IMAGE_CODE) {
-            if (resultCode == RESULT_OK) {
-                assert data != null;
+        if (requestCode == TAKE_IMAGE_CODE && resultCode == RESULT_OK) {
+            if (data != null) {
                 Bitmap bitmap = (Bitmap) Objects.requireNonNull(data.getExtras()).get("data");
                 mProfilePicImageView.setImageBitmap(bitmap);
                 if (bitmap != null) handleUpload(bitmap);
-            }
+            } else throw new NullPointerException("Null Intent Data");
         }
     }
 
@@ -162,10 +161,7 @@ public class ProfileFragment extends Fragment {
         skillsListView.setOnItemClickListener((parent, listview, position, id) -> removeSkill(parent, skillsAdapter, position));
 
         //  Crea un Dialog che permette di aggiungere una nuova competenza
-        addSkillButton.setOnClickListener(l -> {
-            addSkill(skillsAdapter);
-            //skillsAdapter.notifyDataSetChanged();
-        });
+        addSkillButton.setOnClickListener(l -> addSkill(skillsAdapter));
 
         closeButton.setOnClickListener(v -> skillsDialog.hide());
         skillsDialog.show();

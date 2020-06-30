@@ -31,15 +31,15 @@ import java.util.Objects;
 public class DiscoverFragment extends Fragment {
     public static final String TAG = DiscoverFragment.class.getSimpleName();
 
-    private FirestoreUtils firestoreUtils;
+    private FirestoreUtils mFirestoreUtils;
 
     private SearchView mSearchView;
     private RecyclerView mProjectsListView;
-    private DiscoveryProjectsAdapter listAdapter;
+    private DiscoveryProjectsAdapter mListAdapter;
 
     private List<Progetto> mProjects;
 
-    private Activity parentActivity;
+    private Activity mParentActivity;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -54,12 +54,12 @@ public class DiscoverFragment extends Fragment {
 
         Log.d(TAG, "onViewCreated");
 
-        parentActivity = requireActivity();
+        mParentActivity = requireActivity();
 
-        firestoreUtils = new FirestoreUtils(FirebaseFirestore.getInstance());
+        mFirestoreUtils = new FirestoreUtils(FirebaseFirestore.getInstance());
 
-        mSearchView = parentActivity.findViewById(R.id.searchView);
-        mProjectsListView = parentActivity.findViewById(R.id.projects_listView);
+        mSearchView = mParentActivity.findViewById(R.id.searchView);
+        mProjectsListView = mParentActivity.findViewById(R.id.projects_listView);
     }
 
     @Override
@@ -80,7 +80,7 @@ public class DiscoverFragment extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String s) {
-                listAdapter.getFilter().filter(s);
+                mListAdapter.getFilter().filter(s);
                 return false;
             }
         });
@@ -89,7 +89,7 @@ public class DiscoverFragment extends Fragment {
 
     private void displayProjects() {
         //  Ottiene i riferimenti ai progetti memorizzati e li visualizza nella ListView
-        Query query = firestoreUtils.getFirestoreInstance().collection(FirestoreUtils.KEY_PROJECTS);
+        Query query = mFirestoreUtils.getFirestoreInstance().collection(FirestoreUtils.KEY_PROJECTS);
         query.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 for (QueryDocumentSnapshot snapshot : Objects.requireNonNull(task.getResult())) {
@@ -99,43 +99,36 @@ public class DiscoverFragment extends Fragment {
                     @SuppressWarnings(value = "unchecked") Map<String, Boolean> objectives = (Map<String, Boolean>) snapshot.getData().get(FirestoreUtils.KEY_OBJ);
 
                     //   Crea una lista di Progetti corrispondenti alla ListView dei titoli di progetto
-                    if (snapshot.contains(FirestoreUtils.KEY_SPONSORED)) {
-                        mProjects.add(new Progetto(snapshot.getId(),
-                                (String) snapshot.getData().get(FirestoreUtils.KEY_LEADER),
-                                (String) snapshot.getData().get(FirestoreUtils.KEY_TITLE),
-                                (String) snapshot.getData().get(FirestoreUtils.KEY_DESC),
-                                tags,
-                                teammates,
-                                objectives,
-                                true));
-                    } else {
-                        mProjects.add(new Progetto(snapshot.getId(),
-                                (String) snapshot.getData().get(FirestoreUtils.KEY_LEADER),
-                                (String) snapshot.getData().get(FirestoreUtils.KEY_TITLE),
-                                (String) snapshot.getData().get(FirestoreUtils.KEY_DESC),
-                                tags,
-                                teammates,
-                                objectives,
-                                false));
-                    }
+                    mProjects.add(new Progetto(snapshot.getId(),
+                            (String) snapshot.getData().get(FirestoreUtils.KEY_LEADER),
+                            (String) snapshot.getData().get(FirestoreUtils.KEY_TITLE),
+                            (String) snapshot.getData().get(FirestoreUtils.KEY_DESC),
+                            tags,
+                            teammates,
+                            objectives,
+                            (Boolean) snapshot.getData().putIfAbsent(FirestoreUtils.KEY_SPONSORED, false)));
 
-                    //  Riordina la lista ponendo i progetti sponsorizzati in testa
-                    int j = 0;
-                    for (int i = 0; i < mProjects.size(); i++) {
-                        if (mProjects.get(i).isSponsored()) {
-                            Collections.swap(mProjects, i, j);
-                            j++;
-                        }
-                    }
+                    putSponsoredFirst();
                 }
 
-                LinearLayoutManager layoutManager = new LinearLayoutManager(parentActivity, RecyclerView.VERTICAL, false);
+                LinearLayoutManager layoutManager = new LinearLayoutManager(mParentActivity, RecyclerView.VERTICAL, false);
                 mProjectsListView.setLayoutManager(layoutManager);
 
-                listAdapter = new DiscoveryProjectsAdapter(parentActivity, mProjects);
-                mProjectsListView.setAdapter(listAdapter);
-                listAdapter.notifyDataSetChanged();
+                mListAdapter = new DiscoveryProjectsAdapter(mParentActivity, mProjects);
+                mProjectsListView.setAdapter(mListAdapter);
+                mListAdapter.notifyDataSetChanged();
             }
         });
+    }
+
+    private void putSponsoredFirst() {
+        //  Riordina la lista ponendo i progetti sponsorizzati in testa
+        int j = 0;
+        for (int i = 0; i < mProjects.size(); i++) {
+            if (mProjects.get(i).isSponsored()) {
+                Collections.swap(mProjects, i, j);
+                j++;
+            }
+        }
     }
 }

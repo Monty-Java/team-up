@@ -436,20 +436,20 @@ public class ProjectActivity extends AppCompatActivity {
             if (entry.getValue()) completeObjectives.add(entry.getKey());
         }
 
-        ArrayAdapter<String> objectivesAdapter = new ArrayAdapter<>(
+        ArrayAdapter<String> completeObjectivesAdapter = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_list_item_checked,
                 completeObjectives
         );
-        completeObjectivesListView.setAdapter(objectivesAdapter);
+        completeObjectivesListView.setAdapter(completeObjectivesAdapter);
 
         if (Objects.equals(firebaseAuthUtils.getCurrentUser().getDisplayName(), progetto.getLeader())) {
             //  Un click su un obiettivo completo lo segnala come incompleto, aggiornando le due liste
             completeObjectivesListView.setOnItemClickListener((parent, view, position, id) -> {
                 progetto.addObiettivoDaRaggiungere(parent.getItemAtPosition(position).toString());
                 firestoreUtils.updateProjectData(progetto.getId(), FirestoreUtils.KEY_OBJ, progetto.getObiettivi());
-                objectivesAdapter.remove(parent.getItemAtPosition(position).toString());
-                objectivesAdapter.notifyDataSetChanged();
+                completeObjectivesAdapter.remove(parent.getItemAtPosition(position).toString());
+                completeObjectivesAdapter.notifyDataSetChanged();
             });
         }
 
@@ -475,7 +475,7 @@ public class ProjectActivity extends AppCompatActivity {
                 finish();
             }));
 
-            leaveProjectDialogBuilder.setNegativeButton(R.string.cancel_text, (((dialog, which) -> dialog.dismiss())));
+            leaveProjectDialogBuilder.setNegativeButton(R.string.cancel_text, ((dialog, which) -> dialog.dismiss()));
 
             AlertDialog leaveTeamDialog = leaveProjectDialogBuilder.create();
             leaveTeamDialog.show();
