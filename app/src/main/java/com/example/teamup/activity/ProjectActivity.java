@@ -479,7 +479,7 @@ public class ProjectActivity extends AppCompatActivity {
 
             AlertDialog leaveTeamDialog = leaveProjectDialogBuilder.create();
             leaveTeamDialog.show();
-        }
+        } else Toast.makeText(this, "Project leader cannot leave the project. You can delete it instead.", Toast.LENGTH_LONG).show();
     }
 
     private void deleteProject() {

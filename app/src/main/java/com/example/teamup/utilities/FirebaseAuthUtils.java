@@ -1,13 +1,14 @@
 package com.example.teamup.utilities;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.teamup.activity.LoginActivity;
+import androidx.appcompat.app.AlertDialog;
+
 import com.example.teamup.R;
+import com.example.teamup.activity.LoginActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
@@ -144,7 +145,7 @@ public class FirebaseAuthUtils {
         AlertDialog.Builder verifyDialogBuilder = new AlertDialog.Builder(activity);
         verifyDialogBuilder.setTitle(R.string.verify_account_title);
         verifyDialogBuilder.setMessage(R.string.verify_account_message);
-        verifyDialogBuilder.setPositiveButton("OK", (dialog, which) -> {
+        verifyDialogBuilder.setPositiveButton(R.string.ok_text, (dialog, which) -> {
             if (firebaseAuth.getCurrentUser() != null) {
                 firebaseAuth.getCurrentUser().reload().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -171,7 +172,7 @@ public class FirebaseAuthUtils {
             }
         });
 
-        verifyDialogBuilder.setNeutralButton("Resend Link", (dialog, which) -> {
+        verifyDialogBuilder.setNegativeButton("Resend Link", (dialog, which) -> {
             if (firebaseAuth.getCurrentUser() != null)
                 firebaseAuth.getCurrentUser().sendEmailVerification();
         });
