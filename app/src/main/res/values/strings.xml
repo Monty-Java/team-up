@@ -77,5 +77,7 @@
     <string name="default_username_text">User Name</string>
     <string name="view_skills_text">View Skills</string>
     <string name="complete_objectives_dialog_title">Complete Objectives</string>
+    <string name="completed_text">Completed</string>
+    <string name="progress_text">Progress</string>
 
 </resources>

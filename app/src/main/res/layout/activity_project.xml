@@ -16,7 +16,7 @@
         android:layout_weight="0.1"
         android:gravity="center_horizontal"
         android:paddingVertical="@dimen/activity_vertical_margin"
-        android:text="Project description"
+        android:text="@string/project_description_text"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -46,7 +46,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:gravity="center_horizontal"
-                android:text="Objectives"
+                android:text="@string/objectives_text"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -57,7 +57,7 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:text="Completed"
+                android:text="@string/completed_text"
                 android:layout_margin="@dimen/button_margin" />
 
             <androidx.recyclerview.widget.RecyclerView
@@ -69,6 +69,7 @@
                 android:layout_marginEnd="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                android:padding="@dimen/activity_vertical_margin"
                 app:layout_constraintTop_toBottomOf="@+id/objectives_textView" />
 
             <TextView
@@ -78,7 +79,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
                 android:gravity="center_horizontal"
-                android:text="Team"
+                android:text="@string/team_text"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/objectives_listView" />
@@ -106,7 +107,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:layout_weight="0.1"
-        android:text="Progress"
+        android:text="@string/progress_text"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
         app:layout_constraintBottom_toBottomOf="@+id/floatingActionButton"
         app:layout_constraintEnd_toStartOf="@+id/floatingActionButton"
