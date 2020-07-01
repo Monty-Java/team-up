@@ -84,6 +84,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private void onProfileImageClick(View view) {
+        firestoreUtils.updateUserData(firebaseAuthUtils.getCurrentUser().getDisplayName(), FirestoreUtils.KEY_UID, firebaseAuthUtils.getCurrentUser().getUid());
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (intent.resolveActivity(requireActivity().getPackageManager()) != null) {
             startActivityForResult(intent, TAKE_IMAGE_CODE);

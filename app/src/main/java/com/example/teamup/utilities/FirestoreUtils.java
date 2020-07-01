@@ -72,8 +72,6 @@ public class FirestoreUtils {
                 Map<String, Object> newData = new HashMap<>();
                 newData.put(field, data);
 
-                Log.d(TAG, newData.toString());
-
                 DocumentSnapshot snapshot = Objects.requireNonNull(task.getResult()).getDocuments().get(0);
                 snapshot.getReference()
                         .set(newData, SetOptions.merge()).addOnCompleteListener(t -> {

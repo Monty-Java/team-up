@@ -100,6 +100,8 @@ public class FirebaseAuthUtils {
                     user.updateProfile(profileUpdate)
                             .addOnCompleteListener(task1 -> firestoreUtils.storeUserData(getCurrentUser(), skills));
 
+                    firestoreUtils.updateUserData(user.getDisplayName(), FirestoreUtils.KEY_UID, user.getUid());
+
                     signIn(email, pass, onSignupSuccessful);
                 }
             });
